@@ -1,331 +1,359 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. NAVIGATION & LAYOUT
-    const navItems = document.querySelectorAll('.nav-item[data-target]');
-    const sections = document.querySelectorAll('.view-section');
-    const titleDisplay = document.getElementById('currentViewName');
+// --- Particles Canvas ---
+const canvas = document.getElementById('particles-canvas');
+const ctx = canvas.getContext('2d');
+let width, height;
+let particles = [];
+let mouse = { x: null, y: null };
 
-    navItems.forEach(item => {
-        item.addEventListener('click', () => {
-            navItems.forEach(n => n.classList.remove('active'));
-            item.classList.add('active');
-            
-            const target = item.getAttribute('data-target');
-            sections.forEach(s => {
-                s.classList.remove('active');
-                if(s.id === target) s.classList.add('active');
-            });
-            
-            if(titleDisplay) {
-                titleDisplay.textContent = item.textContent.trim();
-            }
-            
-            // Resize canvas if switching to dashboard
-            if (target === 'dashboard') {
-                setTimeout(resizeCanvas, 50);
-            }
-        });
-    });
+function resize() {
+    width = canvas.parentElement.clientWidth;
+    height = canvas.parentElement.clientHeight;
+    canvas.width = width;
+    canvas.height = height;
+}
 
-    // 2. BETTER STACK: UPTIME BARS
-    const uptimeContainer = document.getElementById('uptimeBars');
-    if (uptimeContainer) {
-        for (let i = 0; i < 30; i++) {
-            const bar = document.createElement('div');
-            bar.className = 'uptime-bar';
-            
-            // Simulate 99.99% uptime with one incident 5 days ago
-            if (i === 24) {
-                bar.classList.add('h-err');
-                bar.title = 'Incident: HTTP 429 Rate Limit Exceeded';
-            } else if (i === 23 || i === 25) {
-                bar.classList.add('h-80');
-                bar.title = 'Degraded Performance';
-            } else {
-                bar.classList.add('h-100');
-                bar.title = 'Operational';
-            }
-            uptimeContainer.appendChild(bar);
-        }
-    }
+window.addEventListener('resize', resize);
+resize();
 
-    // 3. TELEMETRY: ECG CANVAS
-    const canvas = document.getElementById('ecgCanvas');
-    let ctx = null;
-    let historySize = 120;
-    let dataPoints = new Array(historySize).fill(0);
-    
-    if (canvas) {
-        ctx = canvas.getContext('2d');
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-        updateECG();
-    }
-
-    function resizeCanvas() {
-        if (!canvas) return;
-        const parent = canvas.parentElement;
-        canvas.width = parent.clientWidth * window.devicePixelRatio;
-        canvas.height = parent.clientHeight * window.devicePixelRatio;
-        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-        dataPoints.fill(canvas.height / window.devicePixelRatio / 2);
-    }
-
-    function drawECG() {
-        if (!canvas || !ctx) return;
-        const w = canvas.width / window.devicePixelRatio;
-        const h = canvas.height / window.devicePixelRatio;
-        ctx.clearRect(0, 0, w, h);
-        
-        ctx.beginPath();
-        ctx.strokeStyle = 'var(--accent-ok)';
-        ctx.lineWidth = 2;
-        ctx.shadowColor = 'var(--accent-ok)';
-        ctx.shadowBlur = 8;
-        
-        const sliceWidth = w / (historySize - 1);
-        let x = 0;
-        
-        for (let i = 0; i < historySize; i++) {
-            const y = dataPoints[i];
-            if (i === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-            x += sliceWidth;
-        }
-        ctx.stroke();
-        ctx.shadowBlur = 0; // reset
-    }
-
-    function updateECG() {
-        if (!canvas) return;
-        const h = canvas.height / window.devicePixelRatio;
-        for(let i=0; i < historySize - 1; i++) {
-            dataPoints[i] = dataPoints[i+1];
-        }
-        
-        const baseLatency = h / 2;
-        const isPulse = Math.random() > 0.95;
-        let newValue = baseLatency;
-        
-        if (isPulse) {
-            newValue = baseLatency - (Math.random() * 40 + 20);
-            setTimeout(() => { dataPoints[historySize-2] = baseLatency + (Math.random() * 20); }, 50);
-        } else {
-            newValue = baseLatency + (Math.random() * 4 - 2);
-        }
-        
-        dataPoints[historySize - 1] = newValue;
-        
-        const avgDisplay = document.getElementById('avgLatency');
-        if(avgDisplay) avgDisplay.textContent = Math.floor(Math.random() * 5 + 10) + ' ms';
-
-        drawECG();
-        requestAnimationFrame(updateECG);
-    }
-
-    // 4. FLEET CONTROL & METRICS
-    const AUTHORIZED_BOTS = ['roblox-tracker', 'bot-discord', 'errorcito-viales'];
-    
-    function purgeBotstickers() {
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key && key.toLowerCase().includes('botstickers')) {
-                localStorage.removeItem(key);
-            }
-        }
-        let state = [
-            { id: 'roblox-tracker', status: 'online', latency: 45, type: 'Go/Node' },
-            { id: 'botstickers-beta', status: 'error', latency: 999, type: 'Node' },
-            { id: 'bot-discord', status: 'online', latency: 60, type: 'Python' },
-            { id: 'errorcito-viales', status: 'online', latency: 200, type: 'Python' }
-        ];
-        return state.filter(bot => AUTHORIZED_BOTS.includes(bot.id));
-    }
-
-    function renderFleet(bots) {
-        const grid = document.getElementById('fleetGrid');
-        if(!grid) return;
-        grid.innerHTML = '';
-        bots.forEach(bot => {
-            const card = document.createElement('div');
-            card.className = 'uptime-card'; // Reuse style
-            card.style.padding = '24px';
-            card.style.display = 'flex';
-            card.style.flexDirection = 'column';
-            card.style.gap = '12px';
-            card.innerHTML = `
-                <div class="flex-between">
-                    <span style="font-family: var(--font-mono); font-size: 14px; font-weight: 500;">${bot.id}</span>
-                    <span class="label" style="color: ${bot.status === 'online' ? 'var(--accent-ok)' : 'var(--accent-error)'}; display: flex; align-items: center; gap: 6px;">
-                        <span style="width: 6px; height: 6px; background: currentColor; border-radius: 50%; display: inline-block;"></span>
-                        ${bot.status.toUpperCase()}
-                    </span>
-                </div>
-                <div style="font-size: 28px; font-weight: 500; font-family: var(--font-mono);">${bot.latency} ms</div>
-                <div class="label">Runtime: ${bot.type}</div>
-            `;
-            grid.appendChild(card);
-        });
-    }
-
-    renderFleet(purgeBotstickers());
-
-    async function fetchSystemMetrics() {
-        const grid = document.getElementById('systemMetricsContainer');
-        if(!grid) return;
-        try {
-            const res = await fetch('/api/v1/system');
-            if(!res.ok) throw new Error('API Error');
-            const data = await res.json();
-            renderMetrics(data.metrics, grid);
-        } catch (e) {
-            console.warn("Using simulated telemetry fallback (Vercel deployment detected).");
-            renderMetrics({
-                memory: { free: 4294967296, total: 8589934592, usedPercentage: 50.00 },
-                cpuLoad: [0.12, 0.08, 0.05],
-                uptime: 86400 * 3.5
-            }, grid);
-        }
-    }
-
-    function renderMetrics(metrics, grid) {
-        const memGB = (metrics.memory.free / 1024 / 1024 / 1024).toFixed(1);
-        const totalMemGB = (metrics.memory.total / 1024 / 1024 / 1024).toFixed(1);
-        grid.innerHTML = `
-            <div>
-                <div class="flex-between" style="margin-bottom: 4px;">
-                    <span style="font-size: 13px; color: var(--text-secondary);">Memory Usage</span>
-                    <span style="font-family: var(--font-mono); font-size: 13px;">${metrics.memory.usedPercentage}%</span>
-                </div>
-                <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
-                    <div style="width: ${metrics.memory.usedPercentage}%; height: 100%; background: var(--accent-brand);"></div>
-                </div>
-                <div class="label" style="margin-top: 6px; text-transform: none;">${memGB}GB / ${totalMemGB}GB Free</div>
-            </div>
-            
-            <div style="margin-top: 12px;">
-                <div class="flex-between" style="margin-bottom: 4px;">
-                    <span style="font-size: 13px; color: var(--text-secondary);">Load Average (1m, 5m, 15m)</span>
-                </div>
-                <div style="font-family: var(--font-mono); font-size: 16px; color: #fff;">
-                    ${metrics.cpuLoad.map(l => l.toFixed(2)).join('  ')}
-                </div>
-            </div>
-            
-            <div style="margin-top: 12px;">
-                <div class="flex-between" style="margin-bottom: 4px;">
-                    <span style="font-size: 13px; color: var(--text-secondary);">Server Uptime</span>
-                </div>
-                <div style="font-family: var(--font-mono); font-size: 16px; color: #fff;">
-                    ${(metrics.uptime / 3600).toFixed(1)} hours
-                </div>
-            </div>
-        `;
-    }
-
-    fetchSystemMetrics();
-    setInterval(fetchSystemMetrics, 10000);
-
-    // 5. RAILWAY: LIVE TERMINAL
-    const cliInput = document.getElementById('cliInput');
-    const cliLogs = document.getElementById('cliLogs');
-
-    function getTimestamp() {
-        const now = new Date();
-        return now.toTimeString().split(' ')[0];
-    }
-
-    function appendLog(msg, type = '') {
-        const div = document.createElement('div');
-        let prefix = `<span class="log-time">${getTimestamp()}</span> `;
-        let colorClass = '';
-        
-        if(type === 'info') prefix += `<span class="log-info">[INFO]</span> `;
-        if(type === 'success') prefix += `<span class="log-success">[OK]</span> `;
-        if(type === 'error') prefix += `<span class="log-error">[ERR]</span> `;
-        if(type === 'warn') prefix += `<span class="log-warn">[WARN]</span> `;
-        
-        div.innerHTML = prefix + msg;
-        cliLogs.appendChild(div);
-        cliLogs.scrollTop = cliLogs.scrollHeight;
-    }
-
-    if (cliInput) {
-        cliInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                const val = cliInput.value.trim();
-                if(!val) return;
-                
-                const div = document.createElement('div');
-                div.innerHTML = `<span class="log-time">${getTimestamp()}</span> <span style="color:var(--text-primary);">❯ ${val}</span>`;
-                cliLogs.appendChild(div);
-                
-                cliInput.value = '';
-                cliLogs.scrollTop = cliLogs.scrollHeight;
-                
-                const cmd = val.toLowerCase().split(' ')[0];
-                setTimeout(() => {
-                    switch(cmd) {
-                        case 'help': appendLog('Commands: help, status, ping, clear', 'info'); break;
-                        case 'status': appendLog('API Gateway running. All systems operational.', 'success'); break;
-                        case 'ping': appendLog('Pong! 12ms', 'success'); break;
-                        case 'clear': cliLogs.innerHTML = ''; break;
-                        default: appendLog(`bash: ${cmd}: command not found`, 'error');
-                    }
-                }, 200);
-            }
-        });
-    }
-
-    // 6. SUPABASE: API EXPLORER
-    const codeTabs = document.querySelectorAll('.code-tab');
-    const codeContent = document.getElementById('codeContent');
-
-    const staticCodeFallbacks = {
-        'server.js': `const express = require('express');\nconst helmet = require('helmet');\nconst app = express();\n\n// Secure API Gateway\napp.use(helmet());\napp.use(express.json());\n\napp.get('/api/v1/system', (req, res) => {\n  res.json({ status: 'ok' });\n});\n\napp.listen(3001, () => {\n  console.log('API Gateway running on port 3001');\n});`,
-        'agent.py': `import requests\n\nclass MoniOpenClient:\n    def __init__(self, bot_id):\n        self.bot_id = bot_id\n        self.api_url = "http://localhost:3001/api/v1/heartbeat"\n\n    def ping(self):\n        requests.post(self.api_url, json={"botId": self.bot_id, "status": "online"})\n\nclient = MoniOpenClient("roblox-tracker")\nclient.ping()`,
-        'app.js': `// Bootstrapping Frontend Observability\ndocument.addEventListener('DOMContentLoaded', () => {\n  console.log("MoniOpen v3.5 UI initialized.");\n  fetchSystemMetrics();\n});`
-    };
-
-    function highlightSyntax(code) {
-        // Very basic regex highlighter for demo purposes
-        let highlighted = code
-            .replace(/</g, '&lt;').replace(/>/g, '&gt;')
-            .replace(/\b(const|let|var|function|return|require|import|class|def|self)\b/g, '<span class="code-token-keyword">$1</span>')
-            .replace(/('.*?'|".*?"|`.*?`)/g, '<span class="code-token-string">$1</span>')
-            .replace(/\b(console|res|req|express|app|requests)\b/g, '<span class="code-token-function">$1</span>')
-            .replace(/(\/\/.*|#.*)/g, '<span class="code-token-comment">$1</span>');
-        return `<pre><code>${highlighted}</code></pre>`;
-    }
-
-    async function loadCodeFile(filename) {
-        if(!codeContent) return;
-        codeContent.innerHTML = "Loading...";
-        try {
-            const res = await fetch(`/${filename}`);
-            if(!res.ok) throw new Error('Not found');
-            const text = await res.text();
-            codeContent.innerHTML = highlightSyntax(text);
-        } catch (e) {
-            codeContent.innerHTML = highlightSyntax(staticCodeFallbacks[filename] || '// Source unavailable');
-        }
-    }
-
-    codeTabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            codeTabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            loadCodeFile(tab.getAttribute('data-file'));
-        });
-    });
-
-    if(codeTabs.length > 0) {
-        loadCodeFile('server.js');
-    }
-
-    window.copyCode = function() {
-        if(!codeContent) return;
-        navigator.clipboard.writeText(codeContent.textContent).then(() => {
-            alert('Code copied to clipboard!');
-        });
-    }
+canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
 });
+canvas.addEventListener('mouseleave', () => {
+    mouse.x = null;
+    mouse.y = null;
+});
+
+class Particle {
+    constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.vx = (Math.random() - 0.5) * 0.5;
+        this.vy = (Math.random() - 0.5) * 0.5;
+        this.radius = 1.5;
+    }
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.x < 0 || this.x > width) this.vx *= -1;
+        if (this.y < 0 || this.y > height) this.vy *= -1;
+    }
+    draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(6, 182, 212, 0.5)';
+        ctx.fill();
+    }
+}
+
+for (let i = 0; i < 60; i++) {
+    particles.push(new Particle());
+}
+
+function animateParticles() {
+    ctx.clearRect(0, 0, width, height);
+    
+    for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+        
+        // Connect particles
+        for (let j = i; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            
+            if (dist < 100) {
+                ctx.beginPath();
+                ctx.moveTo(particles[i].x, particles[i].y);
+                ctx.lineTo(particles[j].x, particles[j].y);
+                ctx.strokeStyle = `rgba(6, 182, 212, ${1 - dist/100})`;
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+            }
+        }
+
+        // Mouse interaction
+        if (mouse.x != null) {
+            const dx = particles[i].x - mouse.x;
+            const dy = particles[i].y - mouse.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 150) {
+                particles[i].x -= dx * 0.01;
+                particles[i].y -= dy * 0.01;
+                ctx.beginPath();
+                ctx.moveTo(particles[i].x, particles[i].y);
+                ctx.lineTo(mouse.x, mouse.y);
+                ctx.strokeStyle = `rgba(94, 106, 210, ${0.5 - dist/300})`;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+        }
+    }
+    requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+// --- ECG Canvas ---
+const ecgCanvas = document.getElementById('ecg-canvas');
+const ecgCtx = ecgCanvas.getContext('2d');
+let ecgWidth, ecgHeight;
+let ecgData = [];
+const ecgMaxDataPoints = 100;
+let latencyDisplay = document.getElementById('latency-display');
+
+function resizeEcg() {
+    ecgWidth = ecgCanvas.parentElement.clientWidth;
+    ecgHeight = ecgCanvas.parentElement.clientHeight;
+    ecgCanvas.width = ecgWidth;
+    ecgCanvas.height = ecgHeight;
+}
+window.addEventListener('resize', resizeEcg);
+resizeEcg();
+
+for(let i=0; i<ecgMaxDataPoints; i++) ecgData.push(42);
+
+function drawEcg() {
+    ecgCtx.clearRect(0, 0, ecgWidth, ecgHeight);
+    
+    // Grid
+    ecgCtx.strokeStyle = 'rgba(255,255,255,0.05)';
+    ecgCtx.lineWidth = 1;
+    for(let i=0; i<ecgWidth; i+=20) {
+        ecgCtx.beginPath(); ecgCtx.moveTo(i,0); ecgCtx.lineTo(i,ecgHeight); ecgCtx.stroke();
+    }
+    for(let i=0; i<ecgHeight; i+=20) {
+        ecgCtx.beginPath(); ecgCtx.moveTo(0,i); ecgCtx.lineTo(ecgWidth,i); ecgCtx.stroke();
+    }
+
+    ecgCtx.beginPath();
+    const sliceWidth = ecgWidth / (ecgMaxDataPoints - 1);
+    let x = 0;
+    for(let i=0; i<ecgMaxDataPoints; i++) {
+        const y = ecgHeight - (ecgData[i] / 100) * ecgHeight;
+        if(i === 0) ecgCtx.moveTo(x, y);
+        else ecgCtx.lineTo(x, y);
+        x += sliceWidth;
+    }
+    
+    ecgCtx.strokeStyle = '#06b6d4';
+    ecgCtx.lineWidth = 2;
+    ecgCtx.stroke();
+
+    // Fill gradient
+    ecgCtx.lineTo(ecgWidth, ecgHeight);
+    ecgCtx.lineTo(0, ecgHeight);
+    ecgCtx.closePath();
+    const gradient = ecgCtx.createLinearGradient(0, 0, 0, ecgHeight);
+    gradient.addColorStop(0, 'rgba(6, 182, 212, 0.2)');
+    gradient.addColorStop(1, 'rgba(6, 182, 212, 0)');
+    ecgCtx.fillStyle = gradient;
+    ecgCtx.fill();
+}
+
+setInterval(() => {
+    // Generate jitter
+    const isJitter = Math.random() > 0.8;
+    const baseVal = 38.4 + Math.random() * 7.8; // ~38.4 to 46.2
+    const jitter = isJitter ? (Math.random() > 0.5 ? 20 : -10) : 0;
+    let newVal = baseVal + jitter;
+    if(newVal > 90) newVal = 90;
+    
+    ecgData.push(newVal);
+    ecgData.shift();
+    drawEcg();
+    if(latencyDisplay) latencyDisplay.innerText = newVal.toFixed(1) + 'ms';
+}, 100); // Fast update for visual appeal
+
+// --- Uptime Strip ---
+const strip = document.getElementById('uptime-strip');
+if(strip) {
+    for(let i=0; i<30; i++) {
+        const bar = document.createElement('div');
+        bar.className = 'uptime-bar';
+        const date = new Date();
+        date.setDate(date.getDate() - (29 - i));
+        const isOutage = Math.random() > 0.95;
+        if(isOutage) {
+            bar.setAttribute('data-status', 'outage');
+            bar.style.height = (Math.random() * 40 + 20) + '%';
+            bar.setAttribute('data-tooltip', `${date.toLocaleDateString()}: 98.2% (Degraded)`);
+        } else {
+            bar.style.height = (Math.random() * 20 + 80) + '%';
+            bar.setAttribute('data-tooltip', `${date.toLocaleDateString()}: 100% (Healthy)`);
+        }
+        strip.appendChild(bar);
+    }
+}
+
+// --- Drawer & Modal Logic ---
+const backdrop = document.getElementById('backdrop');
+const drawer = document.getElementById('bot-drawer');
+const claudeModal = document.getElementById('claude-modal');
+
+function inspectBot(botName) {
+    document.getElementById('drawer-title').innerText = `Inspect: ${botName}`;
+    backdrop.classList.add('visible');
+    drawer.classList.add('open');
+}
+
+function closeModals() {
+    backdrop.classList.remove('visible');
+    drawer.classList.remove('open');
+    claudeModal.classList.remove('open');
+}
+
+// --- CLI Logic ---
+const cliInput = document.getElementById('cli-input');
+const terminalOutput = document.getElementById('terminal-output');
+const commandHistory = [];
+let historyIndex = -1;
+
+function printLog(msg, type = 'info') {
+    const div = document.createElement('div');
+    div.className = `log-line log-${type}`;
+    div.innerText = msg;
+    if(terminalOutput) {
+        terminalOutput.appendChild(div);
+        terminalOutput.scrollTop = terminalOutput.scrollHeight;
+    }
+}
+
+// Simular logs en streaming
+setInterval(() => {
+    if(Math.random() > 0.7) {
+        const bots = ['roblox-tracker', 'bot-discord', 'errorcito-viales'];
+        const bot = bots[Math.floor(Math.random() * bots.length)];
+        printLog(`[${new Date().toISOString().split('T')[1].slice(0,8)}] INFO: ${bot} heartbeat received OK`, 'info');
+    }
+}, 3000);
+
+if(cliInput) {
+    cliInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const cmd = cliInput.value.trim();
+            if (cmd) {
+                commandHistory.push(cmd);
+                historyIndex = commandHistory.length;
+                printLog(`mop@edge-cluster:~$ ${cmd}`, 'info');
+                executeCommand(cmd);
+            }
+            cliInput.value = '';
+        } else if (e.key === 'ArrowUp') {
+            if (historyIndex > 0) {
+                historyIndex--;
+                cliInput.value = commandHistory[historyIndex];
+            }
+        } else if (e.key === 'ArrowDown') {
+            if (historyIndex < commandHistory.length - 1) {
+                historyIndex++;
+                cliInput.value = commandHistory[historyIndex];
+            } else {
+                historyIndex = commandHistory.length;
+                cliInput.value = '';
+            }
+        }
+    });
+}
+
+function executeCommand(cmd) {
+    const parts = cmd.toLowerCase().split(' ');
+    switch (parts[0]) {
+        case 'help':
+            printLog('Available commands:', 'info');
+            printLog('  help       - Show this help message', 'info');
+            printLog('  status     - Show cluster health', 'info');
+            printLog('  ping       - Test network latency', 'info');
+            printLog('  diagnose   - Trigger Claude diagnosis', 'info');
+            printLog('  workers    - List active fleet', 'info');
+            printLog('  clear      - Clear terminal', 'info');
+            break;
+        case 'status':
+            printLog('Cluster Status: HEALTHY', 'success');
+            printLog('Ports: 3001 (API), 22 (SSH)', 'info');
+            break;
+        case 'ping':
+            printLog('Pinging edge-cluster-01 (10.0.0.1)...', 'info');
+            setTimeout(() => printLog('Reply from 10.0.0.1: time=42ms', 'success'), 500);
+            break;
+        case 'diagnose':
+            triggerClaudeDiagnosis();
+            break;
+        case 'workers':
+            printLog('Active Workers:', 'info');
+            printLog('- roblox-tracker (PID: 48291) [Running]', 'success');
+            printLog('- bot-discord (PID: 48292) [Running]', 'success');
+            printLog('- errorcito-viales (PID: 48293) [Running]', 'success');
+            break;
+        case 'clear':
+            if(terminalOutput) terminalOutput.innerHTML = '';
+            break;
+        default:
+            printLog(`Command not found: ${parts[0]}`, 'error');
+    }
+}
+
+// --- Claude Diagnosis Flow ---
+function triggerClaudeDiagnosis() {
+    // 1. Simular incidente en roblox-tracker
+    const dot = document.getElementById('dot-roblox-tracker');
+    if(dot) dot.classList.add('critical');
+    printLog('CRITICAL [roblox-tracker]: HTTP 429 Too Many Requests detected. Rate limit exceeded.', 'error');
+    
+    // 2. Abrir modal
+    setTimeout(() => {
+        backdrop.classList.add('visible');
+        claudeModal.classList.add('open');
+        
+        // 3. Animar contador de tokens
+        let count = 0;
+        const counterEl = document.getElementById('token-counter');
+        const interval = setInterval(() => {
+            count += Math.floor(Math.random() * 50);
+            if(count > 1432) {
+                count = 1432;
+                clearInterval(interval);
+            }
+            if(counterEl) counterEl.innerText = count.toLocaleString();
+        }, 30);
+    }, 1500);
+}
+
+function applyPatch() {
+    closeModals();
+    printLog('Applying AI patch to roblox-tracker...', 'warn');
+    setTimeout(() => {
+        const dot = document.getElementById('dot-roblox-tracker');
+        if(dot) dot.classList.remove('critical');
+        printLog('SUCCESS: Patch applied. roblox-tracker recovered to Healthy state.', 'success');
+    }, 1500);
+}
+
+// --- SDK Tabs Logic ---
+const tabs = document.querySelectorAll('.sdk-tab');
+tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelectorAll('.sdk-content').forEach(c => c.classList.remove('active'));
+        document.getElementById(tab.getAttribute('data-target')).classList.add('active');
+    });
+});
+
+function copySdkCode() {
+    const activeTab = document.querySelector('.sdk-content.active code');
+    if(!activeTab) return;
+    navigator.clipboard.writeText(activeTab.innerText).then(() => {
+        const btn = document.querySelector('.btn-copy');
+        const originalText = btn.innerText;
+        btn.innerText = '¡Copiado!';
+        btn.style.color = 'var(--accent-emerald)';
+        btn.style.borderColor = 'var(--accent-emerald)';
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.style.color = 'var(--text-secondary)';
+            btn.style.borderColor = 'var(--border-subtle)';
+        }, 2000);
+    });
+}

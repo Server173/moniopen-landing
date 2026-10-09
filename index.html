@@ -1,239 +1,257 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoniOpen v3.5 - Observability</title>
-    <!-- Content-Security-Policy (Allowing VPS IP for API) -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' http://179.6.55.118:3001; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http://179.6.55.118:3001;">
+    <title>MoniOpen Production Suite V4.0</title>
     <link rel="stylesheet" href="style.css">
-    <script src="app.js" defer></script>
 </head>
 <body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-icon active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            </div>
+            <div class="sidebar-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            </div>
+            <div class="sidebar-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+            </div>
+        </aside>
 
-    <!-- Linear-style Sidebar -->
-    <aside class="sidebar">
-        <div class="workspace-switcher">
-            <div class="workspace-avatar"></div>
-            <span class="workspace-name">MoniOpen Prod</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-        </div>
+        <main class="main-content">
+            <header class="topbar">
+                <div class="brand">
+                    <span class="brand-glow">●</span> MoniOpen
+                </div>
+                <div class="topbar-status">
+                    <span class="badge">Core v4.0 Active</span>
+                    <span class="badge success">Puerto: 3001 OK</span>
+                    <a href="https://github.com/moniopen" target="_blank" style="color:var(--text-muted);">GitHub</a>
+                </div>
+            </header>
 
-        <div class="nav-group">
-            <div class="label nav-group-title">Observability</div>
-            <div class="nav-item active" data-target="dashboard">
-                <div class="nav-item-left">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-                    Metrics & Uptime
+            <section class="hero-section">
+                <canvas id="particles-canvas"></canvas>
+                <div class="hero-content">
+                    <h1 style="font-size: 2.5rem; margin-bottom: 8px;">Telemetría de Precisión</h1>
+                    <p style="color: var(--text-secondary);">Observabilidad autónoma para tu flota de microservicios</p>
                 </div>
-            </div>
-            <div class="nav-item" data-target="fleet">
-                <div class="nav-item-left">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
-                    Workers Fleet
-                </div>
-            </div>
-            <div class="nav-item" data-target="incidents">
-                <div class="nav-item-left">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                    Incident Tracker
-                </div>
-            </div>
-        </div>
+            </section>
 
-        <div class="nav-group">
-            <div class="label nav-group-title">Infrastructure</div>
-            <div class="nav-item" data-target="cli">
-                <div class="nav-item-left">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
-                    Live Logs
-                </div>
-            </div>
-            <div class="nav-item" data-target="explorer">
-                <div class="nav-item-left">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-                    API Explorer
-                </div>
-            </div>
-        </div>
-    </aside>
-
-    <main class="main-content">
-        <!-- Topbar -->
-        <header class="topbar">
-            <div class="breadcrumbs">
-                MoniOpen <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg> <span class="current" id="currentViewName">Metrics & Uptime</span>
-            </div>
-            <div class="flex-center">
-                <span class="label" style="margin-right: 8px;">Command Menu</span>
-                <span class="kbd">⌘</span><span class="kbd">K</span>
-            </div>
-        </header>
-
-        <!-- Better Stack: Metrics & Uptime -->
-        <section id="dashboard" class="view-section active">
-            <div class="view-header">
-                <div>
-                    <h2 class="title-lg">Metrics & Uptime</h2>
-                    <p style="color: var(--text-secondary); margin-top: 4px;">System telemetry for API Gateway.</p>
-                </div>
-                <div class="flex-center">
-                    <span class="label" style="color: var(--accent-ok); display: flex; align-items: center; gap: 6px;">
-                        <span style="width: 6px; height: 6px; background: var(--accent-ok); border-radius: 50%; display: inline-block;"></span>
-                        All Systems Operational
-                    </span>
-                </div>
-            </div>
-
-            <!-- Uptime Bar Component -->
-            <div class="uptime-card">
-                <div class="uptime-card-header">
-                    <span class="title-md">API Gateway Uptime</span>
-                    <span class="label">Last 30 days</span>
-                </div>
-                <div class="uptime-row" id="uptimeBars">
-                    <!-- JS fills this -->
-                </div>
-                <div class="uptime-footer">
-                    <span>30 days ago</span>
-                    <span>99.99% Uptime</span>
-                    <span>Today</span>
-                </div>
-            </div>
-
-            <div class="grid-2">
-                <!-- Latency Chart -->
-                <div class="chart-container">
-                    <div class="flex-between" style="margin-bottom: 12px;">
-                        <span class="label">P95 Latency</span>
-                        <span id="avgLatency" style="font-family: var(--font-mono); font-size: 13px;">-- ms</span>
-                    </div>
-                    <canvas id="ecgCanvas"></canvas>
-                </div>
-                
-                <!-- System RAM/CPU -->
-                <div class="chart-container">
-                    <div class="flex-between" style="margin-bottom: 12px;">
-                        <span class="label">Host Node Metrics</span>
-                    </div>
-                    <div id="systemMetricsContainer" style="display: flex; flex-direction: column; gap: 16px; margin-top: 24px;">
-                        <!-- JS injected -->
-                        <span style="color: var(--text-muted); font-family: var(--font-mono); font-size: 12px;">Loading node data...</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Fleet -->
-        <section id="fleet" class="view-section">
-            <div class="view-header">
-                <div>
-                    <h2 class="title-lg">Workers Fleet</h2>
-                    <p style="color: var(--text-secondary); margin-top: 4px;">Active microservices and automated quarantine.</p>
-                </div>
-                <button class="btn btn-primary">Add Worker</button>
-            </div>
-            <div class="grid-2" id="fleetGrid">
-                <!-- JS populated -->
-            </div>
-        </section>
-
-        <!-- Sentry: Incident Tracker -->
-        <section id="incidents" class="view-section">
-            <div class="view-header">
-                <div>
-                    <h2 class="title-lg">Incident Tracker</h2>
-                    <p style="color: var(--text-secondary); margin-top: 4px;">AI-powered root cause analysis via Claude 3.5 Sonnet.</p>
-                </div>
-                <button class="btn" onclick="openDiagnosticModal()">Simulate 429 Error</button>
-            </div>
-
-            <div class="incident-card">
-                <div class="incident-header">
-                    <div>
-                        <div class="flex-center" style="margin-bottom: 8px;">
-                            <span class="incident-tag">Unhandled Exception</span>
-                            <span style="font-family: var(--font-mono); font-size: 13px; font-weight: 500; color: #fff;">RateLimitExceeded</span>
+            <div class="dashboard">
+                <!-- Monitor de Red -->
+                <div class="card" style="grid-column: span 2;">
+                    <div class="border-beam"></div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h2 class="card-title">Monitor de Pulso de Red</h2>
+                            <span style="font-size: 0.85rem; color: var(--accent-emerald);">● LIVE</span>
                         </div>
-                        <p style="color: var(--text-secondary); font-size: 13px;">Too many requests to /api/v1/heartbeat in the last 15 minutes.</p>
-                    </div>
-                    <span class="label">Just now</span>
-                </div>
-                <div class="incident-body">
-                    <div class="incident-trace">
-                        <div><span style="color: #61afef;">at</span> RateLimit.check (node_modules/express-rate-limit/lib/index.js:55:12)</div>
-                        <div><span style="color: #61afef;">at</span> Layer.handle [as handle_request] (node_modules/express/lib/router/layer.js:95:5)</div>
-                        <div><span style="color: #61afef;">at</span> trim_prefix (node_modules/express/lib/router/index.js:328:13)</div>
-                        <br>
-                        <div style="color: var(--text-muted);">// Client SDK Trace (agent.py)</div>
-                        <div class="err-line">> response = requests.post(self.api_url, json=payload, timeout=5)</div>
-                        <div>  <span style="color: #61afef;">raise_for_status</span>() <span style="color: var(--text-muted);"># HTTPError: 429 Client Error</span></div>
-                    </div>
-                    <div style="width: 250px;">
-                        <span class="label">AI Diagnosis</span>
-                        <p style="font-size: 13px; color: var(--text-primary); margin-top: 8px; line-height: 1.5;">
-                            The client SDK does not implement exponential backoff. The Node gateway correctly blocked the burst of traffic.
-                        </p>
-                        <button class="btn btn-primary" style="margin-top: 16px; width: 100%; justify-content: center;" onclick="alert('Applying patch...')">Apply Auto-fix</button>
+                        <div class="monitor-container">
+                            <canvas id="ecg-canvas"></canvas>
+                            <div class="telemetry-overlay" id="latency-display">42.4ms</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <!-- Railway: Live Logs -->
-        <section id="cli" class="view-section">
-            <div class="view-header">
-                <div>
-                    <h2 class="title-lg">Live Logs</h2>
-                    <p style="color: var(--text-secondary); margin-top: 4px;">Tail server logs and execute OS commands.</p>
-                </div>
-                <span class="kbd">⌘</span><span class="kbd">L</span>
-            </div>
-            <div class="terminal-card">
-                <div class="terminal-header">
-                    <div class="terminal-dots">
-                        <div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div>
+                <!-- Histograma Better Stack -->
+                <div class="card" style="grid-column: span 2;">
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h2 class="card-title">Disponibilidad (30 Días)</h2>
+                            <span style="font-size: 0.85rem; color: var(--text-secondary);">99.99% Uptime</span>
+                        </div>
+                        <div class="uptime-strip" id="uptime-strip">
+                            <!-- JS will populate 30 bars -->
+                        </div>
                     </div>
-                    <span style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); margin-left: 12px;">root@moniopen:~</span>
                 </div>
-                <div class="terminal-logs" id="cliLogs">
-                    <div><span class="log-time">00:00:01</span> <span class="log-info">[INFO]</span> Starting PM2 daemon...</div>
-                    <div><span class="log-time">00:00:01</span> <span class="log-success">[OK]</span> MoniOpen v3.5 Enterprise online on port 3001.</div>
-                </div>
-                <div class="terminal-input-row">
-                    <span style="color: var(--accent-ok); font-weight: bold; font-family: var(--font-mono); font-size: 13px;">❯</span>
-                    <input type="text" id="cliInput" class="terminal-input" placeholder="Type a command (help, status, clear)..." autocomplete="off" spellcheck="false">
-                </div>
-            </div>
-        </section>
 
-        <!-- Supabase: API Explorer -->
-        <section id="explorer" class="view-section">
-            <div class="view-header">
-                <div>
-                    <h2 class="title-lg">API Explorer</h2>
-                    <p style="color: var(--text-secondary); margin-top: 4px;">Inspect the real source code running on the VPS.</p>
-                </div>
-            </div>
-            
-            <div class="code-card">
-                <div class="code-header">
-                    <div class="code-tabs" id="codeTabs">
-                        <div class="code-tab active" data-file="server.js">server.js</div>
-                        <div class="code-tab" data-file="agent.py">agent.py</div>
-                        <div class="code-tab" data-file="app.js">app.js</div>
+                <!-- Flota de Bots -->
+                <div class="card">
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h2 class="card-title">Flota Activa</h2>
+                        </div>
+                        <div class="fleet-list">
+                            <div class="fleet-item">
+                                <div class="bot-info">
+                                    <div class="bot-status-dot" id="dot-roblox-tracker"></div>
+                                    <div>
+                                        <div class="bot-name">roblox-tracker</div>
+                                        <div class="bot-runtime">Go / Node.js</div>
+                                    </div>
+                                </div>
+                                <button class="btn-inspect" onclick="inspectBot('roblox-tracker')">Inspeccionar</button>
+                            </div>
+                            <div class="fleet-item">
+                                <div class="bot-info">
+                                    <div class="bot-status-dot" id="dot-bot-discord"></div>
+                                    <div>
+                                        <div class="bot-name">bot-discord</div>
+                                        <div class="bot-runtime">Python</div>
+                                    </div>
+                                </div>
+                                <button class="btn-inspect" onclick="inspectBot('bot-discord')">Inspeccionar</button>
+                            </div>
+                            <div class="fleet-item">
+                                <div class="bot-info">
+                                    <div class="bot-status-dot" id="dot-errorcito-viales"></div>
+                                    <div>
+                                        <div class="bot-name">errorcito-viales</div>
+                                        <div class="bot-runtime">Python Worker</div>
+                                    </div>
+                                </div>
+                                <button class="btn-inspect" onclick="inspectBot('errorcito-viales')">Inspeccionar</button>
+                            </div>
+                        </div>
+                        <button class="btn-primary" onclick="triggerClaudeDiagnosis()">
+                            ⚡ Simular Incidente y Diagnosticar con Claude
+                        </button>
                     </div>
-                    <button class="btn" style="padding: 4px 8px; font-size: 11px; height: 28px;" onclick="copyCode()">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                        Copy
-                    </button>
                 </div>
-                <div class="code-content" id="codeContent">
-                    Loading source files...
+
+                <!-- Terminal -->
+                <div class="card">
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h2 class="card-title">Consola del Clúster</h2>
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">edge-cluster-01</span>
+                        </div>
+                        <div class="terminal-container">
+                            <div class="terminal-header">
+                                <span>Terminal</span>
+                                <span>bash</span>
+                            </div>
+                            <div class="terminal-body" id="terminal-output">
+                                <div class="log-line log-info">MoniOpen CLI v4.0.0 initialized.</div>
+                                <div class="log-line log-info">Type 'help' for a list of commands.</div>
+                            </div>
+                            <div style="padding: 0 16px 16px 16px;">
+                                <div class="terminal-input-line">
+                                    <span class="prompt">mop@edge-cluster:~$</span>
+                                    <input type="text" class="terminal-input" id="cli-input" autocomplete="off" spellcheck="false">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SDK Playground -->
+                <div class="card" style="grid-column: span 2;">
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h2 class="card-title">Integración (SDK Playground)</h2>
+                        </div>
+                        <div class="sdk-tabs">
+                            <div class="sdk-tab active" data-target="sdk-python">Python</div>
+                            <div class="sdk-tab" data-target="sdk-node">Node.js</div>
+                            <div class="sdk-tab" data-target="sdk-curl">cURL</div>
+                        </div>
+                        <div class="sdk-code">
+                            <button class="btn-copy" onclick="copySdkCode()">Copiar Código</button>
+                            <div id="sdk-python" class="sdk-content active">
+<pre><code>from moniopen import MoniOpenClient, track_performance
+
+client = MoniOpenClient(bot_id="mi-bot")
+
+@track_performance(client)
+def procesar_datos():
+    # Tu lógica aquí
+    pass</code></pre>
+                            </div>
+                            <div id="sdk-node" class="sdk-content">
+<pre><code>const { MoniOpen } = require('moniopen-sdk');
+
+const client = new MoniOpen({ botId: 'mi-bot-node' });
+
+async function tarea() {
+    const end = client.startTimer();
+    // lógica
+    end({ status: 'success' });
+}</code></pre>
+                            </div>
+                            <div id="sdk-curl" class="sdk-content">
+<pre><code>curl -X POST http://localhost:3001/api/v1/heartbeat \
+  -H "Content-Type: application/json" \
+  -d '{"botId":"curl-test", "status":"Healthy", "latency": 23.5}'</code></pre>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </section>
-    </main>
+        </main>
+    </div>
 
+    <!-- Backdrop -->
+    <div class="backdrop" id="backdrop" onclick="closeModals()"></div>
+
+    <!-- Drawer -->
+    <div class="drawer" id="bot-drawer">
+        <div class="drawer-header">
+            <h3 style="color:#fff;" id="drawer-title">Bot Details</h3>
+            <button class="btn-close" onclick="closeModals()">×</button>
+        </div>
+        <div class="drawer-content">
+            <div style="margin-bottom: 24px;">
+                <p style="color:var(--text-secondary); font-size:0.85rem;">PID Process</p>
+                <div style="font-family:var(--font-mono); color:var(--text-primary);">#48291</div>
+            </div>
+            <div style="margin-bottom: 24px;">
+                <p style="color:var(--text-secondary); font-size:0.85rem;">RAM Usage</p>
+                <div style="background:var(--bg-base); height:8px; border-radius:4px; margin-top:8px; overflow:hidden;">
+                    <div style="background:var(--accent-cyan); width:65%; height:100%; transition: width 0.5s;"></div>
+                </div>
+                <p style="font-family:var(--font-mono); font-size:0.75rem; text-align:right; margin-top:4px;">124MB / 512MB</p>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:12px;">
+                <button class="btn-primary" style="background:rgba(16,185,129,0.1); color:var(--accent-emerald); border-color:var(--accent-emerald);">Forzar Heartbeat</button>
+                <button class="btn-primary" style="background:rgba(244,63,94,0.1); color:var(--accent-rose); border-color:var(--accent-rose);">Pausar Servicio</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Claude Modal -->
+    <div class="modal" id="claude-modal">
+        <div class="modal-header">
+            <div class="claude-logo">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+                Claude 3.5 Sonnet Diagnostics
+            </div>
+            <span class="badge" style="color:#D4A373; border-color:#D4A373;">Analysis Complete</span>
+        </div>
+        <div class="modal-body">
+            <h4 style="color:#fff; margin-bottom:12px;">Causa Raíz Identificada</h4>
+            <p style="color:var(--text-secondary); font-size:0.9rem;">
+                Saturación de polling detectada en `roblox-tracker`. El servicio está recibiendo respuestas HTTP 429 (Too Many Requests) de la API externa debido a la falta de retroceso exponencial (Exponential Backoff).
+            </p>
+            <div class="diff-block">
+                <div class="diff-minus">- def fetch_data():</div>
+                <div class="diff-minus">-     while True:</div>
+                <div class="diff-minus">-         resp = requests.get(API_URL)</div>
+                <div class="diff-minus">-         time.sleep(1)</div>
+                <br>
+                <div class="diff-plus">+ def fetch_data():</div>
+                <div class="diff-plus">+     retries = 0</div>
+                <div class="diff-plus">+     while True:</div>
+                <div class="diff-plus">+         resp = requests.get(API_URL)</div>
+                <div class="diff-plus">+         if resp.status_code == 429:</div>
+                <div class="diff-plus">+             sleep_time = min(60, (2 ** retries) + random.uniform(0, 1))</div>
+                <div class="diff-plus">+             time.sleep(sleep_time)</div>
+                <div class="diff-plus">+             retries += 1</div>
+            </div>
+            <div style="font-family:var(--font-mono); font-size:0.75rem; color:var(--text-muted); display:flex; justify-content:space-between; margin-top:16px;">
+                <span>Tokens evaluados: <span id="token-counter">0</span></span>
+                <span>Confianza: 98.4%</span>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-primary" style="width:auto;" onclick="applyPatch()">Aplicar Parche y Recuperar</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
 </body>
 </html>
