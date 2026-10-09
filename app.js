@@ -1,136 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. PURGA DE BOTSTICKERS Y CONTROL DE FLOTA
-    const AUTHORIZED_BOTS = ['roblox-tracker', 'bot-discord', 'errorcito-viales'];
-    
-    function purgeBotstickers() {
-        console.log("Iniciando secuencia de purga...");
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key && key.toLowerCase().includes('botstickers')) {
-                localStorage.removeItem(key);
-                console.warn(`[PURGA] Eliminado de localStorage: ${key}`);
-            }
-        }
-        
-        let currentState = [
-            { id: 'roblox-tracker', status: 'online', latency: 45, type: 'Go/Node' },
-            { id: 'botstickers-beta', status: 'online', latency: 120, type: 'Node' },
-            { id: 'bot-discord', status: 'online', latency: 60, type: 'Python' },
-            { id: 'BOTSTICKERS_PROD', status: 'error', latency: 999, type: 'Node' },
-            { id: 'errorcito-viales', status: 'warning', latency: 200, type: 'Python' }
-        ];
-
-        currentState = currentState.filter(bot => !bot.id.toLowerCase().includes('botstickers'));
-        currentState = currentState.filter(bot => AUTHORIZED_BOTS.includes(bot.id));
-        return currentState;
-    }
-
-    const fleetState = purgeBotstickers();
-    renderFleet(fleetState);
-
-    // 2. AUDIO FEEDBACK (Web Audio API)
-    let audioCtx = null;
-    let audioEnabled = false;
-
-    const toggleAudioBtn = document.getElementById('toggleAudioBtn');
-    toggleAudioBtn.addEventListener('click', () => {
-        audioEnabled = !audioEnabled;
-        toggleAudioBtn.textContent = audioEnabled ? '🔊' : '🔇';
-        if (audioEnabled && !audioCtx) {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-    });
-
-    function playPulseSound() {
-        if (!audioEnabled || !audioCtx) return;
-        const osc = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(250, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.15);
-        
-        gainNode.gain.setValueAtTime(0.03, audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
-        
-        osc.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.15);
-    }
-
-    // 3. CANVAS ECG DE LATENCIA
-    const canvas = document.getElementById('ecgCanvas');
-    const ctx = canvas.getContext('2d');
-    
-    function resizeCanvas() {
-        const parent = canvas.parentElement;
-        canvas.width = parent.clientWidth * window.devicePixelRatio;
-        canvas.height = parent.clientHeight * window.devicePixelRatio;
-        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-    }
-    
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    const historySize = 100;
-    const dataPoints = new Array(historySize).fill(canvas.height / window.devicePixelRatio / 2);
-
-    function drawECG() {
-        const w = canvas.width / window.devicePixelRatio;
-        const h = canvas.height / window.devicePixelRatio;
-        ctx.clearRect(0, 0, w, h);
-        
-        ctx.beginPath();
-        ctx.strokeStyle = 'var(--ecg-cyan)';
-        ctx.lineWidth = 2.5;
-        ctx.shadowColor = 'rgba(6, 182, 212, 0.6)';
-        ctx.shadowBlur = 12;
-        
-        const sliceWidth = w / (historySize - 1);
-        let x = 0;
-        
-        for (let i = 0; i < historySize; i++) {
-            const y = dataPoints[i];
-            if (i === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-            x += sliceWidth;
-        }
-        ctx.stroke();
-        ctx.shadowBlur = 0;
-    }
-
-    function updateECG() {
-        const h = canvas.height / window.devicePixelRatio;
-        for(let i=0; i < historySize - 1; i++) {
-            dataPoints[i] = dataPoints[i+1];
-        }
-        
-        const baseLatency = h / 2;
-        const isPulse = Math.random() > 0.92;
-        let newValue = baseLatency;
-        
-        if (isPulse) {
-            newValue = baseLatency - (Math.random() * 50 + 30);
-            setTimeout(() => { dataPoints[historySize-2] = baseLatency + (Math.random() * 30); }, 50);
-            playPulseSound();
-        } else {
-            newValue = baseLatency + (Math.random() * 6 - 3);
-        }
-        
-        dataPoints[historySize - 1] = newValue;
-        
-        const avgDisplay = document.getElementById('avgLatency');
-        if(avgDisplay) avgDisplay.textContent = Math.floor(Math.random() * 8 + 12) + ' ms';
-
-        drawECG();
-        requestAnimationFrame(updateECG);
-    }
-    
-    updateECG();
-
-    // 4. NAVEGACIÓN Y TABS
+    // 1. NAVIGATION & LAYOUT
     const navItems = document.querySelectorAll('.nav-item[data-target]');
     const sections = document.querySelectorAll('.view-section');
+    const titleDisplay = document.getElementById('currentViewName');
 
     navItems.forEach(item => {
         item.addEventListener('click', () => {
@@ -143,217 +15,298 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(s.id === target) s.classList.add('active');
             });
             
-            // Close mobile menu if open
-            const sidebar = document.getElementById('sidebar');
-            if(window.innerWidth <= 768 && sidebar.classList.contains('mobile-open')) {
-                sidebar.classList.remove('mobile-open');
+            if(titleDisplay) {
+                titleDisplay.textContent = item.textContent.trim();
             }
             
-            // Refresh canvas sizes if switching to dashboard
+            // Resize canvas if switching to dashboard
             if (target === 'dashboard') {
                 setTimeout(resizeCanvas, 50);
             }
         });
     });
 
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    if (mobileMenuBtn) {
-        mobileMenuBtn.addEventListener('click', () => {
-            document.getElementById('sidebar').classList.toggle('mobile-open');
-        });
-        if (window.innerWidth <= 768) {
-            mobileMenuBtn.style.display = 'block';
+    // 2. BETTER STACK: UPTIME BARS
+    const uptimeContainer = document.getElementById('uptimeBars');
+    if (uptimeContainer) {
+        for (let i = 0; i < 30; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'uptime-bar';
+            
+            // Simulate 99.99% uptime with one incident 5 days ago
+            if (i === 24) {
+                bar.classList.add('h-err');
+                bar.title = 'Incident: HTTP 429 Rate Limit Exceeded';
+            } else if (i === 23 || i === 25) {
+                bar.classList.add('h-80');
+                bar.title = 'Degraded Performance';
+            } else {
+                bar.classList.add('h-100');
+                bar.title = 'Operational';
+            }
+            uptimeContainer.appendChild(bar);
         }
-        window.addEventListener('resize', () => {
-            mobileMenuBtn.style.display = window.innerWidth <= 768 ? 'block' : 'none';
-        });
     }
 
-    // 5. RENDERIZADO DE FLOTA Y MÉTRICAS
+    // 3. TELEMETRY: ECG CANVAS
+    const canvas = document.getElementById('ecgCanvas');
+    let ctx = null;
+    let historySize = 120;
+    let dataPoints = new Array(historySize).fill(0);
+    
+    if (canvas) {
+        ctx = canvas.getContext('2d');
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        updateECG();
+    }
+
+    function resizeCanvas() {
+        if (!canvas) return;
+        const parent = canvas.parentElement;
+        canvas.width = parent.clientWidth * window.devicePixelRatio;
+        canvas.height = parent.clientHeight * window.devicePixelRatio;
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        dataPoints.fill(canvas.height / window.devicePixelRatio / 2);
+    }
+
+    function drawECG() {
+        if (!canvas || !ctx) return;
+        const w = canvas.width / window.devicePixelRatio;
+        const h = canvas.height / window.devicePixelRatio;
+        ctx.clearRect(0, 0, w, h);
+        
+        ctx.beginPath();
+        ctx.strokeStyle = 'var(--accent-ok)';
+        ctx.lineWidth = 2;
+        ctx.shadowColor = 'var(--accent-ok)';
+        ctx.shadowBlur = 8;
+        
+        const sliceWidth = w / (historySize - 1);
+        let x = 0;
+        
+        for (let i = 0; i < historySize; i++) {
+            const y = dataPoints[i];
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+            x += sliceWidth;
+        }
+        ctx.stroke();
+        ctx.shadowBlur = 0; // reset
+    }
+
+    function updateECG() {
+        if (!canvas) return;
+        const h = canvas.height / window.devicePixelRatio;
+        for(let i=0; i < historySize - 1; i++) {
+            dataPoints[i] = dataPoints[i+1];
+        }
+        
+        const baseLatency = h / 2;
+        const isPulse = Math.random() > 0.95;
+        let newValue = baseLatency;
+        
+        if (isPulse) {
+            newValue = baseLatency - (Math.random() * 40 + 20);
+            setTimeout(() => { dataPoints[historySize-2] = baseLatency + (Math.random() * 20); }, 50);
+        } else {
+            newValue = baseLatency + (Math.random() * 4 - 2);
+        }
+        
+        dataPoints[historySize - 1] = newValue;
+        
+        const avgDisplay = document.getElementById('avgLatency');
+        if(avgDisplay) avgDisplay.textContent = Math.floor(Math.random() * 5 + 10) + ' ms';
+
+        drawECG();
+        requestAnimationFrame(updateECG);
+    }
+
+    // 4. FLEET CONTROL & METRICS
+    const AUTHORIZED_BOTS = ['roblox-tracker', 'bot-discord', 'errorcito-viales'];
+    
+    function purgeBotstickers() {
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.toLowerCase().includes('botstickers')) {
+                localStorage.removeItem(key);
+            }
+        }
+        let state = [
+            { id: 'roblox-tracker', status: 'online', latency: 45, type: 'Go/Node' },
+            { id: 'botstickers-beta', status: 'error', latency: 999, type: 'Node' },
+            { id: 'bot-discord', status: 'online', latency: 60, type: 'Python' },
+            { id: 'errorcito-viales', status: 'online', latency: 200, type: 'Python' }
+        ];
+        return state.filter(bot => AUTHORIZED_BOTS.includes(bot.id));
+    }
+
     function renderFleet(bots) {
         const grid = document.getElementById('fleetGrid');
         if(!grid) return;
         grid.innerHTML = '';
         bots.forEach(bot => {
             const card = document.createElement('div');
-            card.className = 'bot-card';
+            card.className = 'uptime-card'; // Reuse style
+            card.style.padding = '24px';
+            card.style.display = 'flex';
+            card.style.flexDirection = 'column';
+            card.style.gap = '12px';
             card.innerHTML = `
-                <div class="bot-header">
-                    <span class="bot-name">${bot.id}</span>
-                    <div class="bot-status ${bot.status}" title="${bot.status}"></div>
+                <div class="flex-between">
+                    <span style="font-family: var(--font-mono); font-size: 14px; font-weight: 500;">${bot.id}</span>
+                    <span class="label" style="color: ${bot.status === 'online' ? 'var(--accent-ok)' : 'var(--accent-error)'}; display: flex; align-items: center; gap: 6px;">
+                        <span style="width: 6px; height: 6px; background: currentColor; border-radius: 50%; display: inline-block;"></span>
+                        ${bot.status.toUpperCase()}
+                    </span>
                 </div>
-                <div class="bot-metric">${bot.latency} ms</div>
-                <div class="bot-subtext">Runtime: ${bot.type} | Ping: Estable</div>
+                <div style="font-size: 28px; font-weight: 500; font-family: var(--font-mono);">${bot.latency} ms</div>
+                <div class="label">Runtime: ${bot.type}</div>
             `;
             grid.appendChild(card);
         });
     }
 
+    renderFleet(purgeBotstickers());
+
     async function fetchSystemMetrics() {
-        const grid = document.getElementById('systemMetricsGrid');
-        const gatewayStatus = document.getElementById('gatewayStatus');
+        const grid = document.getElementById('systemMetricsContainer');
         if(!grid) return;
         try {
-            // Se intenta conectar a la API del servidor (por si estamos local)
-            const res = await fetch('/api/v1/system', { method: 'GET' });
+            const res = await fetch('/api/v1/system');
             if(!res.ok) throw new Error('API Error');
             const data = await res.json();
             renderMetrics(data.metrics, grid);
-            if(gatewayStatus) gatewayStatus.textContent = 'API Gateway OK';
         } catch (e) {
-            // Fallback gracefully for static deployments (like Vercel HTTPS -> HTTP VPS issue)
             console.warn("Using simulated telemetry fallback (Vercel deployment detected).");
-            if(gatewayStatus) gatewayStatus.textContent = 'Gateway OK (Simulado)';
-            const dummyMetrics = {
+            renderMetrics({
                 memory: { free: 4294967296, total: 8589934592, usedPercentage: 50.00 },
                 cpuLoad: [0.12, 0.08, 0.05],
                 uptime: 86400 * 3.5
-            };
-            renderMetrics(dummyMetrics, grid);
+            }, grid);
         }
     }
 
     function renderMetrics(metrics, grid) {
-        const memGB = (metrics.memory.free / 1024 / 1024 / 1024).toFixed(2);
-        const totalMemGB = (metrics.memory.total / 1024 / 1024 / 1024).toFixed(2);
+        const memGB = (metrics.memory.free / 1024 / 1024 / 1024).toFixed(1);
+        const totalMemGB = (metrics.memory.total / 1024 / 1024 / 1024).toFixed(1);
         grid.innerHTML = `
-            <div class="bot-card">
-                <div class="bot-header"><span class="bot-name">Memoria RAM</span></div>
-                <div class="bot-metric">${memGB} GB libres</div>
-                <div class="bot-subtext">de ${totalMemGB} GB total (${metrics.memory.usedPercentage}% usado)</div>
-            </div>
-            <div class="bot-card">
-                <div class="bot-header"><span class="bot-name">Carga CPU (1m, 5m, 15m)</span></div>
-                <div class="bot-metric" style="font-family: var(--font-mono); font-size: 24px;">
-                    ${metrics.cpuLoad.map(l => l.toFixed(2)).join(' / ')}
+            <div>
+                <div class="flex-between" style="margin-bottom: 4px;">
+                    <span style="font-size: 13px; color: var(--text-secondary);">Memory Usage</span>
+                    <span style="font-family: var(--font-mono); font-size: 13px;">${metrics.memory.usedPercentage}%</span>
                 </div>
-                <div class="bot-subtext">Promedios de carga de sistema operativo</div>
+                <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+                    <div style="width: ${metrics.memory.usedPercentage}%; height: 100%; background: var(--accent-brand);"></div>
+                </div>
+                <div class="label" style="margin-top: 6px; text-transform: none;">${memGB}GB / ${totalMemGB}GB Free</div>
             </div>
-            <div class="bot-card">
-                <div class="bot-header"><span class="bot-name">Uptime Servidor</span></div>
-                <div class="bot-metric">${(metrics.uptime / 3600).toFixed(1)} h</div>
-                <div class="bot-subtext">Tiempo de actividad ininterrumpida</div>
+            
+            <div style="margin-top: 12px;">
+                <div class="flex-between" style="margin-bottom: 4px;">
+                    <span style="font-size: 13px; color: var(--text-secondary);">Load Average (1m, 5m, 15m)</span>
+                </div>
+                <div style="font-family: var(--font-mono); font-size: 16px; color: #fff;">
+                    ${metrics.cpuLoad.map(l => l.toFixed(2)).join('  ')}
+                </div>
+            </div>
+            
+            <div style="margin-top: 12px;">
+                <div class="flex-between" style="margin-bottom: 4px;">
+                    <span style="font-size: 13px; color: var(--text-secondary);">Server Uptime</span>
+                </div>
+                <div style="font-family: var(--font-mono); font-size: 16px; color: #fff;">
+                    ${(metrics.uptime / 3600).toFixed(1)} hours
+                </div>
             </div>
         `;
     }
 
     fetchSystemMetrics();
-    setInterval(fetchSystemMetrics, 15000);
+    setInterval(fetchSystemMetrics, 10000);
 
-    // 6. TERMINAL CLI
+    // 5. RAILWAY: LIVE TERMINAL
     const cliInput = document.getElementById('cliInput');
     const cliLogs = document.getElementById('cliLogs');
 
+    function getTimestamp() {
+        const now = new Date();
+        return now.toTimeString().split(' ')[0];
+    }
+
     function appendLog(msg, type = '') {
         const div = document.createElement('div');
-        div.className = `cli-log-line ${type}`;
-        div.textContent = msg;
+        let prefix = `<span class="log-time">${getTimestamp()}</span> `;
+        let colorClass = '';
+        
+        if(type === 'info') prefix += `<span class="log-info">[INFO]</span> `;
+        if(type === 'success') prefix += `<span class="log-success">[OK]</span> `;
+        if(type === 'error') prefix += `<span class="log-error">[ERR]</span> `;
+        if(type === 'warn') prefix += `<span class="log-warn">[WARN]</span> `;
+        
+        div.innerHTML = prefix + msg;
         cliLogs.appendChild(div);
         cliLogs.scrollTop = cliLogs.scrollHeight;
     }
 
-    cliInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            const val = cliInput.value.trim();
-            if(!val) return;
-            appendLog(`root@moniopen:~# ${val}`);
-            cliInput.value = '';
-            
-            const args = val.toLowerCase().split(' ');
-            const cmd = args[0];
-
-            switch(cmd) {
-                case 'help':
-                    appendLog('Comandos: help, status, ping, diagnose, workers, clear', 'info');
-                    break;
-                case 'status':
-                    appendLog('[OK] Núcleo estable. Flota activa: 3. Puerto 3001 en escucha segura.', 'success');
-                    break;
-                case 'ping':
-                    appendLog('Pong! Latencia al gateway: 12ms', 'success');
-                    break;
-                case 'diagnose':
-                    appendLog('Iniciando diagnóstico profundo con Claude 3.5...', 'info');
-                    setTimeout(() => window.openDiagnosticModal(), 500);
-                    break;
-                case 'workers':
-                    appendLog('Workers activos: roblox-tracker, bot-discord, errorcito-viales', 'info');
-                    break;
-                case 'clear':
-                    cliLogs.innerHTML = '';
-                    break;
-                default:
-                    appendLog(`bash: ${cmd}: command not found. Escribe 'help'.`, 'error');
+    if (cliInput) {
+        cliInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const val = cliInput.value.trim();
+                if(!val) return;
+                
+                const div = document.createElement('div');
+                div.innerHTML = `<span class="log-time">${getTimestamp()}</span> <span style="color:var(--text-primary);">❯ ${val}</span>`;
+                cliLogs.appendChild(div);
+                
+                cliInput.value = '';
+                cliLogs.scrollTop = cliLogs.scrollHeight;
+                
+                const cmd = val.toLowerCase().split(' ')[0];
+                setTimeout(() => {
+                    switch(cmd) {
+                        case 'help': appendLog('Commands: help, status, ping, clear', 'info'); break;
+                        case 'status': appendLog('API Gateway running. All systems operational.', 'success'); break;
+                        case 'ping': appendLog('Pong! 12ms', 'success'); break;
+                        case 'clear': cliLogs.innerHTML = ''; break;
+                        default: appendLog(`bash: ${cmd}: command not found`, 'error');
+                    }
+                }, 200);
             }
-        }
-    });
-
-    // 7. DIAGNÓSTICO IA (CLAUDE 3.5 SONNET)
-    const diagModal = document.getElementById('diagnosticModal');
-    
-    window.openDiagnosticModal = async function() {
-        diagModal.classList.add('active');
-        document.getElementById('diagAnalysis').textContent = "Conectando al motor de inferencia Claude 3.5 Sonnet...";
-        document.getElementById('diagDiff').innerHTML = "Analizando logs y contexto...";
-        
-        setTimeout(async () => {
-            try {
-                const res = await fetch('/api/v1/diagnostics');
-                if(!res.ok) throw new Error('Network response was not ok');
-                const data = await res.json();
-                
-                document.getElementById('diagAnalysis').innerHTML = `<strong style="color:var(--status-critical);">Alerta Detectada:</strong> ${data.analysis}`;
-                
-                const diffHtml = data.diff.split('\n').map(line => {
-                    if(line.startsWith('-')) return `<span style="color: var(--status-critical);">${line}</span>`;
-                    if(line.startsWith('+')) return `<span style="color: var(--status-healthy);">${line}</span>`;
-                    return line;
-                }).join('\n');
-                
-                document.getElementById('diagDiff').innerHTML = diffHtml;
-            } catch (e) {
-                // Fallback for Vercel/Static deployments
-                document.getElementById('diagAnalysis').innerHTML = `<strong style="color:var(--status-critical);">Análisis Simulado (Modo Vercel):</strong> Límite de tasa excedido (HTTP 429) detectado en gateway API. Falta backoff exponencial en el cliente.`;
-                document.getElementById('diagDiff').innerHTML = `<span style="color:var(--status-critical);">- fetch(url);</span>\n<span style="color:var(--status-healthy);">+ fetch(url).then(res => {\n+   if(res.status === 429) setTimeout(() => fetch(url), 5000);\n+ });</span>`;
-            }
-        }, 800);
-    }
-    
-    window.closeDiagnosticModal = function() {
-        diagModal.classList.remove('active');
+        });
     }
 
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeDiagnosticModal();
-    });
-
-    // 8. LIVE CODE EXPLORER
+    // 6. SUPABASE: API EXPLORER
     const codeTabs = document.querySelectorAll('.code-tab');
-    const codeTabIndicator = document.getElementById('codeTabIndicator');
     const codeContent = document.getElementById('codeContent');
 
-    function updateTabIndicator(activeTab) {
-        if(!activeTab || !codeTabIndicator) return;
-        codeTabIndicator.style.width = `${activeTab.offsetWidth}px`;
-        codeTabIndicator.style.transform = `translateX(${activeTab.offsetLeft}px)`;
-    }
-
     const staticCodeFallbacks = {
-        'server.js': `// Backend Express API (Puerto 3001)\nconst express = require('express');\nconst app = express();\n// ...código real en el repositorio...`,
-        'app.js': `// Lógica Frontend (app.js)\nconsole.log("MoniOpen v3.5 Inicializado");\n// ...código real en el repositorio...`,
-        'style.css': `/* Estilos CSS (style.css) */\n:root { --bg-canvas: #05070f; }\n/* ...código real en el repositorio... */`,
-        'agent.py': `# Python SDK (agent.py)\nimport requests\nclass MoniOpenClient:\n# ...código real en el repositorio...`
+        'server.js': `const express = require('express');\nconst helmet = require('helmet');\nconst app = express();\n\n// Secure API Gateway\napp.use(helmet());\napp.use(express.json());\n\napp.get('/api/v1/system', (req, res) => {\n  res.json({ status: 'ok' });\n});\n\napp.listen(3001, () => {\n  console.log('API Gateway running on port 3001');\n});`,
+        'agent.py': `import requests\n\nclass MoniOpenClient:\n    def __init__(self, bot_id):\n        self.bot_id = bot_id\n        self.api_url = "http://localhost:3001/api/v1/heartbeat"\n\n    def ping(self):\n        requests.post(self.api_url, json={"botId": self.bot_id, "status": "online"})\n\nclient = MoniOpenClient("roblox-tracker")\nclient.ping()`,
+        'app.js': `// Bootstrapping Frontend Observability\ndocument.addEventListener('DOMContentLoaded', () => {\n  console.log("MoniOpen v3.5 UI initialized.");\n  fetchSystemMetrics();\n});`
     };
 
+    function highlightSyntax(code) {
+        // Very basic regex highlighter for demo purposes
+        let highlighted = code
+            .replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/\b(const|let|var|function|return|require|import|class|def|self)\b/g, '<span class="code-token-keyword">$1</span>')
+            .replace(/('.*?'|".*?"|`.*?`)/g, '<span class="code-token-string">$1</span>')
+            .replace(/\b(console|res|req|express|app|requests)\b/g, '<span class="code-token-function">$1</span>')
+            .replace(/(\/\/.*|#.*)/g, '<span class="code-token-comment">$1</span>');
+        return `<pre><code>${highlighted}</code></pre>`;
+    }
+
     async function loadCodeFile(filename) {
-        codeContent.textContent = "Cargando archivo...";
+        if(!codeContent) return;
+        codeContent.innerHTML = "Loading...";
         try {
             const res = await fetch(`/${filename}`);
-            if(!res.ok) throw new Error('File not found');
+            if(!res.ok) throw new Error('Not found');
             const text = await res.text();
-            codeContent.textContent = text;
+            codeContent.innerHTML = highlightSyntax(text);
         } catch (e) {
-            codeContent.textContent = staticCodeFallbacks[filename] || `No se pudo cargar ${filename} en este entorno estático.`;
+            codeContent.innerHTML = highlightSyntax(staticCodeFallbacks[filename] || '// Source unavailable');
         }
     }
 
@@ -361,30 +314,18 @@ document.addEventListener('DOMContentLoaded', () => {
         tab.addEventListener('click', () => {
             codeTabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
-            updateTabIndicator(tab);
             loadCodeFile(tab.getAttribute('data-file'));
         });
     });
 
     if(codeTabs.length > 0) {
-        setTimeout(() => updateTabIndicator(codeTabs[0]), 100);
         loadCodeFile('server.js');
     }
 
     window.copyCode = function() {
-        const text = codeContent.textContent;
-        navigator.clipboard.writeText(text).then(() => {
-            const btn = document.querySelector('.copy-btn');
-            btn.textContent = '¡Copiado al portapapeles!';
-            btn.style.backgroundColor = 'rgba(16, 185, 129, 0.2)';
-            btn.style.color = 'var(--status-healthy)';
-            btn.style.borderColor = 'var(--status-healthy)';
-            setTimeout(() => {
-                btn.textContent = 'Copiar Código';
-                btn.style.backgroundColor = 'var(--bg-surface-3)';
-                btn.style.color = '#cbd5e1';
-                btn.style.borderColor = 'var(--border-capillary)';
-            }, 2000);
+        if(!codeContent) return;
+        navigator.clipboard.writeText(codeContent.textContent).then(() => {
+            alert('Code copied to clipboard!');
         });
     }
 });
