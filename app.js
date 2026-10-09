@@ -51,9 +51,17 @@ function startMetricsSimulation() {
             base += (parseFloat(sysData.cpu.load1m) * 10);
         }
         
+        
         let currentLatency = Math.floor(base + Math.random() * variance);
         
-        document.getElementById('avg-latency').innerHTML = `${currentLatency}<span class="text-lg font-sans text-gray-500">ms</span>`;
+        const latencyEl = document.getElementById('avg-latency');
+        latencyEl.innerHTML = `${currentLatency}<span class="text-lg font-sans text-gray-500">ms</span>`;
+        
+        // Add pulse animation
+        latencyEl.classList.remove('value-update');
+        void latencyEl.offsetWidth; // trigger reflow
+        latencyEl.classList.add('value-update');
+
         document.getElementById('latency-bar').style.width = `${Math.min(100, (currentLatency / 100) * 100)}%`;
         
         if(crashActive) document.getElementById('latency-bar').classList.replace('bg-indigo-500', 'bg-red-500');
@@ -172,7 +180,8 @@ function renderFleetTable() {
         if(bot.status === 'CRITICAL') { statusClass = 'bg-red-500/20 text-red-400 border-red-500/30 font-bold animate-pulse'; statusDot = 'bg-red-500 animate-ping'; }
 
         const tr = document.createElement('tr');
-        tr.className = 'hover:bg-white/5 cursor-pointer spring-transition group stagger-item';
+        tr.className = 'hover:bg-white/5 cursor-pointer spring-transition group fleet-row-enter';
+        tr.style.animationDelay = `${activeCount * 0.08}s`;
         tr.onclick = () => openBotDrawer(bot.id);
         
         tr.innerHTML = `
@@ -633,6 +642,29 @@ document.addEventListener('DOMContentLoaded', () => {
             if(headerTitle) {
                 headerTitle.innerText = titles[navId];
             }
+        });
+    }
+});
+
+
+// --- Magnetic Buttons Premium Effect ---
+document.addEventListener('DOMContentLoaded', () => {
+    const deployBtn = document.getElementById('btn-deploy');
+    if(deployBtn) {
+        deployBtn.addEventListener('mousemove', (e) => {
+            const rect = deployBtn.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+            deployBtn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+        });
+        deployBtn.addEventListener('mouseleave', () => {
+            deployBtn.style.transform = 'translate(0, 0)';
+        });
+        deployBtn.addEventListener('mousedown', () => {
+            deployBtn.style.transform = 'scale(0.95)';
+        });
+        deployBtn.addEventListener('mouseup', () => {
+            deployBtn.style.transform = 'translate(0, 0)';
         });
     }
 });
