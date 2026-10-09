@@ -27,11 +27,30 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // --- MODULE A: Telemetry & Metrics ---
+
+async function fetchRealSystemData() {
+    try {
+        const res = await fetch('/api/v1/system');
+        const data = await res.json();
+        return data;
+    } catch(e) {
+        return null;
+    }
+}
+
 function startMetricsSimulation() {
     // Latency oscilation
-    setInterval(() => {
+    setInterval(async () => {
         let base = crashActive ? 150 : 38;
         let variance = crashActive ? 50 : 14;
+        
+        // Try fetching real system metrics to influence latency
+        const sysData = await fetchRealSystemData();
+        if (sysData) {
+            // Add CPU load factor to latency
+            base += (parseFloat(sysData.cpu.load1m) * 10);
+        }
+        
         let currentLatency = Math.floor(base + Math.random() * variance);
         
         document.getElementById('avg-latency').innerHTML = `${currentLatency}<span class="text-lg font-sans text-gray-500">ms</span>`;
@@ -47,8 +66,16 @@ function startMetricsSimulation() {
     }, 2500);
 
     // Event Ingestion
-    setInterval(() => {
+    setInterval(async () => {
         let events = Math.floor(1300 + Math.random() * 200);
+        
+        // Influence events with real memory
+        const sysData = await fetchRealSystemData();
+        if (sysData && sysData.memory) {
+            const usage = parseFloat(sysData.memory.usagePercent);
+            events = Math.floor(events * (1 + (usage/100)));
+        }
+
         document.getElementById('event-rate').innerText = events.toLocaleString();
         totalEvents += events;
         document.getElementById('total-events').innerText = totalEvents.toLocaleString();
@@ -117,6 +144,24 @@ function renderFleetTable() {
     tbody.innerHTML = '';
     
     let activeCount = 0;
+
+    if (bots.length === 0) {
+        document.getElementById('cluster-count').innerText = `0/0 Active`;
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="4" class="py-16 text-center text-gray-500">
+                    <div class="flex flex-col items-center justify-center space-y-3">
+                        <i data-lucide="inbox" class="w-12 h-12 text-gray-600/50"></i>
+                        <p class="text-sm">No bots registered in the fleet yet.</p>
+                        <button onclick="openNewBotModal()" class="mt-2 text-xs text-indigo-400 hover:text-indigo-300">Register your first bot</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+        lucide.createIcons();
+        return;
+    }
+
     
     bots.forEach(bot => {
         if(bot.status !== 'Offline' && bot.status !== 'CRITICAL') activeCount++;
@@ -127,7 +172,7 @@ function renderFleetTable() {
         if(bot.status === 'CRITICAL') { statusClass = 'bg-red-500/20 text-red-400 border-red-500/30 font-bold animate-pulse'; statusDot = 'bg-red-500 animate-ping'; }
 
         const tr = document.createElement('tr');
-        tr.className = 'hover:bg-slate-800/30 cursor-pointer transition-colors group';
+        tr.className = 'hover:bg-white/5 cursor-pointer spring-transition group stagger-item';
         tr.onclick = () => openBotDrawer(bot.id);
         
         tr.innerHTML = `
@@ -180,19 +225,19 @@ function openBotDrawer(botId) {
     document.getElementById('backdrop').classList.remove('hidden');
     setTimeout(() => {
         document.getElementById('backdrop').classList.remove('opacity-0');
-        document.getElementById('bot-drawer').classList.remove('translate-x-full');
+        document.getElementById('bot-drawer').classList.remove('hidden', 'drawer-exit'); document.getElementById('bot-drawer').classList.add('drawer-enter');
     }, 10);
 }
 
 function closeAllOverlays() {
-    document.getElementById('bot-drawer').classList.add('translate-x-full');
-    document.getElementById('register-modal').classList.add('opacity-0');
-    document.getElementById('claude-modal').classList.add('opacity-0');
+    document.getElementById('bot-drawer').classList.remove('drawer-enter'); document.getElementById('bot-drawer').classList.add('drawer-exit');
+    document.getElementById('register-modal').classList.remove('modal-enter'); document.getElementById('register-modal').classList.add('modal-exit');
+    document.getElementById('claude-modal').classList.remove('modal-enter'); document.getElementById('claude-modal').classList.add('modal-exit');
     document.getElementById('backdrop').classList.add('opacity-0');
     
     setTimeout(() => {
-        document.getElementById('register-modal').classList.add('hidden');
-        document.getElementById('claude-modal').classList.add('hidden');
+        document.getElementById('register-modal').classList.add('hidden'); document.getElementById('register-modal').classList.remove('modal-exit', 'modal-enter');
+        document.getElementById('claude-modal').classList.add('hidden'); document.getElementById('claude-modal').classList.remove('modal-exit', 'modal-enter');
         document.getElementById('backdrop').classList.add('hidden');
         
         // Reset modal states
@@ -205,8 +250,8 @@ function closeAllOverlays() {
 // --- MODULE C: Register Bot ---
 function openNewBotModal() {
     document.getElementById('backdrop').classList.remove('hidden');
-    document.getElementById('register-modal').classList.remove('hidden');
-    document.getElementById('register-modal').classList.add('flex');
+    document.getElementById('register-modal').classList.remove('hidden', 'modal-exit');
+    document.getElementById('register-modal').classList.add('flex', 'modal-enter');
     
     document.getElementById('new-bot-name').value = '';
     
@@ -413,8 +458,8 @@ function triggerCrashSimulation() {
 
 function openClaudeDiagnostics() {
     document.getElementById('backdrop').classList.remove('hidden');
-    document.getElementById('claude-modal').classList.remove('hidden');
-    document.getElementById('claude-modal').classList.add('flex');
+    document.getElementById('claude-modal').classList.remove('hidden', 'modal-exit');
+    document.getElementById('claude-modal').classList.add('flex', 'modal-enter');
     
     setTimeout(() => {
         document.getElementById('backdrop').classList.remove('opacity-0');
@@ -532,3 +577,62 @@ function showToast(title, message, type = 'success') {
         toast.classList.add('translate-y-[150%]', 'opacity-0');
     }, 4000);
 }
+
+// Linear-style Glow Effect Tracking
+document.addEventListener('mousemove', (e) => {
+    document.querySelectorAll('.glass-card').forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+    });
+});
+
+// SPA Navigation Logic
+document.addEventListener('DOMContentLoaded', () => {
+    const navs = {
+        'nav-overview': 'view-overview',
+        'nav-fleet': 'view-fleet',
+        'nav-logs': 'view-logs',
+        'nav-docs': 'view-docs'
+    };
+    
+    // Add title dynamic update
+    const titles = {
+        'nav-overview': 'Cluster Telemetry',
+        'nav-fleet': 'Fleet Management',
+        'nav-logs': 'System Console',
+        'nav-docs': 'Developer SDK'
+    };
+
+    for (let navId in navs) {
+        const navEl = document.getElementById(navId);
+        if(!navEl) continue;
+        navEl.addEventListener('click', () => {
+            // Update Active Nav
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('active', 'text-white', 'bg-[rgba(255,255,255,0.05)]');
+                el.classList.add('text-gray-400');
+            });
+            navEl.classList.remove('text-gray-400');
+            navEl.classList.add('active', 'text-white', 'bg-[rgba(255,255,255,0.05)]');
+            
+            // Switch View
+            document.querySelectorAll('.view-section').forEach(view => {
+                view.classList.remove('active-view');
+                view.classList.add('hidden-view');
+            });
+            
+            const targetView = document.getElementById(navs[navId]);
+            targetView.classList.remove('hidden-view');
+            targetView.classList.add('active-view');
+            
+            // Update Header Title
+            const headerTitle = document.querySelector('header h1');
+            if(headerTitle) {
+                headerTitle.innerText = titles[navId];
+            }
+        });
+    }
+});

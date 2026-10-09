@@ -7,7 +7,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -17,13 +17,13 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        sans: ['"Inter", "Plus Jakarta Sans"', 'sans-serif'],
                         mono: ['"JetBrains Mono"', 'monospace'],
                     },
                     colors: {
-                        base: '#090d16',
-                        surface: '#0f172a',
-                        border: '#1e293b',
+                        base: '#0a0a0a',
+                        surface: 'rgba(255,255,255,0.02)',
+                        border: 'rgba(255,255,255,0.05)',
                         indigo: { 500: '#6366f1' },
                         emerald: { 500: '#10b981' }
                     },
@@ -44,33 +44,33 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-base text-gray-200 font-sans antialiased h-screen flex overflow-hidden">
+<body class="bg-base text-gray-200 font-sans antialiased h-screen flex overflow-hidden selection:bg-indigo-500/30">
 
     <!-- Sidebar -->
-    <aside class="w-20 md:w-64 border-r border-border bg-surface/50 backdrop-blur-xl flex flex-col h-full z-20">
+    <aside class="w-20 md:w-64 border-r border-border bg-surface backdrop-blur-xl flex flex-col h-full z-20">
         <div class="h-16 flex items-center justify-center md:justify-start md:px-6 border-b border-border">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.5)]">
-                    <i data-lucide="activity" class="text-white w-5 h-5"></i>
+                <div class="w-8 h-8 rounded-xl bg-white flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                    <i data-lucide="triangle" class="text-black w-4 h-4 fill-black"></i>
                 </div>
-                <span class="font-bold text-xl text-white hidden md:block tracking-tight">MoniOpen</span>
+                <span class="font-bold text-xl text-white hidden md:block tracking-tighter">MoniOpen</span>
             </div>
         </div>
         
         <nav class="flex-1 py-6 flex flex-col gap-2 px-3">
-            <a href="#" class="nav-item active flex items-center gap-3 px-3 py-2.5 rounded-lg text-indigo-400 bg-indigo-500/10">
+            <a id="nav-overview" class="nav-item active cursor-pointer flex items-center gap-3 px-3 py-2.5 rounded-lg text-white bg-[rgba(255,255,255,0.05)]">
                 <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
                 <span class="font-medium hidden md:block">Overview</span>
             </a>
-            <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-colors">
+            <a id="nav-fleet" class="nav-item cursor-pointer flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-colors">
                 <i data-lucide="server" class="w-5 h-5"></i>
                 <span class="font-medium hidden md:block">Fleet</span>
             </a>
-            <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-colors">
+            <a id="nav-logs" class="nav-item cursor-pointer flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-colors">
                 <i data-lucide="terminal-square" class="w-5 h-5"></i>
                 <span class="font-medium hidden md:block">Logs</span>
             </a>
-            <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-colors">
+            <a id="nav-docs" class="nav-item cursor-pointer flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-colors">
                 <i data-lucide="book-open" class="w-5 h-5"></i>
                 <span class="font-medium hidden md:block">SDK Docs</span>
             </a>
@@ -82,14 +82,15 @@
                 <span class="text-xs font-medium text-gray-400 hidden md:block">System Operational</span>
             </div>
         </div>
-    </aside>
+    </div>
+</aside>
 
     <!-- Main Content -->
-    <main class="flex-1 flex flex-col h-full overflow-y-auto relative scroll-smooth bg-gradient-to-br from-base to-slate-900/50">
+    <main class="flex-1 flex flex-col h-full overflow-y-auto relative scroll-smooth bg-transparent p-4">
         
         <!-- Header -->
-        <header class="h-16 border-b border-border bg-surface/30 backdrop-blur-md sticky top-0 z-10 px-8 flex items-center justify-between">
-            <h1 class="text-xl font-semibold text-white">Cluster Telemetry</h1>
+        <header class="h-16 border-b border-border bg-surface backdrop-blur-xl border-b border-border sticky top-0 z-10 px-8 flex items-center justify-between">
+            <h1 class="text-xl font-semibold text-white text-shimmer">Cluster Telemetry</h1>
             <div class="flex items-center gap-4">
                 <button onclick="openNewBotModal()" class="btn-primary flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium text-sm transition-all shadow-[0_0_15px_rgba(99,102,241,0.3)]">
                     <i data-lucide="plus" class="w-4 h-4"></i>
@@ -101,7 +102,7 @@
         <div class="p-8 max-w-7xl mx-auto w-full space-y-6">
             
             <!-- AI Diagnostic Alert (Hidden by default) -->
-            <div id="ai-alert" class="hidden mb-6 bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex items-start gap-4">
+            <div id="ai-alert" class="hidden border-beam mb-6 bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex items-start gap-4">
                 <div class="mt-1 bg-red-500/20 p-2 rounded-lg">
                     <i data-lucide="alert-triangle" class="w-5 h-5 text-red-500"></i>
                 </div>
@@ -115,10 +116,32 @@
                 </div>
             </div>
 
+            <div id="view-overview" class="view-section active-view space-y-6">
+
+            <div class="glass-card p-10 rounded-3xl border border-border relative overflow-hidden flex flex-col justify-center min-h-[300px] bg-gradient-to-tr from-[#0a0a0a] to-[rgba(99,102,241,0.05)] stagger-item">
+                <div class="absolute -top-[150px] -right-[150px] w-[400px] h-[400px] bg-indigo-500/20 blur-[120px] rounded-full pointer-events-none"></div>
+                <div class="absolute -bottom-[150px] -left-[150px] w-[300px] h-[300px] bg-emerald-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+                
+                <h1 class="text-5xl font-bold text-white tracking-tighter mb-4 z-10 text-glow" style="letter-spacing: -0.04em;">
+                    MoniOpen <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">V4.0</span>
+                </h1>
+                <p class="text-gray-400 max-w-xl text-lg mb-8 z-10 font-medium">
+                    Enterprise-grade observability and telemetry cluster. Monitor distributed agents, workers, and infrastructure in real-time with sub-millisecond precision.
+                </p>
+                <div class="flex gap-4 z-10">
+                    <button onclick="openNewBotModal()" class="px-6 py-3 bg-white text-black font-semibold rounded-xl hover:scale-95 transition-transform flex items-center gap-2 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+                        <i data-lucide="zap" class="w-4 h-4"></i> Deploy Agent
+                    </button>
+                    <button onclick="triggerCrashSimulation()" class="px-6 py-3 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] text-white font-medium rounded-xl hover:bg-[rgba(255,255,255,0.1)] transition-colors flex items-center gap-2 hover:scale-95">
+                        <i data-lucide="bomb" class="w-4 h-4"></i> Simular Caída
+                    </button>
+                </div>
+            </div>
+
             <!-- Stats Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- Uptime -->
-                <div class="glass-card p-5 rounded-xl border border-border bg-surface relative overflow-hidden group">
+                <div class="glass-card p-5 stagger-item rounded-xl border border-border bg-surface relative overflow-hidden group">
                     <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                         <i data-lucide="activity" class="w-16 h-16 text-emerald-500"></i>
                     </div>
@@ -132,7 +155,7 @@
                 </div>
                 
                 <!-- Latency -->
-                <div class="glass-card p-5 rounded-xl border border-border bg-surface relative overflow-hidden group">
+                <div class="glass-card p-5 stagger-item rounded-xl border border-border bg-surface relative overflow-hidden group">
                     <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                         <i data-lucide="zap" class="w-16 h-16 text-indigo-500"></i>
                     </div>
@@ -146,7 +169,7 @@
                 </div>
 
                 <!-- Events -->
-                <div class="glass-card p-5 rounded-xl border border-border bg-surface relative overflow-hidden group">
+                <div class="glass-card p-5 stagger-item rounded-xl border border-border bg-surface relative overflow-hidden group">
                     <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                         <i data-lucide="radio" class="w-16 h-16 text-cyan-500"></i>
                     </div>
@@ -161,7 +184,7 @@
                 </div>
 
                 <!-- Cluster Status -->
-                <div class="glass-card p-5 rounded-xl border border-border bg-surface relative overflow-hidden group">
+                <div class="glass-card p-5 stagger-item rounded-xl border border-border bg-surface relative overflow-hidden group">
                     <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                         <i data-lucide="server" class="w-16 h-16 text-emerald-500"></i>
                     </div>
@@ -193,9 +216,12 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            </div>
+
+<div id="view-fleet" class="view-section hidden-view space-y-6">
+<div class="grid grid-cols-1 gap-6">
                 <!-- Fleet Table -->
-                <div class="xl:col-span-2 glass-card border border-border bg-surface rounded-xl overflow-hidden flex flex-col h-[400px]">
+                <div class="xl:col-span-2 glass-card border border-border bg-surface rounded-xl overflow-hidden flex flex-col h-[75vh]">
                     <div class="p-5 border-b border-border flex items-center justify-between">
                         <h2 class="text-lg font-semibold text-white">Active Fleet</h2>
                         <i data-lucide="users" class="w-5 h-5 text-gray-400"></i>
@@ -217,8 +243,12 @@
                     </div>
                 </div>
 
-                <!-- Live Logs Console -->
-                <div class="xl:col-span-1 glass-card border border-border bg-[#0a0a0a] rounded-xl flex flex-col h-[400px] overflow-hidden shadow-2xl relative">
+                </div>
+</div>
+
+<div id="view-logs" class="view-section hidden-view space-y-6">
+<!-- Live Logs Console -->
+                <div class="xl:col-span-1 glass-card border border-border bg-[#0a0a0a] rounded-xl flex flex-col h-[75vh] overflow-hidden shadow-2xl relative">
                     <div class="p-3 bg-surface border-b border-border flex items-center justify-between">
                         <div class="flex items-center gap-2">
                             <i data-lucide="terminal" class="w-4 h-4 text-gray-400"></i>
@@ -242,7 +272,10 @@
                 </div>
             </div>
 
-            <!-- SDK Integration Playground -->
+            </div>
+
+<div id="view-docs" class="view-section hidden-view space-y-6">
+<!-- SDK Integration Playground -->
             <div class="glass-card border border-border bg-surface rounded-xl overflow-hidden mt-6">
                 <div class="p-5 border-b border-border">
                     <h2 class="text-lg font-semibold text-white flex items-center gap-2">
@@ -252,7 +285,7 @@
                 </div>
                 <div class="flex flex-col md:flex-row">
                     <div class="md:w-48 bg-slate-900/50 border-r border-border p-3 flex flex-col gap-1">
-                        <button class="sdk-tab active text-left px-4 py-2 rounded-lg text-sm font-medium text-indigo-400 bg-indigo-500/10 transition-colors" data-lang="python">Python</button>
+                        <button class="sdk-tab active text-left px-4 py-2 rounded-lg text-sm font-medium text-white bg-[rgba(255,255,255,0.05)] transition-colors" data-lang="python">Python</button>
                         <button class="sdk-tab text-left px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-colors" data-lang="node">Node.js</button>
                         <button class="sdk-tab text-left px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-colors" data-lang="curl">cURL</button>
                     </div>
@@ -299,17 +332,18 @@ async function runWorker() {
                 </div>
             </div>
             
-            <footer class="pt-8 pb-4 text-center text-xs text-gray-500">
+            </div>
+<footer class="pt-8 pb-4 text-center text-xs text-gray-500">
                 &copy; 2026 MoniOpen Platform. All rights reserved.
             </footer>
         </div>
     </main>
 
     <!-- Modals & Drawers Layer -->
-    <div id="backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300" onclick="closeAllOverlays()"></div>
+    <div id="backdrop" class="fixed inset-0 bg-black/80 backdrop-blur-ultra z-40 hidden opacity-0 transition-opacity duration-300" onclick="closeAllOverlays()"></div>
 
     <!-- Bot Detail Drawer -->
-    <div id="bot-drawer" class="fixed top-0 right-0 h-full w-full md:w-[450px] bg-surface border-l border-border z-50 transform translate-x-full transition-transform duration-300 flex flex-col shadow-2xl">
+    <div id="bot-drawer" class="fixed top-0 right-0 h-full w-full md:w-[450px] bg-surface border-l border-border z-50 hidden flex flex-col shadow-2xl">
         <div class="p-6 border-b border-border flex items-center justify-between">
             <h3 class="text-lg font-bold text-white flex items-center gap-2">
                 <i data-lucide="box" class="w-5 h-5 text-indigo-500"></i>
@@ -365,7 +399,7 @@ async function runWorker() {
     </div>
 
     <!-- Register Bot Modal -->
-    <div id="register-modal" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-surface border border-border rounded-2xl shadow-2xl z-50 hidden opacity-0 transition-opacity duration-300 flex-col overflow-hidden">
+    <div id="register-modal" class="fixed top-1/2 left-1/2  w-[90%] max-w-md glass-card border border-border rounded-2xl shadow-2xl z-50 hidden opacity-0 transition-opacity duration-300 flex-col overflow-hidden">
         <div class="p-5 border-b border-border flex items-center justify-between bg-slate-900/50">
             <h3 class="text-lg font-bold text-white">Register New Worker</h3>
             <button onclick="closeAllOverlays()" class="text-gray-400 hover:text-white">
@@ -390,7 +424,7 @@ async function runWorker() {
                 <div>
                     <label class="block text-sm font-medium text-gray-400 mb-1">Heartbeat Interval</label>
                     <div class="grid grid-cols-4 gap-2">
-                        <button type="button" class="interval-btn active border-indigo-500 text-indigo-400 bg-indigo-500/10 border rounded-lg py-2 text-xs font-medium">5s</button>
+                        <button type="button" class="interval-btn active border-indigo-500 text-white bg-[rgba(255,255,255,0.05)] border rounded-lg py-2 text-xs font-medium">5s</button>
                         <button type="button" class="interval-btn border-border text-gray-400 hover:border-gray-500 border rounded-lg py-2 text-xs font-medium">15s</button>
                         <button type="button" class="interval-btn border-border text-gray-400 hover:border-gray-500 border rounded-lg py-2 text-xs font-medium">30s</button>
                         <button type="button" class="interval-btn border-border text-gray-400 hover:border-gray-500 border rounded-lg py-2 text-xs font-medium">60s</button>
@@ -423,7 +457,7 @@ async function runWorker() {
     </div>
 
     <!-- Claude AI Diagnostic Modal -->
-    <div id="claude-modal" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[95%] max-w-2xl bg-surface border border-indigo-500/30 rounded-2xl shadow-[0_0_50px_rgba(99,102,241,0.15)] z-50 hidden opacity-0 transition-opacity duration-300 flex-col overflow-hidden">
+    <div id="claude-modal" class="fixed top-1/2 left-1/2  w-[95%] max-w-2xl glass-card border border-indigo-500/30 rounded-2xl shadow-[0_0_50px_rgba(99,102,241,0.15)] z-50 hidden opacity-0 transition-opacity duration-300 flex-col overflow-hidden">
         <div class="p-4 border-b border-border flex items-center justify-between bg-gradient-to-r from-indigo-900/40 to-surface">
             <div class="flex items-center gap-3">
                 <div class="bg-[#D4A373]/20 p-1.5 rounded-lg border border-[#D4A373]/30">
