@@ -92,7 +92,7 @@
         <header class="h-16 border-b border-border bg-surface backdrop-blur-xl border-b border-border sticky top-0 z-10 px-8 flex items-center justify-between">
             <h1 class="text-xl font-semibold text-white text-shimmer">Cluster Telemetry</h1>
             <div class="flex items-center gap-4">
-                <button onclick="openNewBotModal()" class="btn-primary flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium text-sm transition-all shadow-[0_0_15px_rgba(99,102,241,0.3)]">
+                <button onclick="openNewBotModal()" class="btn-primary flex items-center gap-2 px-5 py-2.5 bg-white text-black font-semibold rounded-full hover:scale-95 font-medium text-sm transition-all shadow-[0_0_15px_rgba(99,102,241,0.3)]">
                     <i data-lucide="plus" class="w-4 h-4"></i>
                     Register Bot
                 </button>
@@ -132,98 +132,104 @@
                     <button onclick="openNewBotModal()" id="btn-deploy" class="magnetic-btn px-6 py-3 bg-white text-black font-semibold rounded-xl transition-transform flex items-center gap-2 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
                         <i data-lucide="zap" class="w-4 h-4"></i> Deploy Agent
                     </button>
-                    <button onclick="triggerCrashSimulation()" class="px-6 py-3 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] text-white font-medium rounded-xl hover:bg-[rgba(255,255,255,0.1)] transition-colors flex items-center gap-2 hover:scale-95">
+                    <button onclick="triggerCrashSimulation()" class="px-6 py-3 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] text-white font-medium rounded-full hover:bg-[rgba(255,255,255,0.1)] transition-colors flex items-center gap-2 hover:scale-95">
                         <i data-lucide="bomb" class="w-4 h-4"></i> Simular Caída
                     </button>
                 </div>
             </div>
 
-            <!-- Stats Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Uptime -->
-                <div class="glass-card p-5 stagger-item rounded-xl border border-border bg-surface relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <div class="tooltip-container" data-tooltip="Network health over last 24h"><i data-lucide="activity" class="w-16 h-16 text-emerald-500"></i></div>
-                    </div>
-                    <p class="text-sm text-gray-400 font-medium mb-1">Global Uptime</p>
-                    <div class="flex items-end gap-2">
-                        <h3 class="text-3xl font-bold text-white">99.98<span class="text-lg text-gray-500">%</span></h3>
-                    </div>
-                    <div class="mt-3 flex items-center gap-2 text-xs font-medium text-emerald-400">
-                        <i data-lucide="arrow-up-right" class="w-3 h-3"></i> Stable
-                    </div>
-                </div>
+            
+            <!-- Lovable Bento Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 
-                <!-- Latency -->
-                <div class="glass-card p-5 stagger-item rounded-xl border border-border bg-surface relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <div class="tooltip-container" data-tooltip="Round-trip time across global edge"><i data-lucide="zap" class="w-16 h-16 text-indigo-500"></i></div>
+                <!-- Uptime: Feature Card (Span 2) -->
+                <div class="glass-card lg:col-span-2 p-8 stagger-item rounded-3xl border border-border bg-surface relative overflow-hidden group flex flex-col justify-between min-h-[220px]">
+                    <div class="absolute -right-10 -top-10 w-48 h-48 bg-emerald-500/20 blur-[50px] rounded-full pointer-events-none transition-transform group-hover:scale-150 duration-700"></div>
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="text-sm text-gray-400 font-medium tracking-wide uppercase">Global Uptime</p>
+                            <div class="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-xs font-bold flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Stable
+                            </div>
+                        </div>
+                        <h3 class="text-5xl font-extrabold text-white tracking-tighter mt-4">99.98<span class="text-2xl text-gray-500 font-normal">%</span></h3>
                     </div>
-                    <p class="text-sm text-gray-400 font-medium mb-1">Avg Latency</p>
-                    <div class="flex items-end gap-2">
-                        <h3 class="text-3xl font-bold text-white font-mono transition-colors" id="avg-latency">42<span class="text-lg font-sans text-gray-500">ms</span></h3>
-                    </div>
-                    <div class="mt-3 h-1 w-full bg-gray-800 rounded-full overflow-hidden">
-                        <div class="h-full bg-indigo-500 w-1/3" id="latency-bar" style="transition: width 0.3s;"></div>
-                    </div>
-                </div>
-
-                <!-- Events -->
-                <div class="glass-card p-5 stagger-item rounded-xl border border-border bg-surface relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <i data-lucide="radio" class="w-16 h-16 text-cyan-500"></i>
-                    </div>
-                    <p class="text-sm text-gray-400 font-medium mb-1">Event Ingestion</p>
-                    <div class="flex items-end gap-2">
-                        <h3 class="text-3xl font-bold text-white font-mono" id="event-rate">1,420</h3>
-                        <span class="text-sm text-gray-500 mb-1">/sec</span>
-                    </div>
-                    <div class="mt-3 text-xs text-gray-500">
-                        Total: <span id="total-events" class="font-mono">14,293,100</span>
+                    <div class="mt-4 flex items-center gap-3 text-sm text-gray-400">
+                        <i data-lucide="shield-check" class="w-5 h-5 text-emerald-500"></i>
+                        <span>SLA guaranteed across all 4 core regions.</span>
                     </div>
                 </div>
 
-                <!-- Cluster Status -->
-                <div class="glass-card p-5 stagger-item rounded-xl border border-border bg-surface relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <i data-lucide="server" class="w-16 h-16 text-emerald-500"></i>
+                <!-- Latency (Span 1) -->
+                <div class="glass-card lg:col-span-1 p-8 stagger-item rounded-3xl border border-border bg-surface relative overflow-hidden group flex flex-col justify-between min-h-[220px]">
+                    <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-indigo-500/20 blur-[40px] rounded-full pointer-events-none transition-transform group-hover:scale-150 duration-700"></div>
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="text-sm text-gray-400 font-medium tracking-wide uppercase">Edge Latency</p>
+                            <div class="tooltip-container" data-tooltip="Real-time global RTT"><i data-lucide="zap" class="w-4 h-4 text-indigo-400"></i></div>
+                        </div>
+                        <h3 class="text-5xl font-extrabold text-white font-mono tracking-tighter mt-4 transition-colors" id="avg-latency">42<span class="text-xl text-gray-500 font-sans font-normal">ms</span></h3>
                     </div>
-                    <p class="text-sm text-gray-400 font-medium mb-1">Cluster Status</p>
-                    <div class="flex items-end gap-2 mt-2">
-                        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-medium">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span id="cluster-count">4/4 Active</span>
-                        </span>
-                    </div>
-                    <div class="mt-4 flex items-center gap-2">
-                        <button onclick="triggerCrashSimulation()" class="text-xs text-gray-500 hover:text-red-400 transition-colors flex items-center gap-1">
-                            <i data-lucide="bomb" class="w-3 h-3"></i> Simular Caída
-                        </button>
+                    <div class="mt-4 h-1.5 w-full bg-gray-800/50 rounded-full overflow-hidden backdrop-blur-sm">
+                        <div class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 w-1/3 rounded-full" id="latency-bar" style="transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);"></div>
                     </div>
                 </div>
+
+                <!-- Cluster Status (Span 1) -->
+                <div class="glass-card lg:col-span-1 p-8 stagger-item rounded-3xl border border-border bg-surface relative overflow-hidden group flex flex-col justify-between min-h-[220px]">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="text-sm text-gray-400 font-medium tracking-wide uppercase">Cluster Nodes</p>
+                            <i data-lucide="server" class="w-4 h-4 text-gray-400"></i>
+                        </div>
+                        <h3 class="text-4xl font-extrabold text-white tracking-tighter mt-4" id="cluster-count">4<span class="text-xl text-gray-500 font-normal">/4</span></h3>
+                    </div>
+                    <button onclick="triggerCrashSimulation()" class="mt-4 w-full py-2.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-xl text-red-400 text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2">
+                        <i data-lucide="bomb" class="w-3 h-3"></i> Simular Caída
+                    </button>
+                </div>
+
+                <!-- Chart (Span 3 Wide) -->
+                <div class="glass-card lg:col-span-3 p-8 stagger-item rounded-3xl border border-border bg-surface relative overflow-hidden h-[300px] flex flex-col">
+                    <div class="flex items-center justify-between mb-2">
+                        <div>
+                            <h2 class="text-lg font-bold text-white tracking-tight">Live Network Pulse</h2>
+                            <p class="text-xs text-gray-400">Real-time edge telemetry tracking</p>
+                        </div>
+                        <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.8)] animate-pulse"></span>
+                    </div>
+                    <div class="flex-1 w-full relative mt-2 -ml-2">
+                        <canvas id="latencyChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Events (Span 1 Tallish) -->
+                <div class="glass-card lg:col-span-1 p-8 stagger-item rounded-3xl border border-border bg-surface relative overflow-hidden group flex flex-col justify-between h-[300px]">
+                    <div class="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
+                        <i data-lucide="radio" class="w-24 h-24 text-cyan-500 transform rotate-12"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-400 font-medium tracking-wide uppercase">Event Ingestion</p>
+                        <h3 class="text-4xl font-extrabold text-white font-mono tracking-tighter mt-4" id="event-rate">1,420</h3>
+                        <p class="text-sm text-gray-500 mt-1">events / sec</p>
+                    </div>
+                    <div class="mt-auto pt-4 border-t border-white/5">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Total Processed</p>
+                        <p id="total-events" class="font-mono text-white font-medium">14,293,100</p>
+                    </div>
+                </div>
+
             </div>
 
-            <!-- Chart Section -->
-            <div class="glass-card border border-border bg-surface rounded-xl p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-lg font-semibold text-white">Live Network Pulse</h2>
-                    <div class="flex gap-2">
-                        <span class="w-3 h-3 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.8)]"></span>
-                    </div>
-                </div>
-                <div class="h-64 w-full relative">
-                    <canvas id="latencyChart"></canvas>
-                </div>
-            </div>
 
             </div>
 
 <div id="view-fleet" class="view-section hidden-view space-y-6">
 <div class="grid grid-cols-1 gap-6">
                 <!-- Fleet Table -->
-                <div class="xl:col-span-2 glass-card border border-border bg-surface rounded-xl overflow-hidden flex flex-col h-[75vh]">
+                <div class="xl:col-span-2 glass-card border border-border bg-surface rounded-[2rem] overflow-hidden flex flex-col shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] h-[75vh]">
                     <div class="p-5 border-b border-border flex items-center justify-between">
-                        <h2 class="text-lg font-semibold text-white">Active Fleet</h2>
+                        <h2 class="text-2xl font-bold text-white tracking-tight">Active Fleet</h2>
                         <i data-lucide="users" class="w-5 h-5 text-gray-400"></i>
                     </div>
                     <div class="overflow-y-auto flex-1 p-0">
@@ -248,7 +254,7 @@
 
 <div id="view-logs" class="view-section hidden-view space-y-6">
 <!-- Live Logs Console -->
-                <div class="xl:col-span-1 glass-card border border-border bg-[#0a0a0a] rounded-xl flex flex-col h-[75vh] overflow-hidden shadow-2xl relative">
+                <div class="xl:col-span-1 glass-card border border-border bg-[#0a0a0a] rounded-[2rem] flex flex-col h-[75vh] shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] overflow-hidden shadow-2xl relative">
                     <div class="p-3 bg-surface border-b border-border flex items-center justify-between">
                         <div class="flex items-center gap-2">
                             <i data-lucide="terminal" class="w-4 h-4 text-gray-400"></i>
@@ -276,22 +282,36 @@
 
 <div id="view-docs" class="view-section hidden-view space-y-6">
 <!-- SDK Integration Playground -->
-            <div class="glass-card border border-border bg-surface rounded-xl overflow-hidden mt-6">
-                <div class="p-5 border-b border-border">
-                    <h2 class="text-lg font-semibold text-white flex items-center gap-2">
-                        <i data-lucide="code" class="w-5 h-5 text-indigo-500"></i>
-                        SDK Integration Playground
-                    </h2>
-                </div>
-                <div class="flex flex-col md:flex-row">
-                    <div class="md:w-48 bg-slate-900/50 border-r border-border p-3 flex flex-col gap-1">
-                        <button class="sdk-tab active text-left px-4 py-2 rounded-lg text-sm font-medium text-white bg-[rgba(255,255,255,0.05)] transition-colors" data-lang="python">Python</button>
-                        <button class="sdk-tab text-left px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-colors" data-lang="node">Node.js</button>
-                        <button class="sdk-tab text-left px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-colors" data-lang="curl">cURL</button>
+            <div class="glass-card border border-border bg-surface rounded-[2rem] overflow-hidden mt-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+                <div class="p-8 border-b border-white/5 flex items-center justify-between bg-gradient-to-r from-transparent to-indigo-500/5">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
+                            SDK Integration
+                        </h2>
+                        <p class="text-sm text-gray-400 mt-1">Embed MoniOpen directly into your architecture</p>
                     </div>
-                    <div class="flex-1 p-5 relative bg-[#0a0a0a]">
-                        <button onclick="copySdkCode()" id="btn-copy-sdk" class="absolute top-4 right-4 bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-md text-xs font-medium transition-colors border border-gray-700 flex items-center gap-1">
-                            <i data-lucide="copy" class="w-3 h-3"></i> Copy
+                    <div class="w-12 h-12 rounded-full bg-indigo-500/20 flex items-center justify-center border border-indigo-500/30">
+                        <i data-lucide="code-2" class="w-6 h-6 text-indigo-400"></i>
+                    </div>
+                </div>
+                <div class="flex flex-col md:flex-row h-full min-h-[400px]">
+                    <div class="md:w-64 bg-black/40 border-r border-white/5 p-4 flex flex-col gap-2">
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2 px-2">Environments</p>
+                        <button class="sdk-tab active text-left px-4 py-3 rounded-2xl text-sm font-semibold text-white bg-white/10 transition-all hover:scale-[0.98]" data-lang="python">
+                            <i data-lucide="file-json" class="w-4 h-4 inline mr-2 text-indigo-400"></i> Python 3
+                        </button>
+                        <button class="sdk-tab text-left px-4 py-3 rounded-2xl text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all hover:scale-[0.98]" data-lang="node">
+                            <i data-lucide="box" class="w-4 h-4 inline mr-2 text-emerald-400"></i> Node.js
+                        </button>
+                        <button class="sdk-tab text-left px-4 py-3 rounded-2xl text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all hover:scale-[0.98]" data-lang="curl">
+                            <i data-lucide="terminal" class="w-4 h-4 inline mr-2 text-gray-300"></i> cURL
+                        </button>
+                    </div>
+                    <div class="flex-1 p-8 relative bg-[#050505] overflow-hidden group">
+                        <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-indigo-500/10 blur-[80px] rounded-full pointer-events-none group-hover:scale-150 transition-transform duration-1000"></div>
+                        
+                        <button onclick="copySdkCode()" id="btn-copy-sdk" class="absolute top-6 right-6 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-2 hover:scale-95 z-10">
+                            <i data-lucide="copy" class="w-3 h-3"></i> Copy snippet
                         </button>
                         <pre id="sdk-python" class="sdk-content font-mono text-sm text-gray-300 overflow-x-auto"><code>from moniopen import MoniOpenClient
 
@@ -399,7 +419,7 @@ async function runWorker() {
     </div>
 
     <!-- Register Bot Modal -->
-    <div id="register-modal" class="fixed top-1/2 left-1/2  w-[90%] max-w-md glass-card border border-border rounded-2xl shadow-2xl z-50 hidden opacity-0 transition-opacity duration-300 flex-col overflow-hidden">
+    <div id="register-modal" class="fixed top-1/2 left-1/2  w-[90%] max-w-md glass-card border border-border rounded-[2rem] shadow-2xl border-white/10 z-50 hidden opacity-0 transition-opacity duration-300 flex-col overflow-hidden">
         <div class="p-5 border-b border-border flex items-center justify-between bg-slate-900/50">
             <h3 class="text-lg font-bold text-white">Register New Worker</h3>
             <button onclick="closeAllOverlays()" class="text-gray-400 hover:text-white">
@@ -430,7 +450,7 @@ async function runWorker() {
                         <button type="button" class="interval-btn border-border text-gray-400 hover:border-gray-500 border rounded-lg py-2 text-xs font-medium">60s</button>
                     </div>
                 </div>
-                <button onclick="generateBot()" class="w-full mt-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg py-3 font-medium transition-colors shadow-[0_0_15px_rgba(99,102,241,0.4)]">
+                <button onclick="generateBot()" class="w-full mt-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full py-3 font-medium transition-colors shadow-[0_0_15px_rgba(99,102,241,0.4)]">
                     Generate Connection
                 </button>
             </div>
@@ -457,7 +477,7 @@ async function runWorker() {
     </div>
 
     <!-- Claude AI Diagnostic Modal -->
-    <div id="claude-modal" class="fixed top-1/2 left-1/2  w-[95%] max-w-2xl glass-card border border-indigo-500/30 rounded-2xl shadow-[0_0_50px_rgba(99,102,241,0.15)] z-50 hidden opacity-0 transition-opacity duration-300 flex-col overflow-hidden">
+    <div id="claude-modal" class="fixed top-1/2 left-1/2  w-[95%] max-w-2xl glass-card border border-indigo-500/30 rounded-[2rem] shadow-[0_0_80px_rgba(99,102,241,0.2)] border-white/10 z-50 hidden opacity-0 transition-opacity duration-300 flex-col overflow-hidden">
         <div class="p-4 border-b border-border flex items-center justify-between bg-gradient-to-r from-indigo-900/40 to-surface">
             <div class="flex items-center gap-3">
                 <div class="bg-[#D4A373]/20 p-1.5 rounded-lg border border-[#D4A373]/30">

@@ -159,9 +159,9 @@ function renderFleetTable() {
             <tr>
                 <td colspan="4" class="py-16 text-center text-gray-500">
                     <div class="flex flex-col items-center justify-center space-y-3">
-                        <i data-lucide="inbox" class="w-12 h-12 text-gray-600/50"></i>
+                        <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-2"><i data-lucide="ghost" class="w-8 h-8 text-gray-500"></i></div>
                         <p class="text-sm">No bots registered in the fleet yet.</p>
-                        <button onclick="openNewBotModal()" class="mt-2 text-xs text-indigo-400 hover:text-indigo-300">Register your first bot</button>
+                        <button onclick="openNewBotModal()" class="mt-2 px-4 py-2 mt-4 bg-white/5 hover:bg-white/10 rounded-full text-xs font-semibold text-white transition-colors">Register your first bot</button>
                     </div>
                 </td>
             </tr>
@@ -531,13 +531,13 @@ function setupSdkTabs() {
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
             tabs.forEach(t => {
-                t.classList.remove('active', 'text-indigo-400', 'bg-indigo-500/10');
+                t.classList.remove('active', 'text-white', 'bg-white/10', 'font-semibold'); t.classList.add('font-medium');
                 t.classList.add('text-gray-400');
             });
             contents.forEach(c => c.classList.add('hidden'));
             
             tab.classList.remove('text-gray-400');
-            tab.classList.add('active', 'text-indigo-400', 'bg-indigo-500/10');
+            tab.classList.remove('font-medium'); tab.classList.add('active', 'text-white', 'bg-white/10', 'font-semibold');
             
             const target = tab.getAttribute('data-lang');
             document.getElementById(`sdk-${target}`).classList.remove('hidden');
