@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MoniOpen — Open-Source Bot & Service Telemetry Dashboard</title>
+  <meta name="description" content="Open-source observability, health monitoring, and AI-powered root cause diagnostics for autonomous bots and background workers.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              900: '#1e1b4b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #090d16; color: #f1f5f9; }
+    code, pre { font-family: 'JetBrains Mono', monospace; }
+    .gradient-text {
+      background: linear-gradient(135deg, #60a5fa 0%, #a855f7 50%, #ec4899 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#090d16] text-slate-100 selection:bg-indigo-500 selection:text-white">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 backdrop-blur-md bg-[#090d16]/80 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="h-9 w-9 rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-500/30">
+          M
+        </div>
+        <span class="text-xl font-bold tracking-tight text-white">Moni<span class="text-indigo-400">Open</span></span>
+        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          v1.0 Open-Source
+        </span>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <span class="text-xs text-slate-400 bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-lg">
+          Powered by Claude 3.5 Sonnet
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="relative overflow-hidden pt-20 pb-20 border-b border-slate-800/80 text-center px-4">
+    <div class="max-w-4xl mx-auto">
+      <div class="inline-flex items-center space-x-2 bg-indigo-950/60 border border-indigo-500/30 px-3.5 py-1.5 rounded-full text-xs font-semibold text-indigo-300 mb-6">
+        <span class="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>Telemetry & Observability for Automation Bots</span>
+      </div>
+
+      <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight">
+        Open-source monitoring for <span class="gradient-text">autonomous bots</span> & workers.
+      </h1>
+
+      <p class="mt-6 text-lg text-slate-400 max-w-2xl mx-auto">
+        MoniOpen gives developers real-time uptime heartbeats, distributed execution logs, and automated root-cause diagnostics powered by Claude AI.
+      </p>
+
+      <!-- Mockup Table -->
+      <div class="mt-12 max-w-3xl mx-auto rounded-xl bg-slate-900/80 border border-slate-800 p-5 text-left shadow-2xl">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-800 text-xs text-slate-400">
+          <span class="flex items-center gap-2">
+            <span class="h-2.5 w-2.5 rounded-full bg-emerald-400"></span>
+            Active Services: 4/4 Healthy
+          </span>
+          <span class="text-indigo-400 font-semibold">Claude AI Diagnostic: Online</span>
+        </div>
+        <div class="mt-4 space-y-2 text-xs">
+          <div class="flex justify-between p-2.5 rounded bg-slate-800/50 border border-slate-700/50">
+            <span class="font-mono text-white">bot-crawler-node</span>
+            <span class="text-slate-400">Node.js · 12ms latency</span>
+            <span class="text-emerald-400 font-semibold">Healthy</span>
+          </div>
+          <div class="flex justify-between p-2.5 rounded bg-slate-800/50 border border-slate-700/50">
+            <span class="font-mono text-white">automation-worker</span>
+            <span class="text-slate-400">Python · 34ms latency</span>
+            <span class="text-emerald-400 font-semibold">Healthy</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="py-16 max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="p-6 rounded-xl bg-slate-900/50 border border-slate-800">
+      <div class="text-indigo-400 text-xl font-bold mb-2">01. Heartbeats</div>
+      <p class="text-sm text-slate-400">Real-time health pings from Python, Node.js, and Go scripts with automated alerting.</p>
+    </div>
+    <div class="p-6 rounded-xl bg-slate-900/50 border border-slate-800">
+      <div class="text-purple-400 text-xl font-bold mb-2">02. Claude AI</div>
+      <p class="text-sm text-slate-400">Direct integration with Anthropic Claude to analyze stack traces and diagnose crashes in plain English.</p>
+    </div>
+    <div class="p-6 rounded-xl bg-slate-900/50 border border-slate-800">
+      <div class="text-emerald-400 text-xl font-bold mb-2">03. Open-Source</div>
+      <p class="text-sm text-slate-400">100% self-hostable with Docker, lightweight REST APIs, and multi-channel webhooks.</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800 py-8 text-center text-xs text-slate-500">
+    <p>© 2026 MoniOpen. Open-Source Telemetry. MIT Licensed.</p>
+    <p class="mt-1">Contact: contact@moniopen.xyz</p>
+  </footer>
+
+</body>
+</html>
