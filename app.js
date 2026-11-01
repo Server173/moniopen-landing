@@ -26,27 +26,57 @@ document.addEventListener('DOMContentLoaded', () => {
     setupSdkTabs();
 });
 
+function escapeHTML(str) {
+    if (str == null) return '';
+    const d = document.createElement('div');
+    d.textContent = String(str);
+    return d.innerHTML;
+}
+
 // --- MODULE A: Telemetry & Metrics ---
+let lastSysData = null;
+let isFetchingSysData = false;
+let sysFetchFailures = 0;
+const MAX_SYS_FETCH_RETRIES = 5;
 
 async function fetchRealSystemData() {
+    if (document.hidden || isFetchingSysData) return lastSysData;
+    if (sysFetchFailures >= MAX_SYS_FETCH_RETRIES) return lastSysData;
+
+    isFetchingSysData = true;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
     try {
-        const res = await fetch('/api/v1/system');
+        const res = await fetch('/api/v1/system', { signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
+        lastSysData = data;
+        sysFetchFailures = 0;
         return data;
-    } catch(e) {
-        return null;
+    } catch (e) {
+        clearTimeout(timeoutId);
+        sysFetchFailures++;
+        if (sysFetchFailures >= MAX_SYS_FETCH_RETRIES) {
+            // Reset retry counter after 30s cooldown to avoid infinite rapid retries
+            setTimeout(() => { sysFetchFailures = 0; }, 30000);
+        }
+        return lastSysData;
+    } finally {
+        isFetchingSysData = false;
     }
 }
 
 function startMetricsSimulation() {
     // Latency oscilation
     setInterval(async () => {
+        if (document.hidden) return;
         let base = crashActive ? 150 : 38;
         let variance = crashActive ? 50 : 14;
         
         // Try fetching real system metrics to influence latency
         const sysData = await fetchRealSystemData();
-        if (sysData) {
+        if (sysData && sysData.cpu) {
             // Add CPU load factor to latency
             base += (parseFloat(sysData.cpu.load1m) * 10);
         }
@@ -73,14 +103,13 @@ function startMetricsSimulation() {
         chartInstance.update();
     }, 2500);
 
-    // Event Ingestion
-    setInterval(async () => {
+    // Event Ingestion (reuses cached lastSysData to prevent duplicate network calls)
+    setInterval(() => {
+        if (document.hidden) return;
         let events = Math.floor(1300 + Math.random() * 200);
         
-        // Influence events with real memory
-        const sysData = await fetchRealSystemData();
-        if (sysData && sysData.memory) {
-            const usage = parseFloat(sysData.memory.usagePercent);
+        if (lastSysData && lastSysData.memory) {
+            const usage = parseFloat(lastSysData.memory.usagePercent);
             events = Math.floor(events * (1 + (usage/100)));
         }
 
@@ -140,7 +169,11 @@ function initChart() {
 function initBots() {
     const stored = localStorage.getItem('moniopen_bots');
     if (stored) {
-        bots = JSON.parse(stored);
+        try {
+            bots = JSON.parse(stored);
+        } catch (e) {
+            bots = [...defaultBots];
+        }
     } else {
         bots = [...defaultBots];
         localStorage.setItem('moniopen_bots', JSON.stringify(bots));
@@ -159,9 +192,9 @@ function renderFleetTable() {
             <tr>
                 <td colspan="4" class="py-16 text-center text-gray-500">
                     <div class="flex flex-col items-center justify-center space-y-3">
-                        <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-2"><i data-lucide="ghost" class="w-8 h-8 text-gray-500"></i></div>
+                        <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-2"><i data-lucide="ghost" class="w-8 h-8 text-gray-500" aria-hidden="true"></i></div>
                         <p class="text-sm">No bots registered in the fleet yet.</p>
-                        <button onclick="openNewBotModal()" class="mt-2 px-4 py-2 mt-4 bg-white/5 hover:bg-white/10 rounded-full text-xs font-semibold text-white transition-colors">Register your first bot</button>
+                        <button type="button" onclick="openNewBotModal()" class="mt-2 px-4 py-2 mt-4 bg-white/5 hover:bg-white/10 rounded-full text-xs font-semibold text-white transition-colors">Register your first bot</button>
                     </div>
                 </td>
             </tr>
@@ -182,30 +215,39 @@ function renderFleetTable() {
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-white/5 cursor-pointer spring-transition group fleet-row-enter';
         tr.style.animationDelay = `${activeCount * 0.08}s`;
+        tr.setAttribute('tabindex', '0');
+        tr.setAttribute('role', 'button');
+        tr.setAttribute('aria-label', `Inspect bot ${bot.id}, status ${bot.status}`);
         tr.onclick = () => openBotDrawer(bot.id);
+        tr.onkeydown = (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                openBotDrawer(bot.id);
+            }
+        };
         
         tr.innerHTML = `
             <td class="px-5 py-4 border-b border-border">
                 <div class="flex items-center gap-3">
                     <div class="w-8 h-8 rounded-lg bg-surface border border-border flex items-center justify-center group-hover:border-indigo-500/50 transition-colors">
-                        <i data-lucide="cpu" class="w-4 h-4 text-gray-400 group-hover:text-indigo-400"></i>
+                        <i data-lucide="cpu" class="w-4 h-4 text-gray-400 group-hover:text-indigo-400" aria-hidden="true"></i>
                     </div>
-                    <span class="font-medium text-gray-200">${bot.id}</span>
+                    <span class="font-medium text-gray-200">${escapeHTML(bot.id)}</span>
                 </div>
             </td>
             <td class="px-5 py-4 border-b border-border">
-                <span class="font-mono text-xs text-gray-400">${bot.runtime}</span>
+                <span class="font-mono text-xs text-gray-400">${escapeHTML(bot.runtime)}</span>
             </td>
             <td class="px-5 py-4 border-b border-border">
                 <div class="flex flex-col gap-1">
-                    <span class="text-xs font-mono text-gray-300">Lat: ${bot.latency}ms</span>
-                    <span class="text-xs font-mono text-gray-500">RAM: ${bot.ram}MB</span>
+                    <span class="text-xs font-mono text-gray-300">Lat: ${escapeHTML(bot.latency)}ms</span>
+                    <span class="text-xs font-mono text-gray-500">RAM: ${escapeHTML(bot.ram)}MB</span>
                 </div>
             </td>
             <td class="px-5 py-4 border-b border-border">
                 <span class="px-3 py-1 rounded-full text-xs border flex items-center gap-2 w-max ${statusClass}">
                     <span class="w-2 h-2 rounded-full ${statusDot}"></span>
-                    ${bot.status}
+                    ${escapeHTML(bot.status)}
                 </span>
             </td>
         `;
@@ -263,10 +305,13 @@ function openNewBotModal() {
     document.getElementById('register-modal').classList.add('flex', 'modal-enter');
     
     document.getElementById('new-bot-name').value = '';
+    const consentBox = document.getElementById('consent-checkbox');
+    if (consentBox) consentBox.checked = false;
     
     setTimeout(() => {
         document.getElementById('backdrop').classList.remove('opacity-0');
         document.getElementById('register-modal').classList.remove('opacity-0');
+        document.getElementById('new-bot-name').focus();
     }, 10);
 }
 
@@ -283,18 +328,24 @@ document.querySelectorAll('.interval-btn').forEach(btn => {
     });
 });
 
-function generateBot() {
+async function generateBot() {
     const nameInput = document.getElementById('new-bot-name').value.trim();
     if(!nameInput) return showToast('Error', 'Please enter a bot name', 'error');
     
+    const consentBox = document.getElementById('consent-checkbox');
+    if (!consentBox || !consentBox.checked) {
+        return showToast('Consent Required', 'Please accept the Privacy Policy and Terms (TCPA/GDPR) to continue', 'error');
+    }
+
     const lang = document.getElementById('new-bot-lang').value;
+    const consentTimestamp = new Date().toISOString();
     
     // Generate key
     const chars = 'abcdef0123456789';
     let key = 'mop_live_';
     for(let i=0; i<28; i++) key += chars[Math.floor(Math.random() * chars.length)];
     
-    // Add to bots
+    // Add to bots with explicit consent metadata
     const newBot = {
         id: nameInput,
         runtime: lang,
@@ -302,12 +353,32 @@ function generateBot() {
         ram: 0,
         status: 'Waiting...',
         pid: Math.floor(10000 + Math.random() * 80000),
-        uptime: '0m'
+        uptime: '0m',
+        consent_given: true,
+        consent_timestamp: consentTimestamp
     };
     
     bots.push(newBot);
     localStorage.setItem('moniopen_bots', JSON.stringify(bots));
     renderFleetTable();
+
+    // Persist consent on backend with timeout
+    try {
+        const controller = new AbortController();
+        const tid = setTimeout(() => controller.abort(), 5000);
+        await fetch('/api/v1/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                botId: nameInput,
+                runtime: lang,
+                consent_given: true,
+                consent_timestamp: consentTimestamp
+            }),
+            signal: controller.signal
+        });
+        clearTimeout(tid);
+    } catch (e) { }
     
     // Update UI to success step
     document.getElementById('register-form').classList.add('hidden');
@@ -315,7 +386,7 @@ function generateBot() {
     document.getElementById('register-success').classList.add('flex');
     document.getElementById('generated-api-key').innerText = key;
     
-    showToast('Success', 'Bot registered successfully');
+    showToast('Success', 'Bot registered & consent recorded');
 }
 
 function copyGeneratedKey() {
@@ -380,7 +451,7 @@ function applyLogFilters() {
 
 function startLogStream() {
     setInterval(() => {
-        if(isStreamPaused) return;
+        if(isStreamPaused || document.hidden) return;
         
         const botsActive = bots.filter(b => b.status !== 'Offline');
         if(botsActive.length === 0) return;
@@ -421,8 +492,8 @@ function addLog(botId, level, msg, textColor, prefixColor) {
     
     div.innerHTML = `
         <span class="text-gray-500">[${time}]</span> 
-        <span class="${prefixColor} font-bold">[${level}]</span> 
-        <span class="text-gray-400">&lt;${botId}&gt;</span>: ${msg}
+        <span class="${prefixColor} font-bold">[${escapeHTML(level)}]</span> 
+        <span class="text-gray-400">&lt;${escapeHTML(botId)}&gt;</span>: ${escapeHTML(msg)}
     `;
     
     terminal.appendChild(div);
@@ -618,7 +689,8 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let navId in navs) {
         const navEl = document.getElementById(navId);
         if(!navEl) continue;
-        navEl.addEventListener('click', () => {
+        const activateNav = (e) => {
+            if (e) e.preventDefault();
             // Update Active Nav
             document.querySelectorAll('.nav-item').forEach(el => {
                 el.classList.remove('active', 'text-white', 'bg-[rgba(255,255,255,0.05)]');
@@ -642,8 +714,20 @@ document.addEventListener('DOMContentLoaded', () => {
             if(headerTitle) {
                 headerTitle.innerText = titles[navId];
             }
+        };
+        navEl.addEventListener('click', activateNav);
+        navEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                activateNav(e);
+            }
         });
     }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeAllOverlays();
+        }
+    });
 });
 
 

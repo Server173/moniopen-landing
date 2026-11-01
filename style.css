@@ -345,3 +345,15 @@ body {
     opacity: 1;
     transform: translateX(-50%) translateY(0) scale(1);
 }
+
+/* WCAG 2.1 Keyboard Accessibility (:focus-visible) */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+tr[role="button"]:focus-visible,
+[tabindex="0"]:focus-visible {
+    outline: 2px solid #6366f1 !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.35) !important;
+}

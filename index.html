@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MoniOpen - Enterprise Observability</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate icon" href="/favicon.ico">
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -57,21 +59,21 @@
             </div>
         </div>
         
-        <nav class="flex-1 py-6 flex flex-col gap-2 px-3">
-            <a id="nav-overview" class="nav-item active cursor-pointer flex items-center gap-3 px-3 py-2.5 rounded-lg text-white bg-[rgba(255,255,255,0.05)]">
-                <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+        <nav class="flex-1 py-6 flex flex-col gap-2 px-3" aria-label="Main Navigation">
+            <a href="#overview" id="nav-overview" role="button" tabindex="0" aria-label="Overview Dashboard" class="nav-item active cursor-pointer flex items-center gap-3 px-3 py-2.5 rounded-lg text-white bg-[rgba(255,255,255,0.05)]">
+                <i data-lucide="layout-dashboard" class="w-5 h-5" aria-hidden="true"></i>
                 <span class="font-medium hidden md:block">Overview</span>
             </a>
-            <a id="nav-fleet" class="nav-item cursor-pointer flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-colors">
-                <i data-lucide="server" class="w-5 h-5"></i>
+            <a href="#fleet" id="nav-fleet" role="button" tabindex="0" aria-label="Fleet Management" class="nav-item cursor-pointer flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-colors">
+                <i data-lucide="server" class="w-5 h-5" aria-hidden="true"></i>
                 <span class="font-medium hidden md:block">Fleet</span>
             </a>
-            <a id="nav-logs" class="nav-item cursor-pointer flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-colors">
-                <i data-lucide="terminal-square" class="w-5 h-5"></i>
+            <a href="#logs" id="nav-logs" role="button" tabindex="0" aria-label="Live Logs" class="nav-item cursor-pointer flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-colors">
+                <i data-lucide="terminal-square" class="w-5 h-5" aria-hidden="true"></i>
                 <span class="font-medium hidden md:block">Logs</span>
             </a>
-            <a id="nav-docs" class="nav-item cursor-pointer flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-colors">
-                <i data-lucide="book-open" class="w-5 h-5"></i>
+            <a href="#docs" id="nav-docs" role="button" tabindex="0" aria-label="SDK Documentation" class="nav-item cursor-pointer flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-colors">
+                <i data-lucide="book-open" class="w-5 h-5" aria-hidden="true"></i>
                 <span class="font-medium hidden md:block">SDK Docs</span>
             </a>
         </nav>
@@ -199,7 +201,7 @@
                         <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.8)] animate-pulse"></span>
                     </div>
                     <div class="flex-1 w-full relative mt-2 -ml-2">
-                        <canvas id="latencyChart"></canvas>
+                        <canvas id="latencyChart" aria-label="Live Network Latency Chart" role="img"></canvas>
                     </div>
                 </div>
 
@@ -270,7 +272,7 @@
                         <button class="log-filter text-[10px] uppercase font-bold px-2 py-1 rounded hover:bg-gray-800 text-gray-400" data-level="INFO">INFO</button>
                         <button class="log-filter text-[10px] uppercase font-bold px-2 py-1 rounded hover:bg-orange-500/20 text-orange-400" data-level="WARN">WARN</button>
                         <button class="log-filter text-[10px] uppercase font-bold px-2 py-1 rounded hover:bg-red-500/20 text-red-400" data-level="ERROR">ERROR</button>
-                        <input type="text" id="log-search" placeholder="Search..." class="ml-auto bg-gray-900 border border-border rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-indigo-500 w-24 focus:w-32 transition-all">
+                        <input type="text" id="log-search" aria-label="Search logs" placeholder="Search..." class="ml-auto bg-gray-900 border border-border rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-indigo-500 w-24 focus:w-32 transition-all">
                     </div>
                     <div id="terminal-content" class="flex-1 p-3 overflow-y-auto font-mono text-[11px] leading-relaxed tracking-tight flex flex-col gap-1 pb-4">
                         <!-- Logs generated here -->
@@ -363,14 +365,14 @@ async function runWorker() {
     <div id="backdrop" class="fixed inset-0 bg-black/80 backdrop-blur-ultra z-40 hidden opacity-0 transition-opacity duration-300" onclick="closeAllOverlays()"></div>
 
     <!-- Bot Detail Drawer -->
-    <div id="bot-drawer" class="fixed top-0 right-0 h-full w-full md:w-[450px] bg-surface border-l border-border z-50 hidden flex flex-col shadow-2xl">
+    <div id="bot-drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-bot-name" class="fixed top-0 right-0 h-full w-full md:w-[450px] bg-surface border-l border-border z-50 hidden flex flex-col shadow-2xl">
         <div class="p-6 border-b border-border flex items-center justify-between">
             <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                <i data-lucide="box" class="w-5 h-5 text-indigo-500"></i>
+                <i data-lucide="box" class="w-5 h-5 text-indigo-500" aria-hidden="true"></i>
                 <span id="drawer-bot-name">Bot Details</span>
             </h3>
-            <button onclick="closeAllOverlays()" class="text-gray-400 hover:text-white transition-colors">
-                <i data-lucide="x" class="w-6 h-6"></i>
+            <button type="button" aria-label="Close bot details" onclick="closeAllOverlays()" class="text-gray-400 hover:text-white transition-colors">
+                <i data-lucide="x" class="w-6 h-6" aria-hidden="true"></i>
             </button>
         </div>
         <div class="p-6 flex-1 overflow-y-auto space-y-6">
@@ -409,31 +411,31 @@ async function runWorker() {
             </div>
         </div>
         <div class="p-6 border-t border-border bg-slate-900/30 flex gap-3">
-            <button class="flex-1 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/30 rounded-lg text-sm font-medium transition-colors">
+            <button type="button" class="flex-1 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/30 rounded-lg text-sm font-medium transition-colors">
                 Pause Bot
             </button>
-            <button class="flex-1 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-lg text-sm font-medium transition-colors">
+            <button type="button" class="flex-1 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-lg text-sm font-medium transition-colors">
                 Restart Service
             </button>
         </div>
     </div>
 
     <!-- Register Bot Modal -->
-    <div id="register-modal" class="fixed top-1/2 left-1/2  w-[90%] max-w-md glass-card border border-border rounded-[2rem] shadow-2xl border-white/10 z-50 hidden opacity-0 transition-opacity duration-300 flex-col overflow-hidden">
+    <div id="register-modal" role="dialog" aria-modal="true" aria-labelledby="register-modal-title" class="fixed top-1/2 left-1/2  w-[90%] max-w-md glass-card border border-border rounded-[2rem] shadow-2xl border-white/10 z-50 hidden opacity-0 transition-opacity duration-300 flex-col overflow-hidden">
         <div class="p-5 border-b border-border flex items-center justify-between bg-slate-900/50">
-            <h3 class="text-lg font-bold text-white">Register New Worker</h3>
-            <button onclick="closeAllOverlays()" class="text-gray-400 hover:text-white">
-                <i data-lucide="x" class="w-5 h-5"></i>
+            <h3 id="register-modal-title" class="text-lg font-bold text-white">Register New Worker</h3>
+            <button type="button" aria-label="Close registration modal" onclick="closeAllOverlays()" class="text-gray-400 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5" aria-hidden="true"></i>
             </button>
         </div>
         <div class="p-6 space-y-4">
             <div id="register-form" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-1">Bot Name / ID</label>
-                    <input type="text" id="new-bot-name" class="w-full bg-[#0a0a0a] border border-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 transition-colors font-mono text-sm" placeholder="e.g. payment-worker-02">
+                    <label for="new-bot-name" class="block text-sm font-medium text-gray-400 mb-1">Bot Name / ID</label>
+                    <input type="text" id="new-bot-name" class="w-full bg-[#0a0a0a] border border-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 transition-colors font-mono text-sm" placeholder="e.g. payment-worker-02" required>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-1">Runtime Engine</label>
+                    <label for="new-bot-lang" class="block text-sm font-medium text-gray-400 mb-1">Runtime Engine</label>
                     <select id="new-bot-lang" class="w-full bg-[#0a0a0a] border border-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 appearance-none">
                         <option value="Python 3.12">Python</option>
                         <option value="Node.js 22 LTS">Node.js</option>
@@ -450,14 +452,20 @@ async function runWorker() {
                         <button type="button" class="interval-btn border-border text-gray-400 hover:border-gray-500 border rounded-lg py-2 text-xs font-medium">60s</button>
                     </div>
                 </div>
-                <button onclick="generateBot()" class="w-full mt-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full py-3 font-medium transition-colors shadow-[0_0_15px_rgba(99,102,241,0.4)]">
+                <div class="pt-1">
+                    <label for="consent-checkbox" class="flex items-start gap-2.5 cursor-pointer text-xs text-gray-400 leading-relaxed">
+                        <input type="checkbox" id="consent-checkbox" required class="mt-0.5 w-4 h-4 rounded border-border bg-[#0a0a0a] text-indigo-600 focus:ring-indigo-500">
+                        <span>I give my express written consent to receive operational alerts, telemetry notifications, and communications, and I accept the <a href="#privacy" onclick="event.preventDefault();" class="text-indigo-400 underline">Privacy Policy</a> and <a href="#terms" onclick="event.preventDefault();" class="text-indigo-400 underline">Terms of Service</a> (TCPA / GDPR).</span>
+                    </label>
+                </div>
+                <button type="button" onclick="generateBot()" class="w-full mt-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full py-3 font-medium transition-colors shadow-[0_0_15px_rgba(99,102,241,0.4)]">
                     Generate Connection
                 </button>
             </div>
             
             <div id="register-success" class="hidden flex-col items-center text-center space-y-4 py-2">
                 <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center mb-2">
-                    <i data-lucide="check" class="w-6 h-6"></i>
+                    <i data-lucide="check" class="w-6 h-6" aria-hidden="true"></i>
                 </div>
                 <div>
                     <h4 class="text-white font-bold text-lg">Bot Registered!</h4>
@@ -465,11 +473,11 @@ async function runWorker() {
                 </div>
                 <div class="w-full bg-[#0a0a0a] border border-border rounded-lg p-3 relative mt-2 group">
                     <code id="generated-api-key" class="text-emerald-400 font-mono text-sm break-all">mop_live_...</code>
-                    <button onclick="copyGeneratedKey()" class="absolute right-2 top-2 p-1.5 bg-surface border border-border rounded text-gray-400 hover:text-white opacity-0 group-hover:opacity-100 transition-all">
-                        <i data-lucide="copy" class="w-4 h-4"></i>
+                    <button type="button" aria-label="Copy generated API key" onclick="copyGeneratedKey()" class="absolute right-2 top-2 p-1.5 bg-surface border border-border rounded text-gray-400 hover:text-white opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all">
+                        <i data-lucide="copy" class="w-4 h-4" aria-hidden="true"></i>
                     </button>
                 </div>
-                <button onclick="closeAllOverlays()" class="w-full bg-surface border border-border hover:bg-gray-800 text-white rounded-lg py-2.5 font-medium transition-colors mt-2">
+                <button type="button" onclick="closeAllOverlays()" class="w-full bg-surface border border-border hover:bg-gray-800 text-white rounded-lg py-2.5 font-medium transition-colors mt-2">
                     Done
                 </button>
             </div>
@@ -477,13 +485,13 @@ async function runWorker() {
     </div>
 
     <!-- Claude AI Diagnostic Modal -->
-    <div id="claude-modal" class="fixed top-1/2 left-1/2  w-[95%] max-w-2xl glass-card border border-indigo-500/30 rounded-[2rem] shadow-[0_0_80px_rgba(99,102,241,0.2)] border-white/10 z-50 hidden opacity-0 transition-opacity duration-300 flex-col overflow-hidden">
+    <div id="claude-modal" role="dialog" aria-modal="true" aria-labelledby="claude-modal-title" class="fixed top-1/2 left-1/2  w-[95%] max-w-2xl glass-card border border-indigo-500/30 rounded-[2rem] shadow-[0_0_80px_rgba(99,102,241,0.2)] border-white/10 z-50 hidden opacity-0 transition-opacity duration-300 flex-col overflow-hidden">
         <div class="p-4 border-b border-border flex items-center justify-between bg-gradient-to-r from-indigo-900/40 to-surface">
             <div class="flex items-center gap-3">
                 <div class="bg-[#D4A373]/20 p-1.5 rounded-lg border border-[#D4A373]/30">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#D4A373"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+                    <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="#D4A373"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
                 </div>
-                <h3 class="text-lg font-bold text-white">Claude 3.5 Sonnet Diagnostics</h3>
+                <h3 id="claude-modal-title" class="text-lg font-bold text-white">Claude 3.5 Sonnet Diagnostics</h3>
             </div>
             <span id="claude-status-badge" class="px-2 py-1 text-xs font-mono rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
                 <span class="animate-pulse">Analyzing...</span>
