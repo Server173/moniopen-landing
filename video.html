@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 YouTube Short - Sagitario B2</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #0a0a0c;
+            color: #e8e8ee;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .header h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ef4444;
+            margin-bottom: 6px;
+        }
+        .header p {
+            font-size: 0.85rem;
+            color: #a8a8b3;
+        }
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 380px;
+            aspect-ratio: 9 / 16;
+            background: #141417;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(239, 68, 68, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .actions {
+            margin-top: 16px;
+            display: flex;
+            gap: 12px;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 9999px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .btn-download {
+            background: #ef4444;
+            color: #fff;
+        }
+        .btn-download:hover {
+            background: #dc2626;
+            transform: scale(1.03);
+        }
+        .btn-direct {
+            background: rgba(255, 255, 255, 0.08);
+            color: #e8e8ee;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .btn-direct:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌌 Sagitario B2 • Nube de Alcohol</h1>
+        <p>Short automatizado con IA & FFmpeg en el servidor</p>
+    </div>
+
+    <div class="video-container">
+        <video controls autoplay playsinline loop>
+            <source src="/short_espacio.mp4" type="video/mp4">
+            Tu navegador no soporta reproducción de video HTML5.
+        </video>
+    </div>
+
+    <div class="actions">
+        <a href="/short_espacio.mp4" download="short_espacio.mp4" class="btn btn-download">
+            ⬇️ Descargar MP4 (7 MB)
+        </a>
+        <a href="/" class="btn btn-direct">
+            ← Volver a RBX Tracker
+        </a>
+    </div>
+</body>
+</html>
