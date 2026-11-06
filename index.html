@@ -48,6 +48,10 @@
 </head>
 <body class="bg-base text-gray-200 font-sans antialiased h-screen flex overflow-hidden selection:bg-indigo-500/30">
 
+    <!-- Ambient Aurora & Interactive Telemetry Canvas -->
+    <div class="ambient-glow" aria-hidden="true"></div>
+    <canvas id="telemetry-mesh-canvas" class="fixed inset-0 pointer-events-none z-0" aria-hidden="true"></canvas>
+
     <!-- Sidebar -->
     <aside class="w-20 md:w-64 border-r border-border bg-surface backdrop-blur-xl flex flex-col h-full z-20">
         <div class="h-16 flex items-center justify-center md:justify-start md:px-6 border-b border-border">
@@ -80,7 +84,7 @@
         
         <div class="p-4 border-t border-border">
             <div class="flex items-center gap-3">
-                <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse-fast shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
+                <div class="live-beacon w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.9)]"></div>
                 <span class="text-xs font-medium text-gray-400 hidden md:block">System Operational</span>
             </div>
         </div>
@@ -572,6 +576,7 @@ async function runWorker() {
     </div>
 
     <!-- Logic -->
+    <script src="canvas-fx.js"></script>
     <script src="app.js"></script>
     <script>
         // Initialize Lucide icons

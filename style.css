@@ -357,3 +357,59 @@ tr[role="button"]:focus-visible,
     outline-offset: 2px !important;
     box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.35) !important;
 }
+
+/* ============================================================
+   $10K LUXURY TOUCHES (LINEAR / VERCEL INSPIRED)
+   ============================================================ */
+
+/* Ambient Ethereal Glow */
+.ambient-glow {
+    position: fixed;
+    top: -20%;
+    left: 20%;
+    width: 60vw;
+    height: 50vh;
+    background: radial-gradient(ellipse at center, rgba(99, 102, 241, 0.15) 0%, rgba(6, 182, 212, 0.08) 40%, transparent 70%);
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.85;
+    animation: ambientFloat 18s ease-in-out infinite alternate;
+}
+
+@keyframes ambientFloat {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-5%, 8%) scale(1.08); }
+    100% { transform: translate(6%, -4%) scale(0.95); }
+}
+
+/* Pulsing Ripple Dot */
+.live-beacon {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.live-beacon::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 9999px;
+    background: inherit;
+    opacity: 0.6;
+    animation: beaconWave 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+@keyframes beaconWave {
+    0% { transform: scale(0.8); opacity: 0.8; }
+    100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* Enhanced 3D Glass Surface */
+.glass-card {
+    will-change: transform, box-shadow;
+    transform-style: preserve-3d;
+}
+
+.glass-card:hover {
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5), 0 0 25px rgba(99, 102, 241, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
