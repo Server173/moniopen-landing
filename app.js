@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     startMetricsSimulation();
     startLogStream();
     setupSdkTabs();
+    setupFleetSearch();
 });
 
 function escapeHTML(str) {
@@ -68,42 +69,77 @@ async function fetchRealSystemData() {
 }
 
 function startMetricsSimulation() {
-    // Latency oscilation
+    // Latency oscillation & Host Telemetry
     setInterval(async () => {
         if (document.hidden) return;
         let base = crashActive ? 150 : 38;
         let variance = crashActive ? 50 : 14;
         
-        // Try fetching real system metrics to influence latency
+        // Fetch real system metrics to update Host card and influence latency
         const sysData = await fetchRealSystemData();
         if (sysData && sysData.cpu) {
-            // Add CPU load factor to latency
             base += (parseFloat(sysData.cpu.load1m) * 10);
         }
         
+        // Update Live Host Hardware Card (Real telemetry from /api/v1/system)
+        if (sysData && sysData.memory && sysData.cpu) {
+            const totalGB = (sysData.memory.total / (1024 ** 3)).toFixed(1);
+            const usedGB = (sysData.memory.used / (1024 ** 3)).toFixed(1);
+            const percent = parseFloat(sysData.memory.usagePercent).toFixed(0);
+            
+            const elRam = document.getElementById('host-ram-usage');
+            if (elRam) elRam.textContent = `${usedGB} / ${totalGB} GB used`;
+            
+            const elRamPercent = document.getElementById('host-ram-percent');
+            if (elRamPercent) elRamPercent.textContent = `${percent}%`;
+            
+            const elRamBar = document.getElementById('host-ram-bar');
+            if (elRamBar) elRamBar.style.width = `${percent}%`;
+
+            const load1 = parseFloat(sysData.cpu.load1m).toFixed(2);
+            const elCpu = document.getElementById('host-cpu-load');
+            if (elCpu) elCpu.textContent = load1;
+            
+            const elCpuBar = document.getElementById('host-cpu-bar');
+            if (elCpuBar) elCpuBar.style.width = `${Math.min(100, parseFloat(load1) * 50)}%`;
+
+            const elUptime = document.getElementById('host-uptime');
+            if (elUptime && sysData.uptime) {
+                const hours = Math.floor(sysData.uptime / 3600);
+                const mins = Math.floor((sysData.uptime % 3600) / 60);
+                elUptime.textContent = `${hours}h ${mins}m`;
+            }
+        }
         
         let currentLatency = Math.floor(base + Math.random() * variance);
         
         const latencyEl = document.getElementById('avg-latency');
-        latencyEl.innerHTML = `${currentLatency}<span class="text-lg font-sans text-gray-500">ms</span>`;
-        
-        // Add pulse animation
-        latencyEl.classList.remove('value-update');
-        void latencyEl.offsetWidth; // trigger reflow
-        latencyEl.classList.add('value-update');
+        if (latencyEl) {
+            latencyEl.innerHTML = `${currentLatency}<span class="text-xl text-gray-500 font-sans font-normal">ms</span>`;
+            latencyEl.classList.remove('value-flash');
+            void latencyEl.offsetWidth;
+            latencyEl.classList.add('value-flash');
+        }
 
-        document.getElementById('latency-bar').style.width = `${Math.min(100, (currentLatency / 100) * 100)}%`;
-        
-        if(crashActive) document.getElementById('latency-bar').classList.replace('bg-indigo-500', 'bg-red-500');
-        else document.getElementById('latency-bar').classList.replace('bg-red-500', 'bg-indigo-500');
+        const barEl = document.getElementById('latency-bar');
+        if (barEl) {
+            barEl.style.width = `${Math.min(100, (currentLatency / 100) * 100)}%`;
+            if(crashActive) {
+                barEl.className = 'h-full bg-red-500 w-full rounded-full transition-all duration-300';
+            } else {
+                barEl.className = 'h-full bg-gradient-to-r from-indigo-500 to-cyan-400 rounded-full transition-all duration-300';
+            }
+        }
 
         // Update Chart
-        latencyData.push(currentLatency);
-        latencyData.shift();
-        chartInstance.update();
+        if (chartInstance) {
+            latencyData.push(currentLatency);
+            latencyData.shift();
+            chartInstance.update();
+        }
     }, 2500);
 
-    // Event Ingestion (reuses cached lastSysData to prevent duplicate network calls)
+    // Event Ingestion
     setInterval(() => {
         if (document.hidden) return;
         let events = Math.floor(1300 + Math.random() * 200);
@@ -113,18 +149,23 @@ function startMetricsSimulation() {
             events = Math.floor(events * (1 + (usage/100)));
         }
 
-        document.getElementById('event-rate').innerText = events.toLocaleString();
+        const evRate = document.getElementById('event-rate');
+        if (evRate) evRate.innerText = events.toLocaleString();
         totalEvents += events;
-        document.getElementById('total-events').innerText = totalEvents.toLocaleString();
+        const totEv = document.getElementById('total-events');
+        if (totEv) totEv.innerText = totalEvents.toLocaleString();
     }, 1000);
 }
 
 function initChart() {
-    const ctx = document.getElementById('latencyChart').getContext('2d');
+    const canvas = document.getElementById('latencyChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
     
-    // Gradient
-    let gradient = ctx.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, 'rgba(99, 102, 241, 0.5)'); // Indigo 500
+    // Luxury Gradient
+    let gradient = ctx.createLinearGradient(0, 0, 0, 150);
+    gradient.addColorStop(0, 'rgba(99, 102, 241, 0.45)');
+    gradient.addColorStop(0.5, 'rgba(6, 182, 212, 0.12)');
     gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
 
     chartInstance = new Chart(ctx, {
@@ -134,31 +175,48 @@ function initChart() {
             datasets: [{
                 label: 'Latency (ms)',
                 data: latencyData,
-                borderColor: '#6366f1',
+                borderColor: '#818cf8',
                 backgroundColor: gradient,
-                borderWidth: 2,
+                borderWidth: 2.2,
                 pointRadius: 0,
-                pointHoverRadius: 4,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: '#ffffff',
+                pointHoverBorderColor: '#6366f1',
+                pointHoverBorderWidth: 2,
                 fill: true,
-                tension: 0.4
+                tension: 0.42
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             animation: {
-                duration: 500,
+                duration: 400,
                 easing: 'linear'
             },
-            plugins: { legend: { display: false } },
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(7, 8, 12, 0.95)',
+                    titleColor: '#fff',
+                    bodyColor: '#a5b4fc',
+                    borderColor: 'rgba(255, 255, 255, 0.12)',
+                    borderWidth: 1,
+                    padding: 8,
+                    displayColors: false,
+                    callbacks: {
+                        label: (ctx) => `RTT: ${ctx.parsed.y} ms`
+                    }
+                }
+            },
             scales: {
                 x: { display: false },
                 y: {
                     display: true,
-                    grid: { color: 'rgba(30, 41, 59, 0.5)' },
-                    ticks: { color: '#64748b', maxTicksLimit: 5 },
+                    grid: { color: 'rgba(255, 255, 255, 0.04)' },
+                    ticks: { color: '#64748b', font: { family: 'JetBrains Mono', size: 10 }, maxTicksLimit: 4 },
                     min: 0,
-                    max: 200
+                    max: 180
                 }
             }
         }
@@ -180,21 +238,44 @@ function initBots() {
     }
 }
 
-function renderFleetTable() {
+function setupFleetSearch() {
+    const input = document.getElementById('fleet-search');
+    if (input) {
+        input.addEventListener('input', (e) => {
+            renderFleetTable(e.target.value);
+        });
+    }
+}
+
+function pingWorker(botId) {
+    const rtt = Math.floor(12 + Math.random() * 22);
+    showToast(`Worker Ping: ${botId}`, `Latency: ${rtt}ms • Zero packet drop`, 'success');
+}
+
+function renderFleetTable(filterText = '') {
     const tbody = document.getElementById('fleet-table-body');
+    if (!tbody) return;
     tbody.innerHTML = '';
     
     let activeCount = 0;
+    const q = (filterText || '').trim().toLowerCase();
 
-    if (bots.length === 0) {
-        document.getElementById('cluster-count').innerText = `0/0 Active`;
+    const filteredBots = bots.filter(b => {
+        if (!q) return true;
+        return (b.id && b.id.toLowerCase().includes(q)) ||
+               (b.runtime && b.runtime.toLowerCase().includes(q)) ||
+               (b.status && b.status.toLowerCase().includes(q));
+    });
+
+    if (filteredBots.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="4" class="py-16 text-center text-gray-500">
-                    <div class="flex flex-col items-center justify-center space-y-3">
-                        <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-2"><i data-lucide="ghost" class="w-8 h-8 text-gray-500" aria-hidden="true"></i></div>
-                        <p class="text-sm">No bots registered in the fleet yet.</p>
-                        <button type="button" onclick="openNewBotModal()" class="mt-2 px-4 py-2 mt-4 bg-white/5 hover:bg-white/10 rounded-full text-xs font-semibold text-white transition-colors">Register your first bot</button>
+                <td colspan="5" class="py-16 text-center text-gray-500">
+                    <div class="flex flex-col items-center justify-center space-y-2">
+                        <div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-1">
+                            <i data-lucide="search" class="w-5 h-5 text-gray-500" aria-hidden="true"></i>
+                        </div>
+                        <p class="text-xs font-mono">No workers match the search criteria.</p>
                     </div>
                 </td>
             </tr>
@@ -203,18 +284,22 @@ function renderFleetTable() {
         return;
     }
 
-    
-    bots.forEach(bot => {
-        if(bot.status !== 'Offline' && bot.status !== 'CRITICAL') activeCount++;
+    filteredBots.forEach((bot, idx) => {
+        if (bot.status !== 'Offline' && bot.status !== 'CRITICAL') activeCount++;
         
-        let statusClass = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
-        let statusDot = 'bg-emerald-500';
-        if(bot.status === 'Warning') { statusClass = 'bg-orange-500/20 text-orange-400 border-orange-500/30'; statusDot = 'bg-orange-500'; }
-        if(bot.status === 'CRITICAL') { statusClass = 'bg-red-500/20 text-red-400 border-red-500/30 font-bold animate-pulse'; statusDot = 'bg-red-500 animate-ping'; }
+        let statusClass = 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+        let statusDot = 'bg-emerald-400';
+        if (bot.status === 'Warning') { 
+            statusClass = 'bg-amber-500/10 text-amber-400 border-amber-500/20'; 
+            statusDot = 'bg-amber-400'; 
+        }
+        if (bot.status === 'CRITICAL') { 
+            statusClass = 'bg-red-500/10 text-red-400 border-red-500/30 font-bold'; 
+            statusDot = 'bg-red-400 animate-ping'; 
+        }
 
         const tr = document.createElement('tr');
-        tr.className = 'hover:bg-white/5 cursor-pointer spring-transition group fleet-row-enter';
-        tr.style.animationDelay = `${activeCount * 0.08}s`;
+        tr.className = 'fleet-row cursor-pointer group';
         tr.setAttribute('tabindex', '0');
         tr.setAttribute('role', 'button');
         tr.setAttribute('aria-label', `Inspect bot ${bot.id}, status ${bot.status}`);
@@ -227,34 +312,49 @@ function renderFleetTable() {
         };
         
         tr.innerHTML = `
-            <td class="px-5 py-4 border-b border-border">
+            <td class="px-5 py-3.5 border-b border-border">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-lg bg-surface border border-border flex items-center justify-center group-hover:border-indigo-500/50 transition-colors">
-                        <i data-lucide="cpu" class="w-4 h-4 text-gray-400 group-hover:text-indigo-400" aria-hidden="true"></i>
+                    <div class="w-8 h-8 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center group-hover:border-indigo-500/40 group-hover:bg-indigo-500/10 transition-all">
+                        <i data-lucide="cpu" class="w-4 h-4 text-gray-400 group-hover:text-indigo-400 transition-colors" aria-hidden="true"></i>
                     </div>
-                    <span class="font-medium text-gray-200">${escapeHTML(bot.id)}</span>
+                    <div>
+                        <span class="font-medium text-white text-xs block">${escapeHTML(bot.id)}</span>
+                        <span class="text-[10px] text-gray-500 font-mono">PID #${escapeHTML(bot.pid || '84920')}</span>
+                    </div>
                 </div>
             </td>
-            <td class="px-5 py-4 border-b border-border">
-                <span class="font-mono text-xs text-gray-400">${escapeHTML(bot.runtime)}</span>
+            <td class="px-5 py-3.5 border-b border-border">
+                <span class="font-mono text-xs text-gray-300 bg-black/40 px-2 py-1 rounded-md border border-white/5">${escapeHTML(bot.runtime)}</span>
             </td>
-            <td class="px-5 py-4 border-b border-border">
-                <div class="flex flex-col gap-1">
-                    <span class="text-xs font-mono text-gray-300">Lat: ${escapeHTML(bot.latency)}ms</span>
-                    <span class="text-xs font-mono text-gray-500">RAM: ${escapeHTML(bot.ram)}MB</span>
+            <td class="px-5 py-3.5 border-b border-border font-mono text-xs">
+                <div class="flex items-center gap-3">
+                    <span class="text-gray-300">${escapeHTML(bot.latency)}ms</span>
+                    <span class="text-gray-500">•</span>
+                    <span class="text-gray-400">${escapeHTML(bot.ram)}MB</span>
                 </div>
             </td>
-            <td class="px-5 py-4 border-b border-border">
-                <span class="px-3 py-1 rounded-full text-xs border flex items-center gap-2 w-max ${statusClass}">
-                    <span class="w-2 h-2 rounded-full ${statusDot}"></span>
-                    ${escapeHTML(bot.status)}
+            <td class="px-5 py-3.5 border-b border-border">
+                <span class="px-2.5 py-1 rounded-full text-[11px] font-mono border inline-flex items-center gap-1.5 ${statusClass}">
+                    <span class="w-1.5 h-1.5 rounded-full ${statusDot}"></span>
+                    <span>${escapeHTML(bot.status)}</span>
                 </span>
+            </td>
+            <td class="px-5 py-3.5 border-b border-border text-right" onclick="event.stopPropagation()">
+                <div class="flex items-center justify-end gap-1.5">
+                    <button type="button" onclick="pingWorker('${escapeHTML(bot.id)}')" class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white border border-white/10 text-[11px] font-mono transition-all">
+                        Ping
+                    </button>
+                    <button type="button" onclick="openBotDrawer('${escapeHTML(bot.id)}')" class="px-2.5 py-1 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/20 text-[11px] font-semibold transition-all">
+                        Details
+                    </button>
+                </div>
             </td>
         `;
         tbody.appendChild(tr);
     });
     
-    document.getElementById('cluster-count').innerText = `${activeCount}/${bots.length} Active`;
+    const countEl = document.getElementById('cluster-count');
+    if (countEl) countEl.innerHTML = `${activeCount}<span class="text-xl text-gray-500 font-sans font-normal">/${bots.length}</span>`;
     lucide.createIcons();
 }
 

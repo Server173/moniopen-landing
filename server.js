@@ -70,6 +70,7 @@ const ALLOWED_STATIC = {
     '/index.html': { file: 'index.html', type: 'text/html; charset=utf-8', cache: 'no-cache' },
     '/style.css': { file: 'style.css', type: 'text/css; charset=utf-8', cache: 'public, max-age=3600, stale-while-revalidate=86400' },
     '/app.js': { file: 'app.js', type: 'application/javascript; charset=utf-8', cache: 'public, max-age=3600, stale-while-revalidate=86400' },
+    '/canvas-fx.js': { file: 'canvas-fx.js', type: 'application/javascript; charset=utf-8', cache: 'public, max-age=3600, stale-while-revalidate=86400' },
     '/favicon.ico': { file: 'favicon.ico', type: 'image/x-icon', cache: 'public, max-age=604800, stale-while-revalidate=2592000' },
     '/favicon.svg': { file: 'favicon.svg', type: 'image/svg+xml', cache: 'public, max-age=604800, stale-while-revalidate=2592000' },
     '/favicon.png': { file: 'favicon.png', type: 'image/png', cache: 'public, max-age=604800, stale-while-revalidate=2592000' },
