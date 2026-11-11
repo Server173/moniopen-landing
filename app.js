@@ -37,79 +37,57 @@ function escapeHTML(str) {
 // --- MODULE A: Telemetry & Metrics ---
 let lastSysData = null;
 let isFetchingSysData = false;
-let sysFetchFailures = 0;
-const MAX_SYS_FETCH_RETRIES = 5;
+// Telemetría de Clúster Global Edge (Simulada y auto-contenida para proteger la privacidad del servidor)
+function getClusterTelemetry() {
+    const time = Date.now();
+    const baseRam = crashActive ? 74 : 38;
+    const ramWave = Math.sin(time / 15000) * 3 + (Math.random() * 1.5);
+    const percent = Math.min(96, Math.max(22, Math.round(baseRam + ramWave)));
+    const totalGB = 64.0;
+    const usedGB = ((percent / 100) * totalGB).toFixed(1);
 
-async function fetchRealSystemData() {
-    if (document.hidden || isFetchingSysData) return lastSysData;
-    if (sysFetchFailures >= MAX_SYS_FETCH_RETRIES) return lastSysData;
+    const baseLoad = crashActive ? 2.45 : 0.28;
+    const loadWave = (Math.sin(time / 9000) * 0.06) + (Math.random() * 0.03);
+    const load1 = Math.max(0.08, baseLoad + loadWave).toFixed(2);
 
-    isFetchingSysData = true;
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 4000);
-    try {
-        const res = await fetch('/api/v1/system', { signal: controller.signal });
-        clearTimeout(timeoutId);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        lastSysData = data;
-        sysFetchFailures = 0;
-        return data;
-    } catch (e) {
-        clearTimeout(timeoutId);
-        sysFetchFailures++;
-        if (sysFetchFailures >= MAX_SYS_FETCH_RETRIES) {
-            // Reset retry counter after 30s cooldown to avoid infinite rapid retries
-            setTimeout(() => { sysFetchFailures = 0; }, 30000);
-        }
-        return lastSysData;
-    } finally {
-        isFetchingSysData = false;
-    }
+    return {
+        percent,
+        usedGB,
+        totalGB,
+        load1,
+        uptime: '99.99%'
+    };
 }
 
 function startMetricsSimulation() {
-    // Latency oscillation & Host Telemetry
-    setInterval(async () => {
+    // Latency oscillation & Cluster Edge Telemetry
+    setInterval(() => {
         if (document.hidden) return;
         let base = crashActive ? 150 : 38;
         let variance = crashActive ? 50 : 14;
         
-        // Fetch real system metrics to update Host card and influence latency
-        const sysData = await fetchRealSystemData();
-        if (sysData && sysData.cpu) {
-            base += (parseFloat(sysData.cpu.load1m) * 10);
-        }
+        // Obtener telemetría de clúster aislada sin exponer hardware físico ni hacer fetchs externos
+        const clusterData = getClusterTelemetry();
+        base += (parseFloat(clusterData.load1) * 8);
         
-        // Update Live Host Hardware Card (Real telemetry from /api/v1/system)
-        if (sysData && sysData.memory && sysData.cpu) {
-            const totalGB = (sysData.memory.total / (1024 ** 3)).toFixed(1);
-            const usedGB = (sysData.memory.used / (1024 ** 3)).toFixed(1);
-            const percent = parseFloat(sysData.memory.usagePercent).toFixed(0);
-            
-            const elRam = document.getElementById('host-ram-usage');
-            if (elRam) elRam.textContent = `${usedGB} / ${totalGB} GB used`;
-            
-            const elRamPercent = document.getElementById('host-ram-percent');
-            if (elRamPercent) elRamPercent.textContent = `${percent}%`;
-            
-            const elRamBar = document.getElementById('host-ram-bar');
-            if (elRamBar) elRamBar.style.width = `${percent}%`;
+        // Actualizar tarjeta de telemetría de clúster
+        const elRam = document.getElementById('host-ram-usage');
+        if (elRam) elRam.textContent = `${clusterData.usedGB} / ${clusterData.totalGB} GB allocated`;
+        
+        const elRamPercent = document.getElementById('host-ram-percent');
+        if (elRamPercent) elRamPercent.textContent = `${clusterData.percent}%`;
+        
+        const elRamBar = document.getElementById('host-ram-bar');
+        if (elRamBar) elRamBar.style.width = `${clusterData.percent}%`;
 
-            const load1 = parseFloat(sysData.cpu.load1m).toFixed(2);
-            const elCpu = document.getElementById('host-cpu-load');
-            if (elCpu) elCpu.textContent = load1;
-            
-            const elCpuBar = document.getElementById('host-cpu-bar');
-            if (elCpuBar) elCpuBar.style.width = `${Math.min(100, parseFloat(load1) * 50)}%`;
+        const elCpu = document.getElementById('host-cpu-load');
+        if (elCpu) elCpu.textContent = clusterData.load1;
+        
+        const elCpuBar = document.getElementById('host-cpu-bar');
+        if (elCpuBar) elCpuBar.style.width = `${Math.min(100, parseFloat(clusterData.load1) * 45)}%`;
 
-            const elUptime = document.getElementById('host-uptime');
-            if (elUptime && sysData.uptime) {
-                const hours = Math.floor(sysData.uptime / 3600);
-                const mins = Math.floor((sysData.uptime % 3600) / 60);
-                elUptime.textContent = `${hours}h ${mins}m`;
-            }
-        }
+        const elUptime = document.getElementById('host-uptime');
+        if (elUptime) elUptime.textContent = clusterData.uptime;
         
         let currentLatency = Math.floor(base + Math.random() * variance);
         
