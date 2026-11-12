@@ -43,9 +43,17 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css?v=4.3.1">
+    <link rel="stylesheet" href="style.css?v=4.4.0">
 </head>
 <body class="bg-base text-gray-200 font-sans antialiased h-screen flex overflow-hidden selection:bg-indigo-500/30">
+
+    <!-- SVG Optic Refraction Filter for Liquid Glass Edge Distortion -->
+    <svg class="sr-only" aria-hidden="true" width="0" height="0">
+        <filter id="liquid-glass-distortion" x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="3.5" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+    </svg>
 
     <!-- Ambient Aurora & Interactive Telemetry Canvas -->
     <div class="ambient-glow" aria-hidden="true"></div>
@@ -98,22 +106,43 @@
     <!-- Main Content Area -->
     <main class="flex-1 flex flex-col h-full overflow-y-auto relative scroll-smooth bg-transparent p-3 md:p-6">
         
-        <!-- Top App Header -->
-        <header class="h-16 border-b border-border bg-surface backdrop-blur-2xl sticky top-0 z-10 px-6 flex items-center justify-between rounded-2xl mb-6 shadow-lg">
-            <div class="flex items-center gap-3">
-                <span class="text-xs font-mono px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">PRODUCTION</span>
+        <!-- Top App Header: Apple iOS 26 Liquid Glass Floating Capsule -->
+        <header class="liquid-glass-nav sticky top-2 sm:top-3 z-30 mb-6 flex items-center justify-between">
+            <!-- Left: Status Capsule & Dynamic Title -->
+            <div class="flex items-center gap-3 sm:gap-4 relative z-10">
+                <div class="liquid-glass-pill flex items-center gap-2 px-3 py-1.5 text-[11px] font-mono font-medium text-indigo-300 select-none">
+                    <div class="optic-beacon-container" aria-hidden="true">
+                        <span class="optic-beacon-core"></span>
+                        <span class="optic-beacon-ring"></span>
+                    </div>
+                    <span>PRODUCTION</span>
+                </div>
                 <h1 class="text-sm md:text-base font-semibold text-white tracking-tight flex items-center gap-2">
                     <span>Cluster Telemetry</span>
-                    <span class="text-gray-500 text-xs hidden sm:inline">• Latency Optimized</span>
+                    <span class="text-gray-400/70 text-xs hidden sm:inline font-normal">• Optic Liquid Glass</span>
                 </h1>
             </div>
             
-            <div class="flex items-center gap-3">
-                <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-gray-300">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span>Sub-40ms Edge</span>
+            <!-- Center: Dynamic Island Quick Telemetry Capsule (md/lg screens) -->
+            <div class="hidden md:flex items-center gap-2.5 px-4 py-1.5 rounded-full liquid-glass-pill text-xs text-gray-300 relative z-10 select-none">
+                <span class="flex items-center gap-1.5 text-emerald-400 font-mono font-semibold">
+                    <i data-lucide="activity" class="w-3.5 h-3.5"></i>
+                    <span id="nav-live-sla">99.98% SLA</span>
+                </span>
+                <span class="text-gray-600">•</span>
+                <span class="flex items-center gap-1.5 text-cyan-300 font-mono">
+                    <i data-lucide="cpu" class="w-3.5 h-3.5 text-cyan-400"></i>
+                    <span id="nav-live-load">0.28 Load</span>
+                </span>
+            </div>
+
+            <!-- Right: Interactive Controls & Prominent Glass CTA -->
+            <div class="flex items-center gap-2.5 sm:gap-3 relative z-10">
+                <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full liquid-glass-pill text-xs text-gray-300 font-mono select-none" data-tooltip="Edge WebSocket Latency">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]"></span>
+                    <span id="nav-edge-latency">38ms Edge</span>
                 </div>
-                <button onclick="openNewBotModal()" class="btn-glow-primary flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all">
+                <button onclick="openNewBotModal()" class="btn-liquid-glass" aria-label="Register New Bot">
                     <i data-lucide="plus" class="w-3.5 h-3.5"></i>
                     <span>Register Bot</span>
                 </button>

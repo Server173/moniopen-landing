@@ -88,6 +88,14 @@ function startMetricsSimulation() {
 
         const elUptime = document.getElementById('host-uptime');
         if (elUptime) elUptime.textContent = clusterData.uptime;
+
+        // Update Liquid Glass Navbar Dynamic Island Metrics
+        const elNavLatency = document.getElementById('nav-edge-latency');
+        if (elNavLatency) elNavLatency.textContent = `${currentLatency}ms Edge`;
+        const elNavLoad = document.getElementById('nav-live-load');
+        if (elNavLoad) elNavLoad.textContent = `${clusterData.load1} Load`;
+        const elNavSla = document.getElementById('nav-live-sla');
+        if (elNavSla) elNavSla.textContent = `${clusterData.uptime} SLA`;
         
         let currentLatency = Math.floor(base + Math.random() * variance);
         
@@ -736,7 +744,7 @@ function showToast(title, message, type = 'success') {
     }, 4000);
 }
 
-// Linear-style Glow Effect Tracking
+// Linear-style Glow & Apple Liquid Glass Specular Tracking
 document.addEventListener('mousemove', (e) => {
     document.querySelectorAll('.glass-card').forEach(card => {
         const rect = card.getBoundingClientRect();
@@ -745,6 +753,38 @@ document.addEventListener('mousemove', (e) => {
         card.style.setProperty('--mouse-x', `${x}px`);
         card.style.setProperty('--mouse-y', `${y}px`);
     });
+
+    const liquidNav = document.querySelector('.liquid-glass-nav');
+    if (liquidNav) {
+        const rect = liquidNav.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const pctX = Math.max(0, Math.min(100, (x / rect.width) * 100));
+        const pctY = Math.max(0, Math.min(100, (y / rect.height) * 100));
+        liquidNav.style.setProperty('--nav-mouse-x', `${x}px`);
+        liquidNav.style.setProperty('--nav-mouse-y', `${y}px`);
+        liquidNav.style.setProperty('--nav-glare-x', `${pctX}%`);
+        liquidNav.style.setProperty('--nav-glare-y', `${pctY}%`);
+    }
+});
+
+// Dynamic Island Scroll Morphing for Liquid Glass Navbar
+document.addEventListener('DOMContentLoaded', () => {
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+    }
+
+    const scrollMain = document.querySelector('main');
+    const nav = document.querySelector('.liquid-glass-nav');
+    if (scrollMain && nav) {
+        scrollMain.addEventListener('scroll', () => {
+            if (scrollMain.scrollTop > 20) {
+                nav.classList.add('nav-scrolled');
+            } else {
+                nav.classList.remove('nav-scrolled');
+            }
+        }, { passive: true });
+    }
 });
 
 // SPA Navigation Logic
