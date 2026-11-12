@@ -384,7 +384,7 @@ function openNewBotModal() {
     
     document.getElementById('new-bot-name').value = '';
     const consentBox = document.getElementById('consent-checkbox');
-    if (consentBox) consentBox.checked = false;
+    if (consentBox) consentBox.checked = true;
     
     setTimeout(() => {
         document.getElementById('backdrop').classList.remove('opacity-0');
@@ -408,11 +408,11 @@ document.querySelectorAll('.interval-btn').forEach(btn => {
 
 async function generateBot() {
     const nameInput = document.getElementById('new-bot-name').value.trim();
-    if(!nameInput) return showToast('Error', 'Please enter a bot name', 'error');
+    if(!nameInput) return showToast('Error', 'Please enter a worker name / ID', 'error');
     
     const consentBox = document.getElementById('consent-checkbox');
-    if (!consentBox || !consentBox.checked) {
-        return showToast('Consent Required', 'Please accept the Privacy Policy and Terms (TCPA/GDPR) to continue', 'error');
+    if (consentBox && !consentBox.checked) {
+        return showToast('Consent Required', 'Please accept the Privacy Policy and Terms to generate connection', 'error');
     }
 
     const lang = document.getElementById('new-bot-lang').value;
