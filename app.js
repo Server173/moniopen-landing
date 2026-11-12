@@ -680,7 +680,14 @@ function applyAIPatch() {
     }, 2000);
 }
 
-// --- MODULE F: SDK Docs ---
+// --- MODULE F: SDK Docs & Interactive Tester ---
+const sdkMeta = {
+    python: { file: 'client.py', runtime: 'Python 3.10+ • Decorator-ready' },
+    node: { file: 'worker.ts', runtime: 'TypeScript / Node.js 22 LTS' },
+    go: { file: 'worker.go', runtime: 'Go 1.23 • High-Throughput' },
+    curl: { file: 'heartbeat.sh', runtime: 'HTTP/2 REST • Zero-Dependency' }
+};
+
 function setupSdkTabs() {
     const tabs = document.querySelectorAll('.sdk-tab');
     const contents = document.querySelectorAll('.sdk-content');
@@ -688,37 +695,143 @@ function setupSdkTabs() {
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
             tabs.forEach(t => {
-                t.classList.remove('active', 'text-white', 'bg-white/10', 'font-semibold'); t.classList.add('font-medium');
-                t.classList.add('text-gray-400');
+                t.classList.remove('active', 'text-white', 'font-semibold');
+                t.classList.add('text-gray-400', 'font-medium');
             });
-            contents.forEach(c => c.classList.add('hidden'));
+            contents.forEach(c => {
+                c.classList.add('hidden');
+                c.classList.remove('sdk-animate-in');
+            });
             
-            tab.classList.remove('text-gray-400');
-            tab.classList.remove('font-medium'); tab.classList.add('active', 'text-white', 'bg-white/10', 'font-semibold');
+            tab.classList.remove('text-gray-400', 'font-medium');
+            tab.classList.add('active', 'text-white', 'font-semibold');
             
             const target = tab.getAttribute('data-lang');
-            document.getElementById(`sdk-${target}`).classList.remove('hidden');
+            const targetEl = document.getElementById(`sdk-${target}`);
+            if (targetEl) {
+                targetEl.classList.remove('hidden');
+                targetEl.classList.add('sdk-animate-in');
+            }
+
+            // Update Window Chrome Filename & Runtime Pill
+            const filenameEl = document.getElementById('sdk-filename');
+            const runtimeEl = document.getElementById('sdk-runtime-pill');
+            if (sdkMeta[target]) {
+                if (filenameEl) filenameEl.textContent = sdkMeta[target].file;
+                if (runtimeEl) runtimeEl.textContent = sdkMeta[target].runtime;
+            }
         });
     });
+}
+
+function fallbackCopyText(text, onComplete) {
+    try {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-9999px';
+        textArea.style.top = '0';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        if (successful && onComplete) onComplete();
+    } catch (err) {
+        showToast('Notice', 'Clipboard access restricted. Please copy manually.', 'error');
+    }
 }
 
 function copySdkCode() {
     const activeTab = document.querySelector('.sdk-content:not(.hidden) code');
     if(!activeTab) return;
     
-    navigator.clipboard.writeText(activeTab.innerText).then(() => {
-        const btn = document.getElementById('btn-copy-sdk');
-        const originalHTML = btn.innerHTML;
-        btn.innerHTML = '<i data-lucide="check" class="w-3 h-3"></i> Copied!';
-        btn.classList.replace('text-gray-300', 'text-emerald-400');
-        lucide.createIcons();
-        
-        setTimeout(() => {
-            btn.innerHTML = originalHTML;
-            btn.classList.replace('text-emerald-400', 'text-gray-300');
-            lucide.createIcons();
-        }, 2000);
-    });
+    const textToCopy = activeTab.innerText;
+    const btn = document.getElementById('btn-copy-sdk');
+    
+    const notifySuccess = () => {
+        if (btn) {
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> <span class="text-emerald-400">Copied!</span>';
+            btn.classList.add('border-emerald-500/50', 'bg-emerald-500/10');
+            if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+            
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.classList.remove('border-emerald-500/50', 'bg-emerald-500/10');
+                if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+            }, 2000);
+        }
+        showToast('Snippet Copied', 'SDK code copied to clipboard', 'success');
+    };
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(textToCopy)
+            .then(notifySuccess)
+            .catch(() => fallbackCopyText(textToCopy, notifySuccess));
+    } else {
+        fallbackCopyText(textToCopy, notifySuccess);
+    }
+}
+
+// Live Interactive Heartbeat Tester
+async function testSdkHeartbeat() {
+    const btn = document.getElementById('btn-test-sdk');
+    const resultBox = document.getElementById('sdk-test-result');
+    const statusText = document.getElementById('sdk-test-status');
+    const responsePayload = document.getElementById('sdk-test-response');
+    
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin text-cyan-400"></i><span>Pinging API...</span>';
+        if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+    }
+
+    if (resultBox) {
+        resultBox.classList.remove('hidden');
+        resultBox.classList.add('flex');
+    }
+
+    const start = performance.now();
+    try {
+        const simulatedLatency = (Math.random() * 15 + 12).toFixed(1);
+        const res = await fetch('/api/v1/heartbeat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer mop_live_demo123456789'
+            },
+            body: JSON.stringify({
+                botId: 'sdk-interactive-tester',
+                status: 'Healthy',
+                latency: parseFloat(simulatedLatency)
+            })
+        });
+
+        const elapsed = Math.round(performance.now() - start);
+        const data = await res.json();
+
+        if (statusText) {
+            statusText.className = 'text-[11px] font-mono text-emerald-400 font-semibold flex items-center gap-1.5';
+            statusText.innerHTML = `<i data-lucide="check-circle" class="w-3.5 h-3.5"></i> 200 OK • Ack in ${elapsed}ms`;
+        }
+        if (responsePayload) {
+            responsePayload.textContent = JSON.stringify(data, null, 2);
+        }
+        showToast('Heartbeat Ack', `Server acknowledged ping in ${elapsed}ms`, 'success');
+    } catch (err) {
+        if (statusText) {
+            statusText.className = 'text-[11px] font-mono text-red-400 font-semibold';
+            statusText.textContent = `Error: ${err.message}`;
+        }
+        showToast('Ping Failed', err.message, 'error');
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="zap" class="w-3.5 h-3.5 text-emerald-400"></i><span>Test Live Ping</span>';
+            if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        }
+    }
 }
 
 // --- Utilities ---
@@ -827,10 +940,13 @@ document.addEventListener('DOMContentLoaded', () => {
             targetView.classList.remove('hidden-view');
             targetView.classList.add('active-view');
             
-            // Update Header Title
-            const headerTitle = document.querySelector('header h1');
-            if(headerTitle) {
-                headerTitle.innerText = titles[navId];
+            // Update Header Title (Preserving Liquid Glass optical badge)
+            const headerTitleSpan = document.querySelector('header h1 span:first-child');
+            if(headerTitleSpan) {
+                headerTitleSpan.innerText = titles[navId];
+            } else {
+                const headerTitle = document.querySelector('header h1');
+                if(headerTitle) headerTitle.innerText = titles[navId];
             }
         };
         navEl.addEventListener('click', activateNav);

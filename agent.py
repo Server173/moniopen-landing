@@ -5,9 +5,10 @@ import threading
 import random
 
 class MoniOpenClient:
-    def __init__(self, endpoint="http://localhost:3001/api/v1/heartbeat", bot_id="python-agent"):
+    def __init__(self, endpoint="http://localhost:3001/api/v1/heartbeat", bot_id="python-agent", api_key=None):
         self.endpoint = endpoint
         self.bot_id = bot_id
+        self.api_key = api_key
 
     def send_heartbeat(self, status="Healthy", latency=0.0):
         try:
@@ -16,7 +17,10 @@ class MoniOpenClient:
                 "status": status,
                 "latency": round(latency, 2)
             }
-            response = requests.post(self.endpoint, json=payload, timeout=2)
+            headers = {}
+            if self.api_key:
+                headers["Authorization"] = f"Bearer {self.api_key}"
+            response = requests.post(self.endpoint, json=payload, headers=headers, timeout=2)
             if response.status_code == 200:
                 print(f"[MoniOpen] Heartbeat sent: {status} ({latency:.2f}ms)")
             else:
@@ -24,22 +28,27 @@ class MoniOpenClient:
         except Exception as e:
             print(f"[MoniOpen] Connection failed: {str(e)}")
 
+    def track(self, telemetry=True):
+        def decorator(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                start = time.time()
+                try:
+                    result = func(*args, **kwargs)
+                    latency = (time.time() - start) * 1000
+                    if telemetry:
+                        self.send_heartbeat(status="Healthy", latency=latency)
+                    return result
+                except Exception as e:
+                    latency = (time.time() - start) * 1000
+                    if telemetry:
+                        self.send_heartbeat(status=f"ERROR: {str(e)}", latency=latency)
+                    raise
+            return wrapper
+        return decorator
+
 def track_performance(client):
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            start = time.time()
-            try:
-                result = func(*args, **kwargs)
-                latency = (time.time() - start) * 1000
-                client.send_heartbeat(status="Healthy", latency=latency)
-                return result
-            except Exception as e:
-                latency = (time.time() - start) * 1000
-                client.send_heartbeat(status=f"ERROR: {str(e)}", latency=latency)
-                raise
-        return wrapper
-    return decorator
+    return client.track(telemetry=True)
 
 if __name__ == "__main__":
     print("Iniciando MoniOpen Agent Simulator...")

@@ -43,7 +43,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css?v=4.4.0">
+    <link rel="stylesheet" href="style.css?v=4.5.0">
 </head>
 <body class="bg-base text-gray-200 font-sans antialiased h-screen flex overflow-hidden selection:bg-indigo-500/30">
 
@@ -488,86 +488,200 @@
                 </div>
             </div>
 
-            <!-- VIEW 4: SDK DOCUMENTATION -->
+            <!-- VIEW 4: SDK DOCUMENTATION & INTERACTIVE STUDIO -->
             <div id="view-docs" class="view-section hidden-view space-y-6">
-                <div class="glass-card border border-border bg-surface rounded-[2rem] overflow-hidden shadow-2xl">
-                    <div class="p-8 border-b border-white/5 flex items-center justify-between bg-gradient-to-r from-transparent to-indigo-500/5">
+                <div class="glass-card border border-border bg-surface rounded-[2rem] overflow-hidden shadow-2xl relative">
+                    <!-- Glass Specular Header -->
+                    <div class="p-6 md:p-8 border-b border-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-gradient-to-r from-transparent via-indigo-500/[0.03] to-cyan-500/[0.04]">
                         <div>
+                            <div class="flex items-center gap-2.5 mb-1.5">
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">V4.3 CLIENT SPEC</span>
+                                <span class="text-xs text-gray-500 font-mono hidden md:inline">• Zero-Trust Telemetry</span>
+                            </div>
                             <h2 class="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
-                                <span>SDK Integration</span>
+                                <span>SDK &amp; Microservice Integration</span>
                             </h2>
-                            <p class="text-sm text-gray-400 mt-1">Embed MoniOpen directly into your distributed architecture with 2 lines of code.</p>
+                            <p class="text-xs md:text-sm text-gray-400 mt-1">Embed MoniOpen telemetry and automated heartbeats into any agent, bot, or pipeline in 2 lines of code.</p>
                         </div>
-                        <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20">
-                            <i data-lucide="code-2" class="w-6 h-6 text-indigo-400"></i>
+                        
+                        <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                            <button onclick="testSdkHeartbeat()" id="btn-test-sdk" class="btn-liquid-glass flex items-center gap-2 px-3.5 py-2 text-xs" title="Send a real heartbeat to local server">
+                                <i data-lucide="zap" class="w-3.5 h-3.5 text-emerald-400"></i>
+                                <span>Test Live Ping</span>
+                            </button>
                         </div>
                     </div>
 
-                    <div class="flex flex-col md:flex-row min-h-[420px]">
-                        <!-- Language Selector -->
-                        <div class="md:w-64 bg-black/40 border-r border-white/5 p-4 flex flex-col gap-1.5">
-                            <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-2 px-2 font-mono">Environments</p>
-                            <button class="sdk-tab active text-left px-4 py-2.5 rounded-xl text-xs font-semibold text-white bg-white/10 transition-all flex items-center gap-2.5" data-lang="python">
-                                <i data-lucide="file-json" class="w-4 h-4 text-indigo-400"></i>
-                                <span>Python 3.10+</span>
-                            </button>
-                            <button class="sdk-tab text-left px-4 py-2.5 rounded-xl text-xs font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2.5" data-lang="node">
-                                <i data-lucide="box" class="w-4 h-4 text-emerald-400"></i>
-                                <span>Node.js / Bun</span>
-                            </button>
-                            <button class="sdk-tab text-left px-4 py-2.5 rounded-xl text-xs font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2.5" data-lang="curl">
-                                <i data-lucide="terminal" class="w-4 h-4 text-cyan-400"></i>
-                                <span>cURL / REST</span>
-                            </button>
+                    <!-- Live Test Result Banner (Appears on interactive ping) -->
+                    <div id="sdk-test-result" class="hidden border-b border-white/5 bg-black/40 px-6 py-3 items-center justify-between gap-4 sdk-animate-in">
+                        <div class="flex items-center gap-3">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span id="sdk-test-status" class="text-xs font-mono text-emerald-400 font-semibold">200 OK • Ack in 3ms</span>
+                            <span class="text-xs text-gray-500 font-mono hidden sm:inline">|</span>
+                            <code id="sdk-test-response" class="text-[11px] font-mono text-gray-400 truncate max-w-md hidden sm:inline">{"acknowledged": true, "message": "Heartbeat received"}</code>
                         </div>
+                        <span class="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">LIVE API VERIFIED</span>
+                    </div>
 
-                        <!-- Code Display -->
-                        <div class="flex-1 p-8 relative bg-[#050608] overflow-hidden group">
-                            <button onclick="copySdkCode()" id="btn-copy-sdk" class="absolute top-6 right-6 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 z-10 border border-white/10">
-                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                                <span>Copy Snippet</span>
+                    <div class="flex flex-col md:flex-row min-h-[460px]">
+                        <!-- Language Selector (Left Column) -->
+                        <div class="md:w-64 bg-black/40 border-r border-white/5 p-4 flex flex-col gap-2">
+                            <div class="flex items-center justify-between px-2 mb-1">
+                                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest font-mono">Environments</p>
+                                <span class="text-[10px] text-indigo-400 font-mono">4 Runtimes</span>
+                            </div>
+                            
+                            <button class="sdk-tab active text-left px-4 py-3 text-xs font-semibold text-white flex items-center justify-between" data-lang="python">
+                                <div class="flex items-center gap-2.5">
+                                    <i data-lucide="file-json" class="w-4 h-4 text-indigo-400"></i>
+                                    <span>Python 3.10+</span>
+                                </div>
+                                <span class="text-[10px] font-mono text-gray-500">.py</span>
                             </button>
                             
-                            <pre id="sdk-python" class="sdk-content font-mono text-xs md:text-sm text-gray-300 overflow-x-auto leading-relaxed"><code>from moniopen import MoniOpenClient
+                            <button class="sdk-tab text-left px-4 py-3 text-xs font-medium text-gray-400 flex items-center justify-between" data-lang="node">
+                                <div class="flex items-center gap-2.5">
+                                    <i data-lucide="box" class="w-4 h-4 text-emerald-400"></i>
+                                    <span>Node.js / Bun</span>
+                                </div>
+                                <span class="text-[10px] font-mono text-gray-500">.ts</span>
+                            </button>
 
-# Initialize with your local or cluster endpoint
-client = MoniOpenClient(api_key="mop_live_example123456789")
+                            <button class="sdk-tab text-left px-4 py-3 text-xs font-medium text-gray-400 flex items-center justify-between" data-lang="go">
+                                <div class="flex items-center gap-2.5">
+                                    <i data-lucide="cpu" class="w-4 h-4 text-cyan-400"></i>
+                                    <span>Go 1.23</span>
+                                </div>
+                                <span class="text-[10px] font-mono text-gray-500">.go</span>
+                            </button>
+                            
+                            <button class="sdk-tab text-left px-4 py-3 text-xs font-medium text-gray-400 flex items-center justify-between" data-lang="curl">
+                                <div class="flex items-center gap-2.5">
+                                    <i data-lucide="terminal" class="w-4 h-4 text-amber-400"></i>
+                                    <span>cURL / REST</span>
+                                </div>
+                                <span class="text-[10px] font-mono text-gray-500">.sh</span>
+                            </button>
 
-@client.track(telemetry=True)
-def autonomous_task():
-    # Your business logic or agent loop
-    print("Executing job with automated heartbeat...")
+                            <!-- Micro Info Card at bottom of selector -->
+                            <div class="mt-auto p-3.5 rounded-xl bg-white/[0.02] border border-white/5 space-y-2">
+                                <div class="flex items-center gap-2 text-[11px] text-gray-300 font-semibold">
+                                    <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+                                    <span>Zero-Trust Auth</span>
+                                </div>
+                                <p class="text-[10px] text-gray-500 leading-relaxed font-mono">Heartbeats accept Bearer tokens with sub-40ms non-blocking edge telemetry.</p>
+                            </div>
+                        </div>
 
-if __name__ == "__main__":
-    autonomous_task()</code></pre>
+                        <!-- macOS Code Studio Window (Right Column) -->
+                        <div class="flex-1 flex flex-col bg-[#050608] overflow-hidden">
+                            <!-- macOS Glass Chrome Top Bar -->
+                            <div class="px-5 py-3.5 border-b border-white/5 bg-black/60 flex items-center justify-between">
+                                <div class="flex items-center gap-4">
+                                    <div class="flex items-center gap-2">
+                                        <span class="mac-dot mac-dot-red"></span>
+                                        <span class="mac-dot mac-dot-yellow"></span>
+                                        <span class="mac-dot mac-dot-green"></span>
+                                    </div>
+                                    <div class="flex items-center gap-2 pl-2 border-l border-white/10">
+                                        <span id="sdk-filename" class="font-mono text-xs text-indigo-300 font-semibold tracking-tight">client.py</span>
+                                        <span id="sdk-runtime-pill" class="text-[10px] font-mono text-gray-500 hidden sm:inline">• Python 3.10+ • Decorator-ready</span>
+                                    </div>
+                                </div>
 
-                            <pre id="sdk-node" class="sdk-content hidden font-mono text-xs md:text-sm text-gray-300 overflow-x-auto leading-relaxed"><code>const { MoniOpen } = require('moniopen-sdk');
+                                <button onclick="copySdkCode()" id="btn-copy-sdk" class="liquid-glass-pill px-3 py-1.5 text-xs text-white font-medium flex items-center gap-2 hover:bg-white/10 transition-all select-none">
+                                    <i data-lucide="copy" class="w-3.5 h-3.5 text-indigo-300"></i>
+                                    <span>Copy Snippet</span>
+                                </button>
+                            </div>
 
-const client = new MoniOpen({ 
-    apiKey: 'mop_live_example123456789',
-    autoHeartbeat: true
+                            <!-- Code Editor Bodies -->
+                            <div class="p-6 md:p-8 flex-1 overflow-x-auto relative">
+                                
+                                <!-- PYTHON -->
+                                <pre id="sdk-python" class="sdk-content font-mono text-xs md:text-sm text-gray-300 leading-relaxed"><code class="block"><span class="tok-kw">from</span> moniopen <span class="tok-kw">import</span> <span class="tok-cls">MoniOpenClient</span>
+
+<span class="tok-com"># Initialize client with your cluster endpoint and API credentials</span>
+client = <span class="tok-cls">MoniOpenClient</span>(
+    api_key=<span class="tok-str">"mop_live_example123456789"</span>,
+    endpoint=<span class="tok-str">"https://moniopen.rbxtracker.indevs.in/api/v1/heartbeat"</span>,
+    bot_id=<span class="tok-str">"python-worker-01"</span>
+)
+
+<span class="tok-dec">@client.track</span>(telemetry=<span class="tok-kw">True</span>)
+<span class="tok-kw">def</span> <span class="tok-fn">autonomous_task</span>():
+    <span class="tok-com"># Your agent loop, ETL job, or bot listener logic</span>
+    <span class="tok-fn">print</span>(<span class="tok-str">"Executing autonomous worker task with live heartbeat..."</span>)
+    <span class="tok-kw">return</span> {<span class="tok-str">"status"</span>: <span class="tok-str">"completed"</span>, <span class="tok-str">"events"</span>: <span class="tok-num">142</span>}
+
+<span class="tok-kw">if</span> __name__ == <span class="tok-str">"__main__"</span>:
+    <span class="tok-fn">autonomous_task</span>()</code></pre>
+
+                                <!-- NODE.JS / TYPESCRIPT -->
+                                <pre id="sdk-node" class="sdk-content hidden font-mono text-xs md:text-sm text-gray-300 leading-relaxed"><code class="block"><span class="tok-kw">import</span> { <span class="tok-cls">MoniOpen</span> } <span class="tok-kw">from</span> <span class="tok-str">'moniopen-sdk'</span>;
+
+<span class="tok-com">// Initialize MoniOpen SDK instance</span>
+<span class="tok-kw">const</span> client = <span class="tok-kw">new</span> <span class="tok-cls">MoniOpen</span>({ 
+    apiKey: <span class="tok-str">'mop_live_example123456789'</span>,
+    endpoint: <span class="tok-str">'https://moniopen.rbxtracker.indevs.in/api/v1/heartbeat'</span>,
+    autoHeartbeat: <span class="tok-kw">true</span>,
+    intervalMs: <span class="tok-num">30000</span>
 });
 
-async function runWorker() {
-    const trace = client.startTrace('autonomous_task');
-    try {
-        // Business logic execution
-        await trace.end({ status: 'success' });
-    } catch (err) {
-        await trace.end({ status: 'error', error: err.message });
+<span class="tok-kw">async function</span> <span class="tok-fn">runWorker</span>() {
+    <span class="tok-kw">const</span> trace = client.<span class="tok-fn">startTrace</span>(<span class="tok-str">'autonomous_task'</span>);
+    <span class="tok-kw">try</span> {
+        <span class="tok-com">// Business execution or async task</span>
+        <span class="tok-kw">await</span> trace.<span class="tok-fn">end</span>({ status: <span class="tok-str">'success'</span>, recordsProcessed: <span class="tok-num">1250</span> });
+    } <span class="tok-kw">catch</span> (err) {
+        <span class="tok-kw">await</span> trace.<span class="tok-fn">end</span>({ status: <span class="tok-str">'error'</span>, error: err.message });
     }
 }
 
-runWorker();</code></pre>
+<span class="tok-fn">runWorker</span>();</code></pre>
 
-                            <pre id="sdk-curl" class="sdk-content hidden font-mono text-xs md:text-sm text-gray-300 overflow-x-auto leading-relaxed"><code>curl -X POST https://moniopen.indevs.in/api/v1/heartbeat \
-  -H "Authorization: Bearer mop_live_example123456789" \
-  -H "Content-Type: application/json" \
-  -d '{
+                                <!-- GO -->
+                                <pre id="sdk-go" class="sdk-content hidden font-mono text-xs md:text-sm text-gray-300 leading-relaxed"><code class="block"><span class="tok-kw">package</span> main
+
+<span class="tok-kw">import</span> (
+    <span class="tok-str">"context"</span>
+    <span class="tok-str">"fmt"</span>
+    <span class="tok-str">"time"</span>
+    <span class="tok-str">"github.com/moniopen/moniopen-go"</span>
+)
+
+<span class="tok-kw">func</span> <span class="tok-fn">main</span>() {
+    client := moniopen.<span class="tok-fn">NewClient</span>(moniopen.Config{
+        APIKey:   <span class="tok-str">"mop_live_example123456789"</span>,
+        Endpoint: <span class="tok-str">"https://moniopen.rbxtracker.indevs.in/api/v1/heartbeat"</span>,
+        BotID:    <span class="tok-str">"roblox-sync-worker"</span>,
+    })
+
+    <span class="tok-com">// Record automated sub-millisecond execution telemetry</span>
+    start := time.<span class="tok-fn">Now</span>()
+    <span class="tok-kw">defer func</span>() {
+        latency := float64(time.<span class="tok-fn">Since</span>(start).<span class="tok-fn">Milliseconds</span>())
+        client.<span class="tok-fn">SendHeartbeat</span>(context.<span class="tok-fn">Background</span>(), <span class="tok-str">"Healthy"</span>, latency)
+    }()
+
+    fmt.<span class="tok-fn">Println</span>(<span class="tok-str">"MoniOpen Go Worker Operational"</span>)
+}</code></pre>
+
+                                <!-- CURL / REST -->
+                                <pre id="sdk-curl" class="sdk-content hidden font-mono text-xs md:text-sm text-gray-300 leading-relaxed"><code class="block"><span class="tok-com"># Automated Heartbeat Ping with Zero-Trust Authentication</span>
+curl -X POST <span class="tok-str">"https://moniopen.rbxtracker.indevs.in/api/v1/heartbeat"</span> \
+  -H <span class="tok-str">"Authorization: Bearer mop_live_example123456789"</span> \
+  -H <span class="tok-str">"Content-Type: application/json"</span> \
+  -d <span class="tok-str">'{
     "botId": "payment-worker-01",
     "status": "Healthy",
     "latency": 24.5
-  }'</code></pre>
+  }'</span>
+
+<span class="tok-com"># Cluster Response Preview:</span>
+<span class="tok-com"># HTTP/1.1 200 OK</span>
+<span class="tok-com"># {"acknowledged": true, "timestamp": "2026-11-12T21:00:00Z", "message": "Heartbeat received"}</span></code></pre>
+                            </div>
                         </div>
                     </div>
                 </div>

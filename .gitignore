@@ -4,3 +4,4 @@ node_modules
 *.log
 consent_logs.json
 .DS_Store
+__pycache__/
