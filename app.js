@@ -6,6 +6,353 @@ let crashActive = false;
 let chartInstance = null;
 const latencyData = Array(20).fill(42);
 
+// i18n & Theme Preferences
+let currentLang = localStorage.getItem('moniopen-lang') || 'es';
+let currentTheme = localStorage.getItem('moniopen-theme') || 'dark';
+
+const i18n = {
+    es: {
+        // Navigation & Header
+        'nav-overview': 'Resumen General',
+        'nav-fleet': 'Flota Activa',
+        'nav-logs': 'Registros en Vivo',
+        'nav-docs': 'Documentación SDK',
+        'system-healthy': 'Sistema Operativo',
+        'zero-trust': 'Edge US-East • Zero Trust',
+        'badge-production': 'PRODUCCIÓN',
+        'title-overview': 'Telemetría del Clúster',
+        'title-fleet': 'Gestión de Flota',
+        'title-logs': 'Consola del Sistema',
+        'title-docs': 'SDK de Desarrollo',
+        'btn-register-bot': 'Registrar Bot',
+
+        // Hero Banner
+        'hero-pill': 'Motor de Observabilidad Autónoma • 99.98% SLA Global',
+        'hero-title-1': 'Telemetría Distribuida',
+        'hero-title-2': 'Diseñada para Escalar',
+        'hero-subtitle': 'Supervisa agentes de IA, procesos en segundo plano y microservicios con latencia ultra-baja y resolución autónoma de incidentes.',
+        'btn-deploy': 'Desplegar Agente',
+        'btn-sim-incident': 'Simular Incidente',
+
+        // Bento Metrics
+        'global-avail': 'Disponibilidad Global',
+        'all-operational': 'Todos los Sistemas Operativos',
+        'sla-30-days': 'Hace 30 días',
+        'sla-target': 'Objetivo 100% SLA',
+        'sla-today': 'Hoy',
+        'sla-guarantee': 'Garantía SLA Activa',
+        'regions-synced': '4 Regiones Sincronizadas',
+        
+        'edge-latency-title': 'Latencia Edge',
+        'fast-path': 'Ruta Rápida',
+        'sub-50': 'Sub-50ms',
+
+        'active-fleet-bento': 'Flota Activa',
+        'autonomous-online': 'agentes autónomos en línea',
+        'sim-failure': 'Simular Falla',
+
+        'cluster-telemetry-title': 'Telemetría del Clúster Global',
+        'cluster-telemetry-subtitle': 'Red Distribuida Mesh • 99.99% SLA',
+        'cluster-shielded': 'Malla Edge Global Protegida',
+        'cluster-memory-pool': 'Reserva de Memoria del Clúster',
+        'mesh-cpu': 'Utilización de CPU de la Malla',
+        'cluster-uptime-label': 'Disponibilidad del Clúster:',
+        'pop-regions': '24 Regiones PoP Activas • Alta Disponibilidad',
+        'engine-active': 'Motor de Telemetría Activo',
+
+        'pulse-title': 'Pulso de Telemetría en Tiempo Real',
+        'pulse-subtitle': 'Transmisión de fluctuación e ida y vuelta sub-segundo',
+
+        'throughput-title': 'Rendimiento del Flujo de Eventos',
+        'events-per-sec': 'eventos / seg',
+        'total-ingested': 'Total Ingerido',
+        'stream-status': 'Flujo Activo',
+
+        // Incident Banner
+        'alert-critical': 'CRÍTICO',
+        'alert-title': 'Corte de Bot Detectado',
+        'alert-btn-diagnose': 'Diagnosticar y Auto-Reparar con Claude 3.5 Sonnet',
+
+        // Fleet View
+        'fleet-title': 'Gestión Autónoma de Flota',
+        'fleet-subtitle': 'Estado en tiempo real, consumo de memoria y pings de telemetría',
+        'fleet-search-placeholder': 'Buscar bots por ID o entorno...',
+        'btn-new-worker': 'Nuevo Agente',
+        'th-worker-id': 'ID de Agente',
+        'th-runtime': 'Entorno',
+        'th-metrics': 'Métricas',
+        'th-status': 'Estado',
+        'th-actions': 'Acciones',
+        'fleet-empty': 'Ningún agente coincide con los criterios de búsqueda.',
+
+        // Logs View
+        'logs-file-label': 'telemetry-cluster.log',
+        'btn-pause': 'Pausar',
+        'btn-resume': 'Reanudar',
+        'btn-clear': 'Limpiar',
+        'log-search-placeholder': 'Filtrar registros...',
+
+        // SDK View
+        'sdk-spec-badge': 'ESPECIFICACIÓN CLIENTE V4.3',
+        'sdk-spec-subtitle': '• Telemetría Zero-Trust',
+        'sdk-title': 'SDK e Integración de Microservicios',
+        'sdk-subtitle': 'Integra telemetría y latidos automáticos en cualquier agente, bot o pipeline en 2 líneas de código.',
+        'sdk-test-ping': 'Probar Ping en Vivo',
+        'sdk-test-verified': 'API EN VIVO VERIFICADA',
+        'sdk-copy-snippet': 'Copiar Fragmento',
+        'sdk-environments': 'Entornos',
+        'sdk-runtimes-count': '4 Entornos',
+        'sdk-zero-trust-title': 'Autenticación Zero-Trust',
+        'sdk-zero-trust-desc': 'Los latidos aceptan tokens Bearer con telemetría no bloqueante sub-40ms.',
+
+        // Modals & Drawers
+        'drawer-title': 'Detalles del Bot',
+        'drawer-pid-label': 'ID de Proceso',
+        'drawer-uptime-label': 'Tiempo Activo',
+        'drawer-memory-label': 'Asignación de Memoria',
+        'drawer-config-label': 'Configuración de Entorno',
+        'drawer-btn-dismiss': 'Cerrar',
+        'drawer-btn-restart': 'Reiniciar Agente',
+
+        'modal-title': 'Registrar Nuevo Agente',
+        'modal-worker-label': 'Nombre o ID del Agente',
+        'modal-worker-placeholder': 'Ej. telemetry-worker-01',
+        'modal-runtime-label': 'Motor de Ejecución',
+        'modal-consent-label': 'Acepto los Términos de Telemetría y Privacidad (TCPA/GDPR).',
+        'modal-btn-generate': 'Generar Conexión API',
+        'modal-success-title': '¡Agente Registrado!',
+        'modal-success-desc': 'Usa esta clave de clúster para autenticar tu SDK.',
+        'btn-done': 'Listo',
+
+        'claude-modal-title': 'Diagnóstico con Claude 3.5 Sonnet',
+        'claude-analyzing': 'Analizando Incidente...',
+        'claude-thinking': 'Ingiriendo traza de pila y analizando patrones de límite de tasa...',
+        'claude-root-cause': 'Causa Raíz Identificada',
+        'claude-result-desc': 'Detectado un bucle de peticiones sin retroceso exponencial en roblox-sync-worker. El endpoint ascendente responde continuamente con HTTP 429 Too Many Requests.',
+        'claude-patch-suggested': 'Auto-Parche Sugerido (Jitter Exponencial)',
+        'btn-apply-patch': 'Aplicar Parche y Auto-Recuperar',
+        'btn-dismiss': 'Cerrar',
+
+        // Footer
+        'footer-copy': '© 2026 Plataforma MoniOpen • Observabilidad Zero-Trust • Todos los Derechos Reservados.'
+    },
+    en: {
+        // Navigation & Header
+        'nav-overview': 'Overview',
+        'nav-fleet': 'Active Fleet',
+        'nav-logs': 'Live Logs',
+        'nav-docs': 'SDK Docs',
+        'system-healthy': 'System Healthy',
+        'zero-trust': 'Edge US-East • Zero Trust',
+        'badge-production': 'PRODUCTION',
+        'title-overview': 'Cluster Telemetry',
+        'title-fleet': 'Fleet Management',
+        'title-logs': 'System Console',
+        'title-docs': 'Developer SDK',
+        'btn-register-bot': 'Register Bot',
+
+        // Hero Banner
+        'hero-pill': 'Autonomous Observability Engine • 99.98% Global SLA',
+        'hero-title-1': 'Distributed Telemetry',
+        'hero-title-2': 'Engineered for Scale',
+        'hero-subtitle': 'Monitor autonomous AI agents, background workers, and distributed microservices with sub-millisecond edge telemetry and self-healing incident response.',
+        'btn-deploy': 'Deploy Agent',
+        'btn-sim-incident': 'Simulate Incident',
+
+        // Bento Metrics
+        'global-avail': 'Global Availability',
+        'all-operational': 'All Systems Operational',
+        'sla-30-days': '30 days ago',
+        'sla-target': '100% SLA target',
+        'sla-today': 'Today',
+        'sla-guarantee': 'SLA Guarantee Active',
+        'regions-synced': '4 Regions Synchronized',
+
+        'edge-latency-title': 'Edge Latency',
+        'fast-path': 'Fast Path',
+        'sub-50': 'Sub-50ms',
+
+        'active-fleet-bento': 'Active Fleet',
+        'autonomous-online': 'Autonomous workers online',
+        'sim-failure': 'Simulate Failure',
+
+        'cluster-telemetry-title': 'Global Edge Cluster Telemetry',
+        'cluster-telemetry-subtitle': 'Distributed Mesh Network • 99.99% SLA',
+        'cluster-shielded': 'Global Edge Mesh Shielded',
+        'cluster-memory-pool': 'Cluster Memory Pool',
+        'mesh-cpu': 'Mesh CPU Utilization',
+        'cluster-uptime-label': 'Cluster Uptime:',
+        'pop-regions': '24 PoP Regions Active • High Availability',
+        'engine-active': 'Telemetry Engine Active',
+
+        'pulse-title': 'Real-time Telemetry Pulse',
+        'pulse-subtitle': 'Sub-second jitter & roundtrip stream',
+
+        'throughput-title': 'Event Stream Throughput',
+        'events-per-sec': 'events / sec',
+        'total-ingested': 'Total Ingested',
+        'stream-status': 'Active Stream',
+
+        // Incident Banner
+        'alert-critical': 'CRITICAL',
+        'alert-title': 'Bot Outage Detected',
+        'alert-btn-diagnose': 'Diagnose & Auto-Patch with Claude 3.5 Sonnet',
+
+        // Fleet View
+        'fleet-title': 'Autonomous Fleet Management',
+        'fleet-subtitle': 'Real-time status, memory footprint, and telemetry pings',
+        'fleet-search-placeholder': 'Search bots by ID or runtime...',
+        'btn-new-worker': 'New Worker',
+        'th-worker-id': 'Worker ID',
+        'th-runtime': 'Runtime',
+        'th-metrics': 'Metrics',
+        'th-status': 'Status',
+        'th-actions': 'Actions',
+        'fleet-empty': 'No workers match the search criteria.',
+
+        // Logs View
+        'logs-file-label': 'telemetry-cluster.log',
+        'btn-pause': 'Pause',
+        'btn-resume': 'Resume',
+        'btn-clear': 'Clear',
+        'log-search-placeholder': 'Filter logs...',
+
+        // SDK View
+        'sdk-spec-badge': 'V4.3 CLIENT SPEC',
+        'sdk-spec-subtitle': '• Zero-Trust Telemetry',
+        'sdk-title': 'SDK & Microservice Integration',
+        'sdk-subtitle': 'Embed MoniOpen telemetry and automated heartbeats into any agent, bot, or pipeline in 2 lines of code.',
+        'sdk-test-ping': 'Test Live Ping',
+        'sdk-test-verified': 'LIVE API VERIFIED',
+        'sdk-copy-snippet': 'Copy Snippet',
+        'sdk-environments': 'Environments',
+        'sdk-runtimes-count': '4 Runtimes',
+        'sdk-zero-trust-title': 'Zero-Trust Auth',
+        'sdk-zero-trust-desc': 'Heartbeats accept Bearer tokens with sub-40ms non-blocking edge telemetry.',
+
+        // Modals & Drawers
+        'drawer-title': 'Bot Details',
+        'drawer-pid-label': 'Process ID',
+        'drawer-uptime-label': 'Uptime',
+        'drawer-memory-label': 'Memory Allocation',
+        'drawer-config-label': 'Environment Configuration',
+        'drawer-btn-dismiss': 'Dismiss',
+        'drawer-btn-restart': 'Restart Worker',
+
+        'modal-title': 'Register New Worker',
+        'modal-worker-label': 'Worker Name / ID',
+        'modal-worker-placeholder': 'e.g. telemetry-worker-01',
+        'modal-runtime-label': 'Runtime Engine',
+        'modal-consent-label': 'I accept the Telemetry Terms & Privacy Policy (TCPA/GDPR).',
+        'modal-btn-generate': 'Generate API Connection',
+        'modal-success-title': 'Worker Registered!',
+        'modal-success-desc': 'Use this cluster key to authenticate your SDK.',
+        'btn-done': 'Done',
+
+        'claude-modal-title': 'Claude 3.5 Sonnet Diagnostics',
+        'claude-analyzing': 'Analyzing Incident...',
+        'claude-thinking': 'Ingesting stack trace and analyzing rate limit patterns...',
+        'claude-root-cause': 'Root Cause Identified',
+        'claude-result-desc': 'Detected a hard-polling loop without exponential backoff in roblox-sync-worker. Upstream endpoint is returning continuous HTTP 429 Too Many Requests.',
+        'claude-patch-suggested': 'Suggested Auto-Patch (Exponential Jitter)',
+        'btn-apply-patch': 'Apply Patch & Auto-Recover',
+        'btn-dismiss': 'Dismiss',
+
+        // Footer
+        'footer-copy': '© 2026 MoniOpen Platform • Zero-Trust Observability • All Rights Reserved.'
+    }
+};
+
+function applyLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('moniopen-lang', lang);
+    document.documentElement.lang = lang;
+    
+    const dict = i18n[lang] || i18n.es;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) {
+            el.innerHTML = dict[key];
+        }
+    });
+
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (dict[key]) {
+            el.placeholder = dict[key];
+        }
+    });
+
+    const langBtnText = document.getElementById('current-lang-text');
+    if (langBtnText) langBtnText.textContent = lang.toUpperCase();
+
+    // Update active nav title
+    const activeNav = document.querySelector('.nav-item.active');
+    if (activeNav) {
+        const id = activeNav.id;
+        const headerTitleSpan = document.querySelector('header h1 span:first-child');
+        const titles = {
+            'nav-overview': dict['title-overview'],
+            'nav-fleet': dict['title-fleet'],
+            'nav-logs': dict['title-logs'],
+            'nav-docs': dict['title-docs']
+        };
+        if (headerTitleSpan && titles[id]) headerTitleSpan.textContent = titles[id];
+    }
+
+    if (typeof renderFleetTable === 'function' && bots && bots.length > 0) {
+        const searchInput = document.getElementById('fleet-search');
+        renderFleetTable(searchInput ? searchInput.value : '');
+    }
+}
+
+function toggleLanguage() {
+    const nextLang = currentLang === 'es' ? 'en' : 'es';
+    applyLanguage(nextLang);
+    showToast(
+        nextLang === 'es' ? 'Idioma Cambiado' : 'Language Changed',
+        nextLang === 'es' ? 'Español activado en todo el panel' : 'English enabled across dashboard',
+        'success'
+    );
+}
+
+function applyTheme(theme) {
+    currentTheme = theme;
+    localStorage.setItem('moniopen-theme', theme);
+    const html = document.documentElement;
+    const themeIcon = document.getElementById('theme-icon');
+    
+    if (theme === 'light') {
+        html.classList.remove('dark');
+        html.classList.add('light');
+        if (themeIcon) {
+            themeIcon.setAttribute('data-lucide', 'moon');
+            themeIcon.className = 'w-4 h-4 text-indigo-600';
+        }
+    } else {
+        html.classList.remove('light');
+        html.classList.add('dark');
+        if (themeIcon) {
+            themeIcon.setAttribute('data-lucide', 'sun');
+            themeIcon.className = 'w-4 h-4 text-amber-400';
+        }
+    }
+    if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+    if (typeof initChart === 'function') initChart();
+}
+
+function toggleTheme() {
+    const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme(nextTheme);
+    showToast(
+        currentLang === 'es' ? 'Tema Actualizado' : 'Theme Updated',
+        nextTheme === 'light' 
+            ? (currentLang === 'es' ? 'Modo Claro activado' : 'Light Mode enabled') 
+            : (currentLang === 'es' ? 'Modo Oscuro activado' : 'Dark Mode enabled'),
+        'success'
+    );
+}
+
 // Initial Bots
 const defaultBots = [
     { id: 'crawler-node-primary', runtime: 'Node.js 22 LTS', latency: 18, ram: 84, status: 'Healthy', pid: 84920, uptime: '14d 3h' },
@@ -18,6 +365,8 @@ let bots = [];
 
 // DOM Load
 document.addEventListener('DOMContentLoaded', () => {
+    applyTheme(currentTheme);
+    applyLanguage(currentLang);
     initBots();
     renderFleetTable();
     initChart();
@@ -89,6 +438,8 @@ function startMetricsSimulation() {
         const elUptime = document.getElementById('host-uptime');
         if (elUptime) elUptime.textContent = clusterData.uptime;
 
+        let currentLatency = Math.floor(base + Math.random() * variance);
+
         // Update Liquid Glass Navbar Dynamic Island Metrics
         const elNavLatency = document.getElementById('nav-edge-latency');
         if (elNavLatency) elNavLatency.textContent = `${currentLatency}ms Edge`;
@@ -96,8 +447,6 @@ function startMetricsSimulation() {
         if (elNavLoad) elNavLoad.textContent = `${clusterData.load1} Load`;
         const elNavSla = document.getElementById('nav-live-sla');
         if (elNavSla) elNavSla.textContent = `${clusterData.uptime} SLA`;
-        
-        let currentLatency = Math.floor(base + Math.random() * variance);
         
         const latencyEl = document.getElementById('avg-latency');
         if (latencyEl) {
@@ -144,15 +493,27 @@ function startMetricsSimulation() {
 }
 
 function initChart() {
+    if (typeof Chart === 'undefined') return;
     const canvas = document.getElementById('latencyChart');
     if (!canvas) return;
+    if (chartInstance) {
+        chartInstance.destroy();
+        chartInstance = null;
+    }
     const ctx = canvas.getContext('2d');
+    const isLight = document.documentElement.classList.contains('light');
     
     // Luxury Gradient
     let gradient = ctx.createLinearGradient(0, 0, 0, 150);
-    gradient.addColorStop(0, 'rgba(99, 102, 241, 0.45)');
-    gradient.addColorStop(0.5, 'rgba(6, 182, 212, 0.12)');
-    gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
+    if (isLight) {
+        gradient.addColorStop(0, 'rgba(99, 102, 241, 0.35)');
+        gradient.addColorStop(0.5, 'rgba(6, 182, 212, 0.08)');
+        gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
+    } else {
+        gradient.addColorStop(0, 'rgba(99, 102, 241, 0.45)');
+        gradient.addColorStop(0.5, 'rgba(6, 182, 212, 0.12)');
+        gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
+    }
 
     chartInstance = new Chart(ctx, {
         type: 'line',
@@ -161,7 +522,7 @@ function initChart() {
             datasets: [{
                 label: 'Latency (ms)',
                 data: latencyData,
-                borderColor: '#818cf8',
+                borderColor: isLight ? '#6366f1' : '#818cf8',
                 backgroundColor: gradient,
                 borderWidth: 2.2,
                 pointRadius: 0,
@@ -183,10 +544,10 @@ function initChart() {
             plugins: { 
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: 'rgba(7, 8, 12, 0.95)',
-                    titleColor: '#fff',
-                    bodyColor: '#a5b4fc',
-                    borderColor: 'rgba(255, 255, 255, 0.12)',
+                    backgroundColor: isLight ? 'rgba(255, 255, 255, 0.95)' : 'rgba(7, 8, 12, 0.95)',
+                    titleColor: isLight ? '#0f172a' : '#fff',
+                    bodyColor: isLight ? '#4f46e5' : '#a5b4fc',
+                    borderColor: isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.12)',
                     borderWidth: 1,
                     padding: 8,
                     displayColors: false,
@@ -199,7 +560,7 @@ function initChart() {
                 x: { display: false },
                 y: {
                     display: true,
-                    grid: { color: 'rgba(255, 255, 255, 0.04)' },
+                    grid: { color: isLight ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.04)' },
                     ticks: { color: '#64748b', font: { family: 'JetBrains Mono', size: 10 }, maxTicksLimit: 4 },
                     min: 0,
                     max: 180
@@ -245,6 +606,7 @@ function renderFleetTable(filterText = '') {
     
     let activeCount = 0;
     const q = (filterText || '').trim().toLowerCase();
+    const dict = i18n[currentLang] || i18n.es;
 
     const filteredBots = bots.filter(b => {
         if (!q) return true;
@@ -261,14 +623,22 @@ function renderFleetTable(filterText = '') {
                         <div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-1">
                             <i data-lucide="search" class="w-5 h-5 text-gray-500" aria-hidden="true"></i>
                         </div>
-                        <p class="text-xs font-mono">No workers match the search criteria.</p>
+                        <p class="text-xs font-mono">${dict['fleet-empty'] || 'No workers match the search criteria.'}</p>
                     </div>
                 </td>
             </tr>
         `;
-        lucide.createIcons();
+        if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
         return;
     }
+
+    const statusMap = {
+        'Healthy': currentLang === 'es' ? 'Operativo' : 'Healthy',
+        'Warning': currentLang === 'es' ? 'Advertencia' : 'Warning',
+        'CRITICAL': currentLang === 'es' ? 'CRÍTICO' : 'CRITICAL',
+        'Offline': currentLang === 'es' ? 'Desconectado' : 'Offline'
+    };
+    const detailsLabel = currentLang === 'es' ? 'Detalles' : 'Details';
 
     filteredBots.forEach((bot, idx) => {
         if (bot.status !== 'Offline' && bot.status !== 'CRITICAL') activeCount++;
@@ -284,11 +654,13 @@ function renderFleetTable(filterText = '') {
             statusDot = 'bg-red-400 animate-ping'; 
         }
 
+        const displayStatus = statusMap[bot.status] || bot.status;
+
         const tr = document.createElement('tr');
         tr.className = 'fleet-row cursor-pointer group';
         tr.setAttribute('tabindex', '0');
         tr.setAttribute('role', 'button');
-        tr.setAttribute('aria-label', `Inspect bot ${bot.id}, status ${bot.status}`);
+        tr.setAttribute('aria-label', `Inspect bot ${bot.id}, status ${displayStatus}`);
         tr.onclick = () => openBotDrawer(bot.id);
         tr.onkeydown = (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
@@ -304,15 +676,15 @@ function renderFleetTable(filterText = '') {
                         <i data-lucide="cpu" class="w-4 h-4 text-gray-400 group-hover:text-indigo-400 transition-colors" aria-hidden="true"></i>
                     </div>
                     <div>
-                        <span class="font-medium text-white text-xs block">${escapeHTML(bot.id)}</span>
-                        <span class="text-[10px] text-gray-500 font-mono">PID #${escapeHTML(bot.pid || '84920')}</span>
+                        <span class="font-medium text-white text-xs block" translate="no">${escapeHTML(bot.id)}</span>
+                        <span class="text-[10px] text-gray-500 font-mono" translate="no">PID #${escapeHTML(bot.pid || '84920')}</span>
                     </div>
                 </div>
             </td>
             <td class="px-5 py-3.5 border-b border-border">
-                <span class="font-mono text-xs text-gray-300 bg-black/40 px-2 py-1 rounded-md border border-white/5">${escapeHTML(bot.runtime)}</span>
+                <span class="font-mono text-xs text-gray-300 bg-black/40 px-2 py-1 rounded-md border border-white/5" translate="no">${escapeHTML(bot.runtime)}</span>
             </td>
-            <td class="px-5 py-3.5 border-b border-border font-mono text-xs">
+            <td class="px-5 py-3.5 border-b border-border font-mono text-xs" translate="no">
                 <div class="flex items-center gap-3">
                     <span class="text-gray-300">${escapeHTML(bot.latency)}ms</span>
                     <span class="text-gray-500">•</span>
@@ -322,7 +694,7 @@ function renderFleetTable(filterText = '') {
             <td class="px-5 py-3.5 border-b border-border">
                 <span class="px-2.5 py-1 rounded-full text-[11px] font-mono border inline-flex items-center gap-1.5 ${statusClass}">
                     <span class="w-1.5 h-1.5 rounded-full ${statusDot}"></span>
-                    <span>${escapeHTML(bot.status)}</span>
+                    <span>${escapeHTML(displayStatus)}</span>
                 </span>
             </td>
             <td class="px-5 py-3.5 border-b border-border text-right" onclick="event.stopPropagation()">
@@ -331,7 +703,7 @@ function renderFleetTable(filterText = '') {
                         Ping
                     </button>
                     <button type="button" onclick="openBotDrawer('${escapeHTML(bot.id)}')" class="px-2.5 py-1 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/20 text-[11px] font-semibold transition-all">
-                        Details
+                        ${detailsLabel}
                     </button>
                 </div>
             </td>
@@ -341,12 +713,19 @@ function renderFleetTable(filterText = '') {
     
     const countEl = document.getElementById('cluster-count');
     if (countEl) countEl.innerHTML = `${activeCount}<span class="text-xl text-gray-500 font-sans font-normal">/${bots.length}</span>`;
-    lucide.createIcons();
+    if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
 }
 
 function openBotDrawer(botId) {
     const bot = bots.find(b => b.id === botId);
     if(!bot) return;
+
+    const statusMap = {
+        'Healthy': currentLang === 'es' ? 'Operativo' : 'Healthy',
+        'Warning': currentLang === 'es' ? 'Advertencia' : 'Warning',
+        'CRITICAL': currentLang === 'es' ? 'CRÍTICO' : 'CRITICAL',
+        'Offline': currentLang === 'es' ? 'Desconectado' : 'Offline'
+    };
 
     document.getElementById('drawer-bot-name').innerText = bot.id;
     document.getElementById('drawer-bot-runtime').innerText = bot.runtime;
@@ -354,7 +733,7 @@ function openBotDrawer(botId) {
     document.getElementById('drawer-ram').innerText = bot.ram;
     
     const statusEl = document.getElementById('drawer-bot-status');
-    statusEl.innerText = bot.status;
+    statusEl.innerText = statusMap[bot.status] || bot.status;
     if(bot.status === 'Healthy') statusEl.className = 'px-3 py-1 text-xs font-bold rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
     else if(bot.status === 'CRITICAL') statusEl.className = 'px-3 py-1 text-xs font-bold rounded-full bg-red-500/20 text-red-400 border border-red-500/30 animate-pulse';
     else statusEl.className = 'px-3 py-1 text-xs font-bold rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30';
@@ -364,6 +743,15 @@ function openBotDrawer(botId) {
         document.getElementById('backdrop').classList.remove('opacity-0');
         document.getElementById('bot-drawer').classList.remove('hidden', 'drawer-exit'); document.getElementById('bot-drawer').classList.add('drawer-enter');
     }, 10);
+}
+
+function restartWorkerFromDrawer() {
+    showToast(
+        currentLang === 'es' ? 'Agente Reiniciado' : 'Worker Restarted',
+        currentLang === 'es' ? 'El proceso se reinicializó correctamente.' : 'Worker re-initialized smoothly.',
+        'success'
+    );
+    closeAllOverlays();
 }
 
 function closeAllOverlays() {
@@ -416,11 +804,19 @@ document.querySelectorAll('.interval-btn').forEach(btn => {
 
 async function generateBot() {
     const nameInput = document.getElementById('new-bot-name').value.trim();
-    if(!nameInput) return showToast('Error', 'Please enter a worker name / ID', 'error');
+    if(!nameInput) return showToast(
+        currentLang === 'es' ? 'Error' : 'Error',
+        currentLang === 'es' ? 'Por favor ingresa un nombre o ID de agente' : 'Please enter a worker name / ID',
+        'error'
+    );
     
     const consentBox = document.getElementById('consent-checkbox');
     if (consentBox && !consentBox.checked) {
-        return showToast('Consent Required', 'Please accept the Privacy Policy and Terms to generate connection', 'error');
+        return showToast(
+            currentLang === 'es' ? 'Consentimiento Requerido' : 'Consent Required',
+            currentLang === 'es' ? 'Por favor acepta los términos y privacidad para generar la conexión' : 'Please accept the Privacy Policy and Terms to generate connection',
+            'error'
+        );
     }
 
     const lang = document.getElementById('new-bot-lang').value;
@@ -437,7 +833,7 @@ async function generateBot() {
         runtime: lang,
         latency: 0,
         ram: 0,
-        status: 'Waiting...',
+        status: currentLang === 'es' ? 'Operativo' : 'Healthy',
         pid: Math.floor(10000 + Math.random() * 80000),
         uptime: '0m',
         consent_given: true,
@@ -472,13 +868,21 @@ async function generateBot() {
     document.getElementById('register-success').classList.add('flex');
     document.getElementById('generated-api-key').innerText = key;
     
-    showToast('Success', 'Bot registered & consent recorded');
+    showToast(
+        currentLang === 'es' ? '¡Éxito!' : 'Success',
+        currentLang === 'es' ? 'Agente registrado y consentimiento guardado' : 'Bot registered & consent recorded',
+        'success'
+    );
 }
 
 function copyGeneratedKey() {
     const key = document.getElementById('generated-api-key').innerText;
     navigator.clipboard.writeText(key).then(() => {
-        showToast('Copied!', 'API Key copied to clipboard');
+        showToast(
+            currentLang === 'es' ? '¡Copiado!' : 'Copied!',
+            currentLang === 'es' ? 'Clave de API copiada al portapapeles' : 'API Key copied to clipboard',
+            'success'
+        );
     });
 }
 
@@ -619,7 +1023,11 @@ function triggerCrashSimulation() {
         }, i * 500);
     }
     
-    showToast('CRITICAL', 'roblox-sync-worker is failing', 'error');
+    showToast(
+        currentLang === 'es' ? 'CRÍTICO' : 'CRITICAL',
+        currentLang === 'es' ? 'Falla detectada en roblox-sync-worker' : 'roblox-sync-worker is failing',
+        'error'
+    );
 }
 
 function openClaudeDiagnostics() {
@@ -637,27 +1045,35 @@ function openClaudeDiagnostics() {
     document.getElementById('claude-result').classList.add('hidden');
     document.getElementById('claude-result').classList.remove('flex');
     const badge = document.getElementById('claude-status-badge');
-    badge.innerHTML = '<span class="animate-pulse">Analyzing...</span>';
+    badge.innerHTML = `<span class="animate-pulse">${currentLang === 'es' ? 'Analizando...' : 'Analyzing...'}</span>`;
     badge.className = 'px-2 py-1 text-xs font-mono rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30';
     
     // Animate thinking
-    setTimeout(() => { document.getElementById('claude-thinking-text').innerText = "Correlating HTTP 429 errors with source code..."; }, 1500);
-    setTimeout(() => { document.getElementById('claude-thinking-text').innerText = "Generating Exponential Backoff patch..."; }, 3000);
+    setTimeout(() => { 
+        document.getElementById('claude-thinking-text').innerText = currentLang === 'es' 
+            ? "Correlacionando errores HTTP 429 con el código fuente..." 
+            : "Correlating HTTP 429 errors with source code..."; 
+    }, 1500);
+    setTimeout(() => { 
+        document.getElementById('claude-thinking-text').innerText = currentLang === 'es' 
+            ? "Generando parche de retroceso exponencial..." 
+            : "Generating Exponential Backoff patch..."; 
+    }, 3000);
     
     setTimeout(() => {
         document.getElementById('claude-loading').classList.add('hidden');
         document.getElementById('claude-result').classList.remove('hidden');
         document.getElementById('claude-result').classList.add('flex');
         
-        badge.innerHTML = '<i data-lucide="check-circle" class="w-3 h-3 inline"></i> Analysis Complete';
+        badge.innerHTML = `<i data-lucide="check-circle" class="w-3 h-3 inline"></i> ${currentLang === 'es' ? 'Análisis Completo' : 'Analysis Complete'}`;
         badge.className = 'px-2 py-1 text-xs font-mono rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1';
-        lucide.createIcons();
+        if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
     }, 4500);
 }
 
 function applyAIPatch() {
     const btn = document.getElementById('btn-apply-patch');
-    btn.innerHTML = '<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Applying...';
+    btn.innerHTML = `<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> ${currentLang === 'es' ? 'Aplicando...' : 'Applying...'}`;
     
     setTimeout(() => {
         crashActive = false;
@@ -665,7 +1081,7 @@ function applyAIPatch() {
         // Recover bot
         const botIndex = bots.findIndex(b => b.id === 'roblox-sync-worker');
         if(botIndex !== -1) {
-            bots[botIndex].status = 'Healthy';
+            bots[botIndex].status = currentLang === 'es' ? 'Operativo' : 'Healthy';
             bots[botIndex].latency = 42;
             renderFleetTable();
         }
@@ -673,10 +1089,13 @@ function applyAIPatch() {
         document.getElementById('ai-alert').classList.add('hidden');
         closeAllOverlays();
         
-        addLog('SYSTEM', 'INFO', 'AI Patch applied successfully. roblox-sync-worker recovered.', 'text-emerald-400', 'text-emerald-500');
-        showToast('System Restored', 'Bot roblox-sync-worker is Healthy again.');
+        addLog('SYSTEM', 'INFO', currentLang === 'es' ? 'Parche IA aplicado con éxito. roblox-sync-worker recuperado.' : 'AI Patch applied successfully. roblox-sync-worker recovered.', 'text-emerald-400', 'text-emerald-500');
+        showToast(
+            currentLang === 'es' ? 'Sistema Restaurado' : 'System Restored',
+            currentLang === 'es' ? 'El agente roblox-sync-worker volvió a estar operativo.' : 'Bot roblox-sync-worker is Healthy again.'
+        );
         
-        btn.innerHTML = '<i data-lucide="wrench" class="w-4 h-4"></i> Apply Patch & Auto-Recover';
+        btn.innerHTML = `<i data-lucide="wrench" class="w-4 h-4"></i> ${currentLang === 'es' ? 'Aplicar Parche y Auto-Recuperar' : 'Apply Patch & Auto-Recover'}`;
     }, 2000);
 }
 
@@ -752,7 +1171,7 @@ function copySdkCode() {
     const notifySuccess = () => {
         if (btn) {
             const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> <span class="text-emerald-400">Copied!</span>';
+            btn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> <span class="text-emerald-400">${currentLang === 'es' ? '¡Copiado!' : 'Copied!'}</span>`;
             btn.classList.add('border-emerald-500/50', 'bg-emerald-500/10');
             if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
             
@@ -762,7 +1181,11 @@ function copySdkCode() {
                 if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
             }, 2000);
         }
-        showToast('Snippet Copied', 'SDK code copied to clipboard', 'success');
+        showToast(
+            currentLang === 'es' ? 'Fragmento Copiado' : 'Snippet Copied',
+            currentLang === 'es' ? 'Código SDK copiado al portapapeles' : 'SDK code copied to clipboard',
+            'success'
+        );
     };
 
     if (navigator.clipboard && window.isSecureContext) {
@@ -783,7 +1206,7 @@ async function testSdkHeartbeat() {
     
     if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin text-cyan-400"></i><span>Pinging API...</span>';
+        btn.innerHTML = `<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin text-cyan-400"></i><span>${currentLang === 'es' ? 'Enviando Ping...' : 'Pinging API...'}</span>`;
         if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
     }
 
@@ -818,17 +1241,26 @@ async function testSdkHeartbeat() {
         if (responsePayload) {
             responsePayload.textContent = JSON.stringify(data, null, 2);
         }
-        showToast('Heartbeat Ack', `Server acknowledged ping in ${elapsed}ms`, 'success');
+        showToast(
+            currentLang === 'es' ? 'Latido Confirmado' : 'Heartbeat Ack',
+            currentLang === 'es' ? `Servidor reconoció el ping en ${elapsed}ms` : `Server acknowledged ping in ${elapsed}ms`,
+            'success'
+        );
     } catch (err) {
         if (statusText) {
             statusText.className = 'text-[11px] font-mono text-red-400 font-semibold';
             statusText.textContent = `Error: ${err.message}`;
         }
-        showToast('Ping Failed', err.message, 'error');
+        showToast(
+            currentLang === 'es' ? 'Ping Fallido' : 'Ping Failed',
+            err.message,
+            'error'
+        );
     } finally {
         if (btn) {
             btn.disabled = false;
-            btn.innerHTML = '<i data-lucide="zap" class="w-3.5 h-3.5 text-emerald-400"></i><span>Test Live Ping</span>';
+            const pingLabel = (i18n[currentLang] || i18n.es)['sdk-test-ping'] || 'Probar Ping en Vivo';
+            btn.innerHTML = `<i data-lucide="zap" class="w-3.5 h-3.5 text-emerald-400"></i><span>${pingLabel}</span>`;
             if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
         }
     }
@@ -848,7 +1280,7 @@ function showToast(title, message, type = 'success') {
         iconContainer.className = 'w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center';
         iconContainer.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i>';
     }
-    lucide.createIcons();
+    if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
     
     toast.classList.remove('translate-y-[150%]', 'opacity-0');
     
@@ -884,7 +1316,7 @@ document.addEventListener('mousemove', (e) => {
 // Dynamic Island Scroll Morphing for Liquid Glass Navbar
 document.addEventListener('DOMContentLoaded', () => {
     if (typeof lucide !== 'undefined' && lucide.createIcons) {
-        lucide.createIcons();
+        if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
     }
 
     const scrollMain = document.querySelector('main');
@@ -941,12 +1373,19 @@ document.addEventListener('DOMContentLoaded', () => {
             targetView.classList.add('active-view');
             
             // Update Header Title (Preserving Liquid Glass optical badge)
+            const dict = i18n[currentLang] || i18n.es;
+            const titlesMap = {
+                'nav-overview': dict['title-overview'],
+                'nav-fleet': dict['title-fleet'],
+                'nav-logs': dict['title-logs'],
+                'nav-docs': dict['title-docs']
+            };
             const headerTitleSpan = document.querySelector('header h1 span:first-child');
             if(headerTitleSpan) {
-                headerTitleSpan.innerText = titles[navId];
+                headerTitleSpan.innerText = titlesMap[navId] || titles[navId];
             } else {
                 const headerTitle = document.querySelector('header h1');
-                if(headerTitle) headerTitle.innerText = titles[navId];
+                if(headerTitle) headerTitle.innerText = titlesMap[navId] || titles[navId];
             }
         };
         navEl.addEventListener('click', activateNav);

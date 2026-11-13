@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="es" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -43,7 +43,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css?v=4.6.0">
+    <link rel="stylesheet" href="style.css?v=4.7.0">
 </head>
 <body class="bg-base text-gray-200 font-sans antialiased h-screen flex overflow-hidden selection:bg-indigo-500/30">
 
@@ -76,19 +76,19 @@
         <nav class="flex-1 py-6 flex flex-col gap-1.5 px-3" aria-label="Main Navigation">
             <a href="#overview" id="nav-overview" role="button" tabindex="0" aria-label="Overview Dashboard" class="nav-item active cursor-pointer flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-white bg-white/10 font-medium">
                 <i data-lucide="layout-dashboard" class="w-4 h-4 text-indigo-400" aria-hidden="true"></i>
-                <span class="hidden md:block text-sm">Overview</span>
+                <span class="hidden md:block text-sm" data-i18n="nav-overview">Resumen General</span>
             </a>
             <a href="#fleet" id="nav-fleet" role="button" tabindex="0" aria-label="Fleet Management" class="nav-item cursor-pointer flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all">
                 <i data-lucide="server" class="w-4 h-4 text-emerald-400" aria-hidden="true"></i>
-                <span class="hidden md:block text-sm">Active Fleet</span>
+                <span class="hidden md:block text-sm" data-i18n="nav-fleet">Flota Activa</span>
             </a>
             <a href="#logs" id="nav-logs" role="button" tabindex="0" aria-label="Live Logs" class="nav-item cursor-pointer flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all">
                 <i data-lucide="terminal-square" class="w-4 h-4 text-cyan-400" aria-hidden="true"></i>
-                <span class="hidden md:block text-sm">Live Logs</span>
+                <span class="hidden md:block text-sm" data-i18n="nav-logs">Registros en Vivo</span>
             </a>
             <a href="#docs" id="nav-docs" role="button" tabindex="0" aria-label="SDK Documentation" class="nav-item cursor-pointer flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all">
                 <i data-lucide="book-open" class="w-4 h-4 text-amber-400" aria-hidden="true"></i>
-                <span class="hidden md:block text-sm">SDK Docs</span>
+                <span class="hidden md:block text-sm" data-i18n="nav-docs">Documentación SDK</span>
             </a>
         </nav>
         
@@ -96,8 +96,8 @@
             <div class="flex items-center gap-3">
                 <span class="live-beacon w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.9)]"></span>
                 <div class="hidden md:flex flex-col">
-                    <span class="text-xs font-semibold text-gray-200">System Healthy</span>
-                    <span class="text-[10px] text-gray-500 font-mono">Edge US-East • Zero Trust</span>
+                    <span class="text-xs font-semibold text-gray-200" data-i18n="system-healthy">Sistema Operativo</span>
+                    <span class="text-[10px] text-gray-500 font-mono" data-i18n="zero-trust">Edge US-East • Zero Trust</span>
                 </div>
             </div>
         </div>
@@ -115,10 +115,10 @@
                         <span class="optic-beacon-core"></span>
                         <span class="optic-beacon-ring"></span>
                     </div>
-                    <span>PRODUCTION</span>
+                    <span data-i18n="badge-production">PRODUCCIÓN</span>
                 </div>
                 <h1 class="text-sm md:text-base font-semibold text-white tracking-tight flex items-center gap-2">
-                    <span>Cluster Telemetry</span>
+                    <span data-i18n="title-overview">Telemetría del Clúster</span>
                     <span class="text-gray-400/70 text-xs hidden sm:inline font-normal">• Optic Liquid Glass</span>
                 </h1>
             </div>
@@ -127,24 +127,37 @@
             <div class="hidden md:flex items-center gap-2.5 px-4 py-1.5 rounded-full liquid-glass-pill text-xs text-gray-300 relative z-10 select-none">
                 <span class="flex items-center gap-1.5 text-emerald-400 font-mono font-semibold">
                     <i data-lucide="activity" class="w-3.5 h-3.5"></i>
-                    <span id="nav-live-sla">99.98% SLA</span>
+                    <span id="nav-live-sla" translate="no">99.98% SLA</span>
                 </span>
                 <span class="text-gray-600">•</span>
                 <span class="flex items-center gap-1.5 text-cyan-300 font-mono">
                     <i data-lucide="cpu" class="w-3.5 h-3.5 text-cyan-400"></i>
-                    <span id="nav-live-load">0.28 Load</span>
+                    <span id="nav-live-load" translate="no">0.28 Load</span>
                 </span>
             </div>
 
-            <!-- Right: Interactive Controls & Prominent Glass CTA -->
-            <div class="flex items-center gap-2.5 sm:gap-3 relative z-10">
+            <!-- Right: Controls (Language + Theme + Ping + Register CTA) -->
+            <div class="flex items-center gap-2 sm:gap-2.5 relative z-10">
                 <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full liquid-glass-pill text-xs text-gray-300 font-mono select-none" data-tooltip="Edge WebSocket Latency">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]"></span>
-                    <span id="nav-edge-latency">38ms Edge</span>
+                    <span id="nav-edge-latency" translate="no">38ms Edge</span>
                 </div>
+
+                <!-- Language Toggle Button (ES / EN) -->
+                <button type="button" onclick="toggleLanguage()" id="btn-lang-toggle" class="liquid-glass-pill px-2.5 py-1.5 text-xs font-semibold flex items-center gap-1.5 text-gray-200 hover:text-white transition-all select-none" title="Cambiar idioma (Español / English)" aria-label="Toggle language">
+                    <i data-lucide="languages" class="w-3.5 h-3.5 text-cyan-400"></i>
+                    <span id="current-lang-text" class="font-mono">ES</span>
+                </button>
+
+                <!-- Light / Dark Mode Toggle Button -->
+                <button type="button" onclick="toggleTheme()" id="btn-theme-toggle" class="liquid-glass-pill p-2 text-xs flex items-center justify-center text-gray-200 hover:text-white transition-all select-none" title="Cambiar tema (Claro / Oscuro)" aria-label="Toggle light/dark theme">
+                    <i id="theme-icon" data-lucide="sun" class="w-4 h-4 text-amber-400"></i>
+                </button>
+
+                <!-- Prominent Liquid Glass Action CTA -->
                 <button onclick="openNewBotModal()" class="btn-liquid-glass" aria-label="Register New Bot">
                     <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                    <span>Register Bot</span>
+                    <span data-i18n="btn-register-bot">Registrar Bot</span>
                 </button>
             </div>
         </header>
@@ -158,13 +171,13 @@
                 </div>
                 <div class="flex-1">
                     <div class="flex items-center gap-2 mb-1">
-                        <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-red-500 text-white">CRITICAL</span>
-                        <h3 class="text-red-300 font-semibold text-sm">Bot Outage Detected</h3>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-red-500 text-white" data-i18n="alert-critical">CRÍTICO</span>
+                        <h3 class="text-red-300 font-semibold text-sm" data-i18n="alert-title">Corte de Bot Detectado</h3>
                     </div>
-                    <p class="text-xs text-red-200/80 mb-3 font-mono" id="alert-desc">roblox-sync-worker has entered a CRITICAL state due to HTTP 429 Too Many Requests.</p>
+                    <p class="text-xs text-red-200/80 mb-3 font-mono" id="alert-desc" translate="no">roblox-sync-worker has entered a CRITICAL state due to HTTP 429 Too Many Requests.</p>
                     <button onclick="openClaudeDiagnostics()" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 hover:border-orange-500 text-orange-300 rounded-xl text-xs font-bold transition-all shadow-[0_0_15px_rgba(249,115,22,0.25)]">
                         <i data-lucide="sparkles" class="w-3.5 h-3.5 text-orange-400"></i>
-                        <span>Diagnose & Auto-Patch with Claude 3.5 Sonnet</span>
+                        <span data-i18n="alert-btn-diagnose">Diagnosticar y Auto-Reparar con Claude 3.5 Sonnet</span>
                     </button>
                 </div>
             </div>
@@ -180,26 +193,26 @@
                     <!-- Floating Pill Badge -->
                     <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-xs font-medium text-indigo-300 shimmer-badge mb-5 w-max">
                         <span class="w-2 h-2 rounded-full bg-emerald-400 live-beacon"></span>
-                        <span>Autonomous Observability Engine • 99.98% Global SLA</span>
+                        <span data-i18n="hero-pill">Motor de Observabilidad Autónoma • 99.98% SLA Global</span>
                     </div>
 
                     <h1 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-4 text-glow leading-tight" style="letter-spacing: -0.04em;">
-                        Distributed Telemetry <br class="hidden sm:inline">
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400">Engineered for Scale</span>
+                        <span data-i18n="hero-title-1">Telemetría Distribuida</span> <br class="hidden sm:inline">
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400" data-i18n="hero-title-2">Diseñada para Escalar</span>
                     </h1>
                     
-                    <p class="text-gray-400 max-w-2xl text-sm md:text-base mb-8 font-normal leading-relaxed">
-                        Monitor distributed autonomous agents, microservices, and background workers in real-time. Sub-millisecond precision, self-healing telemetry, and instant diagnostic intelligence.
+                    <p class="text-gray-400 max-w-2xl text-sm md:text-base mb-8 font-normal leading-relaxed" data-i18n="hero-subtitle">
+                        Supervisa agentes de IA, procesos en segundo plano y microservicios con latencia ultra-baja y resolución autónoma de incidentes.
                     </p>
 
                     <div class="flex flex-wrap gap-4 z-10">
                         <button onclick="openNewBotModal()" id="btn-deploy" class="btn-glow-primary px-6 py-3 rounded-xl text-xs md:text-sm font-bold flex items-center gap-2.5 transition-all">
                             <i data-lucide="zap" class="w-4 h-4 fill-black"></i>
-                            <span>Deploy Agent</span>
+                            <span data-i18n="btn-deploy">Desplegar Agente</span>
                         </button>
                         <button onclick="triggerCrashSimulation()" class="btn-glow-glass px-6 py-3 rounded-xl text-xs md:text-sm font-semibold flex items-center gap-2 text-gray-300 hover:text-white transition-all">
                             <i data-lucide="flame" class="w-4 h-4 text-red-400"></i>
-                            <span>Simular Incidente</span>
+                            <span data-i18n="btn-sim-incident">Simular Incidente</span>
                         </button>
                     </div>
                 </div>
@@ -212,23 +225,23 @@
                         <div>
                             <div class="flex justify-between items-start mb-2">
                                 <div>
-                                    <p class="text-xs text-gray-400 font-semibold tracking-wider uppercase">Global Availability</p>
-                                    <h3 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight mt-1">
+                                    <p class="text-xs text-gray-400 font-semibold tracking-wider uppercase" data-i18n="global-avail">Disponibilidad Global</p>
+                                    <h3 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight mt-1" translate="no">
                                         99.98<span class="text-xl text-gray-500 font-normal">%</span>
                                     </h3>
                                 </div>
                                 <div class="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-xs font-bold flex items-center gap-2">
                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                                    <span>All Systems Operational</span>
+                                    <span data-i18n="all-operational">Todos los Sistemas Operativos</span>
                                 </div>
                             </div>
                             
                             <!-- 32-Bar Visual SLA Track -->
                             <div class="mt-4">
                                 <div class="flex justify-between text-[10px] text-gray-500 mb-1.5 font-mono">
-                                    <span>30 days ago</span>
-                                    <span>100% SLA target</span>
-                                    <span>Today</span>
+                                    <span data-i18n="sla-30-days">Hace 30 días</span>
+                                    <span data-i18n="sla-target">Objetivo 100% SLA</span>
+                                    <span data-i18n="sla-today">Hoy</span>
                                 </div>
                                 <div class="uptime-track">
                                     <div class="uptime-pill" data-tooltip="Day 1: 100% operational"></div>
@@ -266,8 +279,8 @@
                         </div>
                         
                         <div class="mt-4 flex items-center justify-between text-xs text-gray-400 border-t border-white/5 pt-3">
-                            <span class="flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> SLA Guarantee Active</span>
-                            <span class="font-mono text-gray-500">4 Regions Synchronized</span>
+                            <span class="flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> <span data-i18n="sla-guarantee">Garantía SLA Activa</span></span>
+                            <span class="font-mono text-gray-500" data-i18n="regions-synced">4 Regiones Sincronizadas</span>
                         </div>
                     </div>
 
@@ -275,20 +288,20 @@
                     <div class="glass-card p-7 stagger-item rounded-3xl border border-border bg-surface relative flex flex-col justify-between min-h-[220px]">
                         <div>
                             <div class="flex justify-between items-start mb-2">
-                                <p class="text-xs text-gray-400 font-semibold tracking-wider uppercase">Edge Latency</p>
+                                <p class="text-xs text-gray-400 font-semibold tracking-wider uppercase" data-i18n="edge-latency-title">Latencia Edge</p>
                                 <div class="tooltip-container" data-tooltip="Real-time global RTT">
                                     <i data-lucide="activity" class="w-4 h-4 text-indigo-400"></i>
                                 </div>
                             </div>
-                            <h3 class="text-4xl md:text-5xl font-extrabold text-white font-mono tracking-tight mt-1" id="avg-latency">
+                            <h3 class="text-4xl md:text-5xl font-extrabold text-white font-mono tracking-tight mt-1" id="avg-latency" translate="no">
                                 42<span class="text-xl text-gray-500 font-sans font-normal">ms</span>
                             </h3>
                         </div>
                         
                         <div>
                             <div class="flex justify-between text-[11px] font-mono text-gray-400 mb-1">
-                                <span>Fast Path</span>
-                                <span class="text-indigo-400">Sub-50ms</span>
+                                <span data-i18n="fast-path">Ruta Rápida</span>
+                                <span class="text-indigo-400" data-i18n="sub-50">Sub-50ms</span>
                             </div>
                             <div class="h-2 w-full bg-gray-800/60 rounded-full overflow-hidden">
                                 <div class="h-full bg-gradient-to-r from-indigo-500 to-cyan-400 w-1/3 rounded-full transition-all duration-300" id="latency-bar"></div>
@@ -300,18 +313,18 @@
                     <div class="glass-card p-7 stagger-item rounded-3xl border border-border bg-surface relative flex flex-col justify-between min-h-[220px]">
                         <div>
                             <div class="flex justify-between items-start mb-2">
-                                <p class="text-xs text-gray-400 font-semibold tracking-wider uppercase">Active Fleet</p>
+                                <p class="text-xs text-gray-400 font-semibold tracking-wider uppercase" data-i18n="active-fleet-bento">Flota Activa</p>
                                 <span class="live-beacon w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.9)]"></span>
                             </div>
-                            <h3 class="text-4xl md:text-5xl font-extrabold text-white font-mono tracking-tight mt-1" id="cluster-count">
+                            <h3 class="text-4xl md:text-5xl font-extrabold text-white font-mono tracking-tight mt-1" id="cluster-count" translate="no">
                                 4<span class="text-xl text-gray-500 font-sans font-normal">/4</span>
                             </h3>
-                            <p class="text-xs text-gray-400 mt-1">Autonomous workers online</p>
+                            <p class="text-xs text-gray-400 mt-1" data-i18n="autonomous-online">agentes autónomos en línea</p>
                         </div>
                         
                         <button onclick="triggerCrashSimulation()" class="w-full py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-xl text-red-400 text-[11px] font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5">
                             <i data-lucide="bomb" class="w-3.5 h-3.5"></i>
-                            <span>Simular Falla</span>
+                            <span data-i18n="sim-failure">Simular Falla</span>
                         </button>
                     </div>
 
@@ -323,13 +336,13 @@
                                     <i data-lucide="cpu" class="w-4 h-4 text-indigo-400"></i>
                                 </div>
                                 <div>
-                                    <h4 class="text-sm font-bold text-white tracking-tight">Global Edge Cluster Telemetry</h4>
-                                    <p class="text-[10px] text-gray-400 font-mono">Distributed Mesh Network • 99.99% SLA</p>
+                                    <h4 class="text-sm font-bold text-white tracking-tight" data-i18n="cluster-telemetry-title">Telemetría del Clúster Global</h4>
+                                    <p class="text-[10px] text-gray-400 font-mono" data-i18n="cluster-telemetry-subtitle">Red Distribuida Mesh • 99.99% SLA</p>
                                 </div>
                             </div>
                             <span class="px-2.5 py-1 rounded-full text-[10px] font-mono font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                                Global Edge Mesh Shielded
+                                <span data-i18n="cluster-shielded">Malla Edge Global Protegida</span>
                             </span>
                         </div>
 
@@ -338,31 +351,31 @@
                             <!-- RAM Gauge -->
                             <div>
                                 <div class="flex justify-between items-center text-xs mb-1.5">
-                                    <span class="text-gray-400 font-medium">Cluster Memory Pool</span>
-                                    <span class="font-mono text-white text-xs font-semibold" id="host-ram-percent">38%</span>
+                                    <span class="text-gray-400 font-medium" data-i18n="cluster-memory-pool">Reserva de Memoria del Clúster</span>
+                                    <span class="font-mono text-white text-xs font-semibold" id="host-ram-percent" translate="no">38%</span>
                                 </div>
                                 <div class="h-2 w-full bg-gray-800/80 rounded-full overflow-hidden">
                                     <div id="host-ram-bar" class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 w-[38%] transition-all duration-700 rounded-full"></div>
                                 </div>
-                                <span class="text-[11px] font-mono text-gray-500 mt-1 block" id="host-ram-usage">24.3 / 64 GB allocated</span>
+                                <span class="text-[11px] font-mono text-gray-500 mt-1 block" id="host-ram-usage" translate="no">24.3 / 64 GB allocated</span>
                             </div>
 
                             <!-- CPU Load Gauge -->
                             <div>
                                 <div class="flex justify-between items-center text-xs mb-1.5">
-                                    <span class="text-gray-400 font-medium">Mesh CPU Utilization</span>
-                                    <span class="font-mono text-white text-xs font-semibold" id="host-cpu-load">0.24</span>
+                                    <span class="text-gray-400 font-medium" data-i18n="mesh-cpu">Utilización de CPU de la Malla</span>
+                                    <span class="font-mono text-white text-xs font-semibold" id="host-cpu-load" translate="no">0.24</span>
                                 </div>
                                 <div class="h-2 w-full bg-gray-800/80 rounded-full overflow-hidden">
                                     <div id="host-cpu-bar" class="h-full bg-gradient-to-r from-emerald-500 to-cyan-400 w-[18%] transition-all duration-700 rounded-full"></div>
                                 </div>
-                                <span class="text-[11px] font-mono text-gray-500 mt-1 block">Cluster Uptime: <span id="host-uptime" class="text-gray-400">99.99%</span></span>
+                                <span class="text-[11px] font-mono text-gray-500 mt-1 block"><span data-i18n="cluster-uptime-label">Disponibilidad del Clúster:</span> <span id="host-uptime" class="text-gray-400" translate="no">99.99%</span></span>
                             </div>
                         </div>
 
                         <div class="flex items-center justify-between text-[11px] text-gray-500 border-t border-white/5 pt-2 font-mono">
-                            <span>24 PoP Regions Active • High Availability</span>
-                            <span class="text-indigo-400">Telemetry Engine Active</span>
+                            <span data-i18n="pop-regions">24 Regiones PoP Activas • Alta Disponibilidad</span>
+                            <span class="text-indigo-400" data-i18n="engine-active">Motor de Telemetría Activo</span>
                         </div>
                     </div>
 
@@ -370,8 +383,8 @@
                     <div class="glass-card md:col-span-2 p-7 stagger-item rounded-3xl border border-border bg-surface relative flex flex-col justify-between min-h-[240px]">
                         <div class="flex items-center justify-between mb-2">
                             <div>
-                                <h4 class="text-sm font-bold text-white tracking-tight">Real-time Telemetry Pulse</h4>
-                                <p class="text-[10px] text-gray-400 font-mono">Sub-second jitter & roundtrip stream</p>
+                                <h4 class="text-sm font-bold text-white tracking-tight" data-i18n="pulse-title">Pulso de Telemetría en Tiempo Real</h4>
+                                <p class="text-[10px] text-gray-400 font-mono" data-i18n="pulse-subtitle">Transmisión de fluctuación e ida y vuelta sub-segundo</p>
                             </div>
                             <div class="flex items-center gap-1.5 bg-black/40 p-1 rounded-xl border border-white/5 text-[10px] font-mono">
                                 <button class="px-2.5 py-1 rounded-lg bg-white/10 text-white font-semibold">Live</button>
@@ -392,22 +405,22 @@
                                 <i data-lucide="radio" class="w-6 h-6 text-cyan-400"></i>
                             </div>
                             <div>
-                                <p class="text-xs text-gray-400 font-semibold tracking-wider uppercase">Event Stream Throughput</p>
+                                <p class="text-xs text-gray-400 font-semibold tracking-wider uppercase" data-i18n="throughput-title">Rendimiento del Flujo de Eventos</p>
                                 <div class="flex items-baseline gap-2 mt-0.5">
-                                    <h3 class="text-3xl font-extrabold text-white font-mono" id="event-rate">1,420</h3>
-                                    <span class="text-xs text-gray-500 font-mono">events / sec</span>
+                                    <h3 class="text-3xl font-extrabold text-white font-mono" id="event-rate" translate="no">1,420</h3>
+                                    <span class="text-xs text-gray-500 font-mono" data-i18n="events-per-sec">eventos / seg</span>
                                 </div>
                             </div>
                         </div>
 
                         <div class="flex items-center gap-8 border-t md:border-t-0 md:border-l border-white/10 pt-4 md:pt-0 md:pl-8 w-full md:w-auto justify-between md:justify-start">
                             <div>
-                                <p class="text-[11px] text-gray-500 uppercase tracking-wider mb-0.5 font-mono">Total Ingested</p>
-                                <p id="total-events" class="text-xl font-bold font-mono text-white">14,293,100</p>
+                                <p class="text-[11px] text-gray-500 uppercase tracking-wider mb-0.5 font-mono" data-i18n="total-ingested">Total Ingerido</p>
+                                <p id="total-events" class="text-xl font-bold font-mono text-white" translate="no">14,293,100</p>
                             </div>
                             <div class="text-right">
-                                <p class="text-[11px] text-gray-500 uppercase tracking-wider mb-0.5 font-mono">Status</p>
-                                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Active Stream</span>
+                                <p class="text-[11px] text-gray-500 uppercase tracking-wider mb-0.5 font-mono" data-i18n="stream-status">Flujo Activo</p>
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" data-i18n="stream-status">Flujo Activo</span>
                             </div>
                         </div>
                     </div>
@@ -423,16 +436,16 @@
                         <div>
                             <h2 class="text-xl font-bold text-white tracking-tight flex items-center gap-2.5">
                                 <i data-lucide="server" class="w-5 h-5 text-indigo-400"></i>
-                                <span>Autonomous Fleet Management</span>
+                                <span data-i18n="fleet-title">Gestión Autónoma de Flota</span>
                             </h2>
-                            <p class="text-xs text-gray-400 mt-0.5">Real-time status, memory footprint, and telemetry pings</p>
+                            <p class="text-xs text-gray-400 mt-0.5" data-i18n="fleet-subtitle">Estado en tiempo real, consumo de memoria y pings de telemetría</p>
                         </div>
                         
                         <div class="flex items-center gap-3">
-                            <input type="text" id="fleet-search" placeholder="Search bots by ID or runtime..." class="bg-black/40 border border-border rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 w-52 md:w-64 transition-all">
+                            <input type="text" id="fleet-search" placeholder="Buscar bots por ID o entorno..." data-i18n-placeholder="fleet-search-placeholder" class="bg-black/40 border border-border rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 w-52 md:w-64 transition-all">
                             <button onclick="openNewBotModal()" class="btn-glow-primary px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2">
                                 <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                                <span>New Worker</span>
+                                <span data-i18n="btn-new-worker">Nuevo Agente</span>
                             </button>
                         </div>
                     </div>
@@ -441,11 +454,11 @@
                         <table class="w-full text-left text-sm">
                             <thead>
                                 <tr class="text-xs text-gray-400 uppercase tracking-wider border-b border-border">
-                                    <th class="px-5 py-3.5 font-semibold">Worker ID</th>
-                                    <th class="px-5 py-3.5 font-semibold">Runtime</th>
-                                    <th class="px-5 py-3.5 font-semibold">Metrics</th>
-                                    <th class="px-5 py-3.5 font-semibold">Status</th>
-                                    <th class="px-5 py-3.5 font-semibold text-right">Actions</th>
+                                    <th class="px-5 py-3.5 font-semibold" data-i18n="th-worker-id">ID de Agente</th>
+                                    <th class="px-5 py-3.5 font-semibold" data-i18n="th-runtime">Entorno</th>
+                                    <th class="px-5 py-3.5 font-semibold" data-i18n="th-metrics">Métricas</th>
+                                    <th class="px-5 py-3.5 font-semibold" data-i18n="th-status">Estado</th>
+                                    <th class="px-5 py-3.5 font-semibold text-right" data-i18n="th-actions">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody id="fleet-table-body" class="divide-y divide-border">
@@ -472,17 +485,17 @@
 
                         <div class="flex items-center gap-2">
                             <button onclick="toggleLogStream()" id="btn-stream" class="text-xs px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-gray-300 transition-colors font-mono">
-                                Pause
+                                <span data-i18n="btn-pause">Pausar</span>
                             </button>
                             <button onclick="clearLogs()" class="text-xs px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-gray-300 transition-colors font-mono">
-                                Clear
+                                <span data-i18n="btn-clear">Limpiar</span>
                             </button>
-                            <input type="text" id="log-search" placeholder="Filter logs..." class="bg-black/50 border border-border rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none focus:border-indigo-500 w-36 transition-all font-mono">
+                            <input type="text" id="log-search" placeholder="Filtrar registros..." data-i18n-placeholder="log-search-placeholder" class="bg-black/50 border border-border rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none focus:border-indigo-500 w-36 transition-all font-mono">
                         </div>
                     </div>
 
-                    <!-- Terminal Output Window -->
-                    <div id="terminal-content" class="flex-1 p-4 overflow-y-auto font-mono text-[11px] leading-relaxed tracking-tight flex flex-col gap-1.5 bg-[#050608]">
+                    <!-- Terminal Output Window (translate="no" to protect auto-translate extensions) -->
+                    <div id="terminal-content" translate="no" class="flex-1 p-4 overflow-y-auto font-mono text-[11px] leading-relaxed tracking-tight flex flex-col gap-1.5 bg-[#050608]">
                         <!-- Populated by app.js stream -->
                     </div>
                 </div>
@@ -495,19 +508,19 @@
                     <div class="p-6 md:p-8 border-b border-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-gradient-to-r from-transparent via-indigo-500/[0.03] to-cyan-500/[0.04]">
                         <div>
                             <div class="flex items-center gap-2.5 mb-1.5">
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">V4.3 CLIENT SPEC</span>
-                                <span class="text-xs text-gray-500 font-mono hidden md:inline">• Zero-Trust Telemetry</span>
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30" data-i18n="sdk-spec-badge">ESPECIFICACIÓN CLIENTE V4.3</span>
+                                <span class="text-xs text-gray-500 font-mono hidden md:inline" data-i18n="sdk-spec-subtitle">• Telemetría Zero-Trust</span>
                             </div>
                             <h2 class="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
-                                <span>SDK &amp; Microservice Integration</span>
+                                <span data-i18n="sdk-title">SDK e Integración de Microservicios</span>
                             </h2>
-                            <p class="text-xs md:text-sm text-gray-400 mt-1">Embed MoniOpen telemetry and automated heartbeats into any agent, bot, or pipeline in 2 lines of code.</p>
+                            <p class="text-xs md:text-sm text-gray-400 mt-1" data-i18n="sdk-subtitle">Integra telemetría y latidos automáticos en cualquier agente, bot o pipeline en 2 líneas de código.</p>
                         </div>
                         
                         <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-                            <button onclick="testSdkHeartbeat()" id="btn-test-sdk" class="btn-liquid-glass flex items-center gap-2 px-3.5 py-2 text-xs" title="Send a real heartbeat to local server">
+                            <button onclick="testSdkHeartbeat()" id="btn-test-sdk" class="btn-liquid-glass flex items-center gap-2 px-3.5 py-2 text-xs" title="Enviar latido real al clúster">
                                 <i data-lucide="zap" class="w-3.5 h-3.5 text-emerald-400"></i>
-                                <span>Test Live Ping</span>
+                                <span data-i18n="sdk-test-ping">Probar Ping en Vivo</span>
                             </button>
                         </div>
                     </div>
@@ -520,15 +533,15 @@
                             <span class="text-xs text-gray-500 font-mono hidden sm:inline">|</span>
                             <code id="sdk-test-response" class="text-[11px] font-mono text-gray-400 truncate max-w-md hidden sm:inline">{"acknowledged": true, "message": "Heartbeat received"}</code>
                         </div>
-                        <span class="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">LIVE API VERIFIED</span>
+                        <span class="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20" data-i18n="sdk-test-verified">API EN VIVO VERIFICADA</span>
                     </div>
 
                     <div class="flex flex-col md:flex-row min-h-[460px]">
                         <!-- Language Selector (Left Column) -->
                         <div class="md:w-64 bg-black/40 border-r border-white/5 p-4 flex flex-col gap-2">
                             <div class="flex items-center justify-between px-2 mb-1">
-                                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest font-mono">Environments</p>
-                                <span class="text-[10px] text-indigo-400 font-mono">4 Runtimes</span>
+                                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest font-mono" data-i18n="sdk-environments">Entornos</p>
+                                <span class="text-[10px] text-indigo-400 font-mono" data-i18n="sdk-runtimes-count">4 Entornos</span>
                             </div>
                             
                             <button class="sdk-tab active text-left px-4 py-3 text-xs font-semibold text-white flex items-center justify-between" data-lang="python">
@@ -567,9 +580,9 @@
                             <div class="mt-auto p-3.5 rounded-xl bg-white/[0.02] border border-white/5 space-y-2">
                                 <div class="flex items-center gap-2 text-[11px] text-gray-300 font-semibold">
                                     <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
-                                    <span>Zero-Trust Auth</span>
+                                    <span data-i18n="sdk-zero-trust-title">Autenticación Zero-Trust</span>
                                 </div>
-                                <p class="text-[10px] text-gray-500 leading-relaxed font-mono">Heartbeats accept Bearer tokens with sub-40ms non-blocking edge telemetry.</p>
+                                <p class="text-[10px] text-gray-500 leading-relaxed font-mono" data-i18n="sdk-zero-trust-desc">Los latidos aceptan tokens Bearer con telemetría no bloqueante sub-40ms.</p>
                             </div>
                         </div>
 
@@ -584,14 +597,14 @@
                                         <span class="mac-dot mac-dot-green"></span>
                                     </div>
                                     <div class="flex items-center gap-2 pl-2 border-l border-white/10">
-                                        <span id="sdk-filename" class="font-mono text-xs text-indigo-300 font-semibold tracking-tight">client.py</span>
-                                        <span id="sdk-runtime-pill" class="text-[10px] font-mono text-gray-500 hidden sm:inline">• Python 3.10+ • Decorator-ready</span>
+                                        <span id="sdk-filename" class="font-mono text-xs text-indigo-300 font-semibold tracking-tight" translate="no">client.py</span>
+                                        <span id="sdk-runtime-pill" class="text-[10px] font-mono text-gray-500 hidden sm:inline" translate="no">• Python 3.10+ • Decorator-ready</span>
                                     </div>
                                 </div>
 
                                 <button onclick="copySdkCode()" id="btn-copy-sdk" class="liquid-glass-pill px-3 py-1.5 text-xs text-white font-medium flex items-center gap-2 hover:bg-white/10 transition-all select-none">
                                     <i data-lucide="copy" class="w-3.5 h-3.5 text-indigo-300"></i>
-                                    <span>Copy Snippet</span>
+                                    <span data-i18n="sdk-copy-snippet">Copiar Fragmento</span>
                                 </button>
                             </div>
 
@@ -599,7 +612,7 @@
                             <div class="p-6 md:p-8 flex-1 overflow-x-auto relative">
                                 
                                 <!-- PYTHON -->
-                                <pre id="sdk-python" class="sdk-content font-mono text-xs md:text-sm text-gray-300 leading-relaxed"><code class="block"><span class="tok-kw">from</span> moniopen <span class="tok-kw">import</span> <span class="tok-cls">MoniOpenClient</span>
+                                <pre id="sdk-python" translate="no" class="sdk-content font-mono text-xs md:text-sm text-gray-300 leading-relaxed"><code class="block"><span class="tok-kw">from</span> moniopen <span class="tok-kw">import</span> <span class="tok-cls">MoniOpenClient</span>
 
 <span class="tok-com"># Initialize client with your cluster endpoint and API credentials</span>
 client = <span class="tok-cls">MoniOpenClient</span>(
@@ -618,7 +631,7 @@ client = <span class="tok-cls">MoniOpenClient</span>(
     <span class="tok-fn">autonomous_task</span>()</code></pre>
 
                                 <!-- NODE.JS / TYPESCRIPT -->
-                                <pre id="sdk-node" class="sdk-content hidden font-mono text-xs md:text-sm text-gray-300 leading-relaxed"><code class="block"><span class="tok-kw">import</span> { <span class="tok-cls">MoniOpen</span> } <span class="tok-kw">from</span> <span class="tok-str">'moniopen-sdk'</span>;
+                                <pre id="sdk-node" translate="no" class="sdk-content hidden font-mono text-xs md:text-sm text-gray-300 leading-relaxed"><code class="block"><span class="tok-kw">import</span> { <span class="tok-cls">MoniOpen</span> } <span class="tok-kw">from</span> <span class="tok-str">'moniopen-sdk'</span>;
 
 <span class="tok-com">// Initialize MoniOpen SDK instance</span>
 <span class="tok-kw">const</span> client = <span class="tok-kw">new</span> <span class="tok-cls">MoniOpen</span>({ 
@@ -641,7 +654,7 @@ client = <span class="tok-cls">MoniOpenClient</span>(
 <span class="tok-fn">runWorker</span>();</code></pre>
 
                                 <!-- GO -->
-                                <pre id="sdk-go" class="sdk-content hidden font-mono text-xs md:text-sm text-gray-300 leading-relaxed"><code class="block"><span class="tok-kw">package</span> main
+                                <pre id="sdk-go" translate="no" class="sdk-content hidden font-mono text-xs md:text-sm text-gray-300 leading-relaxed"><code class="block"><span class="tok-kw">package</span> main
 
 <span class="tok-kw">import</span> (
     <span class="tok-str">"context"</span>
@@ -668,7 +681,7 @@ client = <span class="tok-cls">MoniOpenClient</span>(
 }</code></pre>
 
                                 <!-- CURL / REST -->
-                                <pre id="sdk-curl" class="sdk-content hidden font-mono text-xs md:text-sm text-gray-300 leading-relaxed"><code class="block"><span class="tok-com"># Automated Heartbeat Ping with Zero-Trust Authentication</span>
+                                <pre id="sdk-curl" translate="no" class="sdk-content hidden font-mono text-xs md:text-sm text-gray-300 leading-relaxed"><code class="block"><span class="tok-com"># Automated Heartbeat Ping with Zero-Trust Authentication</span>
 curl -X POST <span class="tok-str">"https://moniopen.rbxtracker.indevs.in/api/v1/heartbeat"</span> \
   -H <span class="tok-str">"Authorization: Bearer mop_live_example123456789"</span> \
   -H <span class="tok-str">"Content-Type: application/json"</span> \
@@ -688,8 +701,8 @@ curl -X POST <span class="tok-str">"https://moniopen.rbxtracker.indevs.in/api/v1
             </div>
 
             <!-- Global Footer -->
-            <footer class="pt-8 pb-4 text-center text-xs text-gray-500 font-mono">
-                &copy; 2026 MoniOpen Platform • Zero-Trust Observability • All Rights Reserved.
+            <footer class="pt-8 pb-4 text-center text-xs text-gray-500 font-mono" data-i18n="footer-copy">
+                &copy; 2026 Plataforma MoniOpen • Observabilidad Zero-Trust • Todos los Derechos Reservados.
             </footer>
         </div>
     </main>
@@ -702,7 +715,7 @@ curl -X POST <span class="tok-str">"https://moniopen.rbxtracker.indevs.in/api/v1
         <div class="p-6 border-b border-border flex items-center justify-between">
             <h3 class="text-base font-bold text-white flex items-center gap-2.5">
                 <i data-lucide="box" class="w-5 h-5 text-indigo-400"></i>
-                <span id="drawer-bot-name">Bot Details</span>
+                <span id="drawer-bot-name" data-i18n="drawer-title">Detalles del Bot</span>
             </h3>
             <button type="button" aria-label="Close" onclick="closeAllOverlays()" class="text-gray-400 hover:text-white transition-colors">
                 <i data-lucide="x" class="w-5 h-5"></i>
@@ -710,23 +723,23 @@ curl -X POST <span class="tok-str">"https://moniopen.rbxtracker.indevs.in/api/v1
         </div>
         <div class="p-6 flex-1 overflow-y-auto space-y-5">
             <div class="flex items-center gap-3">
-                <span id="drawer-bot-status" class="px-3 py-1 text-xs font-bold rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Healthy</span>
-                <span id="drawer-bot-runtime" class="text-xs text-gray-400 font-mono">Node.js 22 LTS</span>
+                <span id="drawer-bot-status" class="px-3 py-1 text-xs font-bold rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" translate="no">Operativo</span>
+                <span id="drawer-bot-runtime" class="text-xs text-gray-400 font-mono" translate="no">Node.js 22 LTS</span>
             </div>
             
             <div class="space-y-3.5 bg-black/40 p-5 rounded-2xl border border-border font-mono text-xs">
                 <div class="flex justify-between items-center">
-                    <span class="text-gray-400">Process ID</span>
-                    <span class="text-white font-bold">#<span id="drawer-pid">83921</span></span>
+                    <span class="text-gray-400" data-i18n="drawer-pid-label">ID de Proceso</span>
+                    <span class="text-white font-bold" translate="no">#<span id="drawer-pid">83921</span></span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <span class="text-gray-400">Uptime</span>
-                    <span class="text-white">14d 3h 22m</span>
+                    <span class="text-gray-400" data-i18n="drawer-uptime-label">Tiempo Activo</span>
+                    <span class="text-white" translate="no">14d 3h 22m</span>
                 </div>
                 <div>
                     <div class="flex justify-between items-center mb-1.5">
-                        <span class="text-gray-400">Memory Allocation</span>
-                        <span class="text-white font-bold"><span id="drawer-ram">84</span>MB / 512MB</span>
+                        <span class="text-gray-400" data-i18n="drawer-memory-label">Asignación de Memoria</span>
+                        <span class="text-white font-bold" translate="no"><span id="drawer-ram">84</span>MB / 512MB</span>
                     </div>
                     <div class="h-1.5 w-full bg-gray-800 rounded-full overflow-hidden">
                         <div class="h-full bg-cyan-400 w-[22%] rounded-full"></div>
@@ -735,8 +748,8 @@ curl -X POST <span class="tok-str">"https://moniopen.rbxtracker.indevs.in/api/v1
             </div>
 
             <div>
-                <h4 class="text-xs font-bold text-gray-300 mb-2 uppercase tracking-wider font-mono">Environment Configuration</h4>
-                <div class="bg-black/60 rounded-xl p-3.5 border border-border font-mono text-[11px] text-gray-400 space-y-1">
+                <h4 class="text-xs font-bold text-gray-300 mb-2 uppercase tracking-wider font-mono" data-i18n="drawer-config-label">Configuración de Entorno</h4>
+                <div class="bg-black/60 rounded-xl p-3.5 border border-border font-mono text-[11px] text-gray-400 space-y-1" translate="no">
                     <div><span class="text-indigo-400">MONIOPEN_ENV</span>=production</div>
                     <div><span class="text-indigo-400">LOG_LEVEL</span>=debug</div>
                     <div><span class="text-indigo-400">REGION</span>=us-east-1</div>
@@ -745,10 +758,10 @@ curl -X POST <span class="tok-str">"https://moniopen.rbxtracker.indevs.in/api/v1
         </div>
         <div class="p-5 border-t border-border bg-black/40 flex gap-3">
             <button type="button" onclick="closeAllOverlays()" class="flex-1 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-gray-300 rounded-xl text-xs font-semibold transition-all">
-                Dismiss
+                <span data-i18n="drawer-btn-dismiss">Cerrar</span>
             </button>
-            <button type="button" onclick="showToast('Service Restarted', 'Worker re-initialized smoothly.', 'success'); closeAllOverlays();" class="flex-1 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-indigo-600/30">
-                Restart Worker
+            <button type="button" onclick="restartWorkerFromDrawer()" class="flex-1 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-indigo-600/30">
+                <span data-i18n="drawer-btn-restart">Reiniciar Agente</span>
             </button>
         </div>
     </div>
@@ -758,7 +771,7 @@ curl -X POST <span class="tok-str">"https://moniopen.rbxtracker.indevs.in/api/v1
         <div class="p-5 border-b border-border flex items-center justify-between bg-black/40">
             <h3 id="register-modal-title" class="text-sm font-bold text-white flex items-center gap-2">
                 <i data-lucide="plus-circle" class="w-4 h-4 text-indigo-400"></i>
-                <span>Register New Worker</span>
+                <span data-i18n="modal-title">Registrar Nuevo Agente</span>
             </h3>
             <button type="button" onclick="closeAllOverlays()" class="text-gray-400 hover:text-white">
                 <i data-lucide="x" class="w-4 h-4"></i>
@@ -767,11 +780,11 @@ curl -X POST <span class="tok-str">"https://moniopen.rbxtracker.indevs.in/api/v1
         <div class="p-6 space-y-4">
             <div id="register-form" class="space-y-4">
                 <div>
-                    <label for="new-bot-name" class="block text-xs font-semibold text-gray-400 mb-1.5 uppercase font-mono">Worker Name / ID</label>
-                    <input type="text" id="new-bot-name" onkeydown="if(event.key === 'Enter') generateBot()" class="w-full bg-black/50 border border-border rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 font-mono text-xs transition-colors" placeholder="e.g. telemetry-worker-01" required>
+                    <label for="new-bot-name" class="block text-xs font-semibold text-gray-400 mb-1.5 uppercase font-mono" data-i18n="modal-worker-label">Nombre o ID del Agente</label>
+                    <input type="text" id="new-bot-name" onkeydown="if(event.key === 'Enter') generateBot()" class="w-full bg-black/50 border border-border rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 font-mono text-xs transition-colors" placeholder="Ej. telemetry-worker-01" data-i18n-placeholder="modal-worker-placeholder" required>
                 </div>
                 <div>
-                    <label for="new-bot-lang" class="block text-xs font-semibold text-gray-400 mb-1.5 uppercase font-mono">Runtime Engine</label>
+                    <label for="new-bot-lang" class="block text-xs font-semibold text-gray-400 mb-1.5 uppercase font-mono" data-i18n="modal-runtime-label">Motor de Ejecución</label>
                     <select id="new-bot-lang" class="w-full bg-black/50 border border-border rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 text-xs font-mono">
                         <option value="Python 3.12">Python 3.12</option>
                         <option value="Node.js 22 LTS">Node.js 22 LTS</option>
@@ -782,11 +795,11 @@ curl -X POST <span class="tok-str">"https://moniopen.rbxtracker.indevs.in/api/v1
                 <div class="pt-1">
                     <label for="consent-checkbox" class="flex items-start gap-2.5 text-[11px] text-gray-400 cursor-pointer select-none">
                         <input type="checkbox" id="consent-checkbox" checked class="mt-0.5 w-4 h-4 rounded border-white/20 bg-black/60 text-indigo-600 focus:ring-indigo-500 accent-indigo-600 cursor-pointer">
-                        <span>I accept the <a href="#privacy" onclick="event.preventDefault();" class="text-indigo-400 underline hover:text-indigo-300">Telemetry Terms &amp; Privacy Policy</a> (TCPA/GDPR).</span>
+                        <span data-i18n="modal-consent-label">Acepto los Términos de Telemetría y Privacidad (TCPA/GDPR).</span>
                     </label>
                 </div>
                 <button type="button" onclick="generateBot()" class="w-full mt-2 btn-glow-primary rounded-xl py-3 text-xs font-bold flex items-center justify-center gap-2">
-                    <span>Generate API Connection</span>
+                    <span data-i18n="modal-btn-generate">Generar Conexión API</span>
                 </button>
             </div>
             
@@ -795,17 +808,17 @@ curl -X POST <span class="tok-str">"https://moniopen.rbxtracker.indevs.in/api/v1
                     <i data-lucide="check" class="w-6 h-6"></i>
                 </div>
                 <div>
-                    <h4 class="text-white font-bold text-base">Worker Registered!</h4>
-                    <p class="text-xs text-gray-400 mt-1">Use this cluster key to authenticate your SDK.</p>
+                    <h4 class="text-white font-bold text-base" data-i18n="modal-success-title">¡Agente Registrado!</h4>
+                    <p class="text-xs text-gray-400 mt-1" data-i18n="modal-success-desc">Usa esta clave de clúster para autenticar tu SDK.</p>
                 </div>
                 <div class="w-full bg-black/80 border border-border rounded-xl p-3 relative group">
-                    <code id="generated-api-key" class="text-emerald-400 font-mono text-xs break-all">mop_live_...</code>
-                    <button type="button" onclick="copyGeneratedKey()" class="absolute right-2 top-2 p-1.5 bg-white/10 hover:bg-white/20 rounded text-gray-300">
+                    <code id="generated-api-key" translate="no" class="text-emerald-400 font-mono text-xs break-all">mop_live_...</code>
+                    <button type="button" onclick="copyGeneratedKey()" class="absolute right-2 top-2 p-1.5 bg-white/10 hover:bg-white/20 rounded text-gray-300" title="Copiar Clave">
                         <i data-lucide="copy" class="w-3.5 h-3.5"></i>
                     </button>
                 </div>
                 <button type="button" onclick="closeAllOverlays()" class="w-full bg-white/10 hover:bg-white/20 text-white rounded-xl py-2.5 text-xs font-bold transition-colors">
-                    Done
+                    <span data-i18n="btn-done">Listo</span>
                 </button>
             </div>
         </div>
@@ -818,10 +831,10 @@ curl -X POST <span class="tok-str">"https://moniopen.rbxtracker.indevs.in/api/v1
                 <div class="bg-indigo-500/20 p-1.5 rounded-lg border border-indigo-500/30">
                     <i data-lucide="sparkles" class="w-4 h-4 text-indigo-400"></i>
                 </div>
-                <h3 id="claude-modal-title" class="text-sm font-bold text-white">Claude 3.5 Sonnet Diagnostics</h3>
+                <h3 id="claude-modal-title" class="text-sm font-bold text-white" data-i18n="claude-modal-title">Diagnóstico con Claude 3.5 Sonnet</h3>
             </div>
             <span id="claude-status-badge" class="px-2.5 py-1 text-[10px] font-mono rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 animate-pulse">
-                Analyzing Incident...
+                <span data-i18n="claude-analyzing">Analizando Incidente...</span>
             </span>
         </div>
         
@@ -831,7 +844,7 @@ curl -X POST <span class="tok-str">"https://moniopen.rbxtracker.indevs.in/api/v1
                 <div class="absolute inset-0 rounded-full border-t-2 border-indigo-500 animate-spin"></div>
                 <div class="absolute inset-2 rounded-full border-r-2 border-cyan-400 animate-spin" style="animation-direction: reverse; animation-duration: 1.5s;"></div>
             </div>
-            <p class="text-gray-400 font-mono text-xs" id="claude-thinking-text">Ingesting stack trace and analyzing rate limit patterns...</p>
+            <p class="text-gray-400 font-mono text-xs" id="claude-thinking-text" data-i18n="claude-thinking">Ingiriendo traza de pila y analizando patrones de límite de tasa...</p>
         </div>
 
         <!-- Result State -->
@@ -839,18 +852,18 @@ curl -X POST <span class="tok-str">"https://moniopen.rbxtracker.indevs.in/api/v1
             <div class="p-6 overflow-y-auto max-h-[60vh] space-y-4">
                 <div>
                     <h4 class="text-red-400 font-semibold text-xs mb-1.5 flex items-center gap-2 uppercase tracking-wider font-mono">
-                        <i data-lucide="target" class="w-3.5 h-3.5"></i> Root Cause Identified
+                        <i data-lucide="target" class="w-3.5 h-3.5"></i> <span data-i18n="claude-root-cause">Causa Raíz Identificada</span>
                     </h4>
-                    <p class="text-gray-300 text-xs leading-relaxed">
-                        Detected a hard-polling loop without exponential backoff in <code>roblox-sync-worker</code>. Upstream endpoint is returning continuous <code class="text-red-400 bg-red-400/10 px-1 py-0.5 rounded">HTTP 429 Too Many Requests</code>.
+                    <p class="text-gray-300 text-xs leading-relaxed" id="claude-result-desc" data-i18n="claude-result-desc">
+                        Detectado un bucle de peticiones sin retroceso exponencial en <code>roblox-sync-worker</code>. El endpoint ascendente responde continuamente con <code class="text-red-400 bg-red-400/10 px-1 py-0.5 rounded">HTTP 429 Too Many Requests</code>.
                     </p>
                 </div>
                 
                 <div>
                     <h4 class="text-emerald-400 font-semibold text-xs mb-1.5 flex items-center gap-2 uppercase tracking-wider font-mono">
-                        <i data-lucide="code" class="w-3.5 h-3.5"></i> Suggested Auto-Patch (Exponential Jitter)
+                        <i data-lucide="code" class="w-3.5 h-3.5"></i> <span data-i18n="claude-patch-suggested">Auto-Parche Sugerido (Jitter Exponencial)</span>
                     </h4>
-                    <div class="bg-black/80 border border-border rounded-xl p-4 font-mono text-[11px] overflow-x-auto leading-relaxed">
+                    <div class="bg-black/80 border border-border rounded-xl p-4 font-mono text-[11px] overflow-x-auto leading-relaxed" translate="no">
                         <div class="text-red-400/80 mb-2">
                             - def fetch_roblox_assets():<br>
                             - &nbsp;&nbsp;&nbsp;&nbsp;while True:<br>
@@ -871,10 +884,12 @@ curl -X POST <span class="tok-str">"https://moniopen.rbxtracker.indevs.in/api/v1
             </div>
             
             <div class="p-4 border-t border-border bg-black/40 flex justify-end gap-3">
-                <button onclick="closeAllOverlays()" class="px-4 py-2 text-gray-400 hover:text-white text-xs font-semibold">Dismiss</button>
+                <button onclick="closeAllOverlays()" class="px-4 py-2 text-gray-400 hover:text-white text-xs font-semibold">
+                    <span data-i18n="btn-dismiss">Cerrar</span>
+                </button>
                 <button onclick="applyAIPatch()" id="btn-apply-patch" class="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white rounded-xl text-xs font-bold shadow-lg shadow-emerald-500/30 transition-all flex items-center gap-2">
                     <i data-lucide="wrench" class="w-3.5 h-3.5"></i>
-                    <span>Apply Patch & Auto-Recover</span>
+                    <span data-i18n="btn-apply-patch">Aplicar Parche y Auto-Recuperar</span>
                 </button>
             </div>
         </div>
@@ -886,14 +901,14 @@ curl -X POST <span class="tok-str">"https://moniopen.rbxtracker.indevs.in/api/v1
             <i data-lucide="check" class="w-4 h-4"></i>
         </div>
         <div>
-            <h4 id="toast-title" class="text-white text-xs font-bold">Success</h4>
-            <p id="toast-message" class="text-gray-400 text-[11px]">Action completed.</p>
+            <h4 id="toast-title" class="text-white text-xs font-bold">Éxito</h4>
+            <p id="toast-message" class="text-gray-400 text-[11px]">Acción completada.</p>
         </div>
     </div>
 
     <!-- Logic Scripts -->
-    <script src="canvas-fx.js?v=4.6.0"></script>
-    <script src="app.js?v=4.6.0"></script>
+    <script src="canvas-fx.js?v=4.7.0"></script>
+    <script src="app.js?v=4.7.0"></script>
     <script>
         lucide.createIcons();
     </script>

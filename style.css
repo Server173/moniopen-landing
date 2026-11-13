@@ -759,3 +759,269 @@ select:focus-visible {
 .mac-dot-red { background: #ef4444; }
 .mac-dot-yellow { background: #f59e0b; }
 .mac-dot-green { background: #10b981; }
+
+/* ==========================================================================
+   Apple iOS 26 Liquid Glass - Light Mode Theme
+   Luminous Frosted Silver & Crystal Refraction Optics
+   ========================================================================== */
+
+html.light {
+    --bg-base: #f8fafc;
+    --bg-surface: rgba(255, 255, 255, 0.85);
+    --border-subtle: rgba(0, 0, 0, 0.08);
+    --border-hover: rgba(99, 102, 241, 0.35);
+}
+
+html.light body {
+    background-color: #f1f5f9 !important;
+    color: #1e293b !important;
+    background-image: 
+        radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.1) 0%, transparent 60%),
+        radial-gradient(circle at 100% 50%, rgba(6, 182, 212, 0.05) 0%, transparent 40%),
+        linear-gradient(rgba(0, 0, 0, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.035) 1px, transparent 1px) !important;
+}
+
+/* Light Mode Sidebar */
+html.light aside {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    backdrop-filter: blur(24px) !important;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.04) !important;
+}
+html.light aside .text-white {
+    color: #0f172a !important;
+}
+html.light aside .text-gray-400 {
+    color: #64748b !important;
+}
+html.light aside .nav-item:hover {
+    background: rgba(0, 0, 0, 0.04) !important;
+    color: #0f172a !important;
+}
+html.light aside .nav-item.active {
+    background: rgba(99, 102, 241, 0.12) !important;
+    color: #4f46e5 !important;
+    font-weight: 600 !important;
+}
+html.light aside .border-b,
+html.light aside .border-t {
+    border-color: rgba(0, 0, 0, 0.06) !important;
+}
+html.light aside .bg-black\/20 {
+    background: rgba(0, 0, 0, 0.02) !important;
+}
+html.light aside .text-gray-200 {
+    color: #1e293b !important;
+}
+
+/* Light Mode Liquid Glass Floating Navbar */
+html.light .liquid-glass-nav {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.88) 0%,
+        rgba(255, 255, 255, 0.68) 45%,
+        rgba(241, 245, 249, 0.82) 100%
+    ) !important;
+    border: 1px solid rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 
+        0 16px 36px -10px rgba(0, 0, 0, 0.08),
+        0 4px 12px rgba(0, 0, 0, 0.03),
+        inset 0 1.5px 1px 0 rgba(255, 255, 255, 1),
+        inset 0 -1.5px 2px 0 rgba(0, 0, 0, 0.04),
+        0 0 0 1px rgba(0, 0, 0, 0.06) !important;
+}
+
+html.light .liquid-glass-nav::before {
+    background: radial-gradient(
+        220px circle at var(--nav-glare-x, 50%) var(--nav-glare-y, 0%),
+        rgba(255, 255, 255, 1) 0%,
+        rgba(99, 102, 241, 0.35) 25%,
+        rgba(6, 182, 212, 0.2) 50%,
+        transparent 75%
+    ) !important;
+    opacity: 0.9 !important;
+}
+
+html.light .liquid-glass-nav::after {
+    background: radial-gradient(
+        420px circle at var(--nav-mouse-x, 50%) var(--nav-mouse-y, 50%),
+        rgba(255, 255, 255, 0.5) 0%,
+        rgba(99, 102, 241, 0.06) 35%,
+        transparent 75%
+    ) !important;
+}
+
+html.light .liquid-glass-nav.nav-scrolled {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.95) 0%,
+        rgba(255, 255, 255, 0.88) 100%
+    ) !important;
+    box-shadow: 
+        0 20px 48px -10px rgba(0, 0, 0, 0.12),
+        inset 0 1.5px 1px 0 rgba(255, 255, 255, 1),
+        0 0 0 1px rgba(0, 0, 0, 0.06) !important;
+}
+
+html.light .liquid-glass-nav .text-white {
+    color: #0f172a !important;
+}
+html.light .liquid-glass-nav .text-gray-300 {
+    color: #475569 !important;
+}
+html.light .liquid-glass-nav .text-gray-400\/70 {
+    color: #64748b !important;
+}
+
+/* Light Mode Glass Pills */
+html.light .liquid-glass-pill {
+    background: rgba(0, 0, 0, 0.035) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 
+        inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        0 2px 6px rgba(0, 0, 0, 0.03) !important;
+    color: #334155 !important;
+}
+html.light .liquid-glass-pill:hover {
+    background: rgba(0, 0, 0, 0.06) !important;
+    border-color: rgba(0, 0, 0, 0.14) !important;
+    color: #0f172a !important;
+}
+
+/* Light Mode Glass Cards */
+html.light .glass-card {
+    background: rgba(255, 255, 255, 0.82) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 
+        0 8px 30px -4px rgba(0, 0, 0, 0.05),
+        0 2px 8px rgba(0, 0, 0, 0.02),
+        inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+}
+html.light .glass-card:hover {
+    border-color: rgba(99, 102, 241, 0.3) !important;
+    box-shadow: 
+        0 20px 48px -10px rgba(0, 0, 0, 0.1),
+        0 0 25px rgba(99, 102, 241, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+}
+html.light .glass-card::before {
+    background: radial-gradient(
+        500px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+        rgba(255, 255, 255, 0.8),
+        rgba(99, 102, 241, 0.1) 25%,
+        transparent 50%
+    ) !important;
+}
+html.light .glass-card .text-white {
+    color: #0f172a !important;
+}
+html.light .glass-card .text-gray-400 {
+    color: #64748b !important;
+}
+html.light .glass-card .text-gray-200 {
+    color: #1e293b !important;
+}
+html.light .glass-card .text-gray-300 {
+    color: #334155 !important;
+}
+html.light .glass-card .text-gray-500 {
+    color: #94a3b8 !important;
+}
+html.light .glass-card .border-border,
+html.light .glass-card .border-white\/5,
+html.light .glass-card .border-white\/10 {
+    border-color: rgba(0, 0, 0, 0.06) !important;
+}
+html.light .glass-card .bg-black\/40,
+html.light .glass-card .bg-black\/50,
+html.light .glass-card .bg-black\/60 {
+    background: rgba(248, 250, 252, 0.85) !important;
+}
+
+/* Light Mode Hero Banner */
+html.light #view-overview .glass-card:first-child {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(241, 245, 249, 0.9) 100%) !important;
+}
+
+/* Light Mode Table */
+html.light .fleet-row:hover {
+    background-color: rgba(99, 102, 241, 0.05) !important;
+}
+html.light table th {
+    background: rgba(241, 245, 249, 0.85) !important;
+    color: #475569 !important;
+}
+
+/* Light Mode Inputs & Buttons */
+html.light input[type="text"],
+html.light select {
+    background: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.15) !important;
+    color: #0f172a !important;
+}
+html.light input::placeholder {
+    color: #94a3b8 !important;
+}
+
+/* Light Mode Canvas Mesh */
+html.light canvas#telemetry-mesh-canvas {
+    opacity: 0.18 !important;
+    filter: invert(1) hue-rotate(180deg) !important;
+}
+
+/* Light Mode Modals */
+html.light #bot-drawer,
+html.light #register-modal,
+html.light #new-bot-modal,
+html.light #claude-modal {
+    background: rgba(255, 255, 255, 0.96) !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.12) !important;
+}
+html.light #bot-drawer .text-white,
+html.light #register-modal .text-white,
+html.light #new-bot-modal .text-white,
+html.light #claude-modal .text-white {
+    color: #0f172a !important;
+}
+html.light #bot-drawer .bg-black\/40,
+html.light #bot-drawer .bg-black\/60,
+html.light #register-modal .bg-black\/40,
+html.light #register-modal .bg-black\/50,
+html.light #register-modal .bg-black\/60,
+html.light #register-modal .bg-black\/80,
+html.light #claude-modal .bg-black\/40,
+html.light #claude-modal .bg-black\/80 {
+    background: rgba(241, 245, 249, 0.8) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+}
+html.light #view-docs .md\:w-64.bg-black\/40 {
+    background: rgba(248, 250, 252, 0.85) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+}
+html.light #view-docs .sdk-tab {
+    color: #475569 !important;
+}
+html.light #view-docs .sdk-tab.active {
+    background: rgba(99, 102, 241, 0.12) !important;
+    color: #4f46e5 !important;
+}
+html.light #view-docs .sdk-tab:hover {
+    background: rgba(0, 0, 0, 0.04) !important;
+    color: #0f172a !important;
+}
+html.light #backdrop {
+    background: rgba(15, 23, 42, 0.35) !important;
+}
+html.light #toast {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+}
+html.light #toast .text-white {
+    color: #0f172a !important;
+}
+html.light #toast .text-gray-400 {
+    color: #64748b !important;
+}
